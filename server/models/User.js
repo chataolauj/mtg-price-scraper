@@ -11,7 +11,10 @@ const UserSchema = mongoose.Schema({
         require: true
     },
     wishList: {
-        type: Array
+        type: [{
+            name: String,
+            set: String
+        }]
     },
     createdAt: {
         type: Date,

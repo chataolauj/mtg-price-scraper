@@ -45,7 +45,7 @@ router.patch('/:id', async (req, res) => {
     } catch(err) {
         res.json({message: err})
     }
-})
+});
 
 //Delete specific user
 router.delete('/:id', async (req, res) => {
@@ -53,9 +53,19 @@ router.delete('/:id', async (req, res) => {
         let user = await User.findById(req.params.id);
         await User.findByIdAndRemove(req.params.id);
         res.json({message: 'Removed ' + user.email + ' from the database.'});
-    } catch (error) {
+    } catch (err) {
         res.json({message: err});
     }
-})
+});
+
+//Get specific user wish list
+router.get('/:id/wishList', async (req, res) => {
+    try {
+        let wishList = await User.findOne({_id: req.params.id}, {wishList: 1});
+        res.json(wishList)
+    } catch (err) {
+        res.json({message: err});
+    }
+});
 
 module.exports = router;
