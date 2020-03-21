@@ -9,11 +9,22 @@ router.get('/', (req, res) => {
         .then(users => res.json(users));
 });
 
+//Get user by their ObjectId
+router.get('/:id', async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        res.json(user);
+    } catch(err) {
+        res.json({message: err});
+    }
+});
+
 //Insert a user
 router.post('/', (req, res) => {
     const user = new User({
         email: req.body.email,
-        password: req.body.password
+        password: req.body.password,
+        wishList: req.body.wishList
     });
 
     user.save()
@@ -24,5 +35,27 @@ router.post('/', (req, res) => {
             res.json({ message: err })
         });
 });
+
+//Update specific user information
+router.patch('/:id', async (req, res) => {
+    try {
+        let user = await User.findById(req.params.id);
+        await User.updateOne({_id: req.params.id}, {$set: {password: req.body.password}});
+        res.json({message: user.email +  `'s information has been updated.`});
+    } catch(err) {
+        res.json({message: err})
+    }
+})
+
+//Delete specific user
+router.delete('/:id', async (req, res) => {
+    try {
+        let user = await User.findById(req.params.id);
+        await User.findByIdAndRemove(req.params.id);
+        res.json({message: 'Removed ' + user.email + ' from the database.'});
+    } catch (error) {
+        res.json({message: err});
+    }
+})
 
 module.exports = router;
