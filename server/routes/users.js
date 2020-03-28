@@ -9,7 +9,7 @@ router.get('/', (req, res) => {
         .then(users => res.json(users));
 });
 
-//Get user by their ObjectId
+//Get specific user by their ObjectId
 router.get('/:id', async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
     const user = new User({
         email: req.body.email,
         password: req.body.password,
-        wishList: req.body.wishList
+        wish_list: req.body.wish_list
     });
 
     user.save()
@@ -36,7 +36,7 @@ router.post('/', (req, res) => {
         });
 });
 
-//Update specific user information
+//Update specific user information (password)
 router.patch('/:id', async (req, res) => {
     try {
         let user = await User.findById(req.params.id);
@@ -47,7 +47,7 @@ router.patch('/:id', async (req, res) => {
     }
 });
 
-//Delete specific user
+//Delete user
 router.delete('/:id', async (req, res) => {
     try {
         let user = await User.findById(req.params.id);
@@ -58,11 +58,86 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
-//Get specific user wish list
-router.get('/:id/wishList', async (req, res) => {
+//Get user wish list
+router.get('/:id/wish_list', async (req, res) => {
     try {
-        let wishList = await User.findOne({_id: req.params.id}, {wishList: 1});
-        res.json(wishList)
+        let wish_list = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+        res.json(wish_list)
+    } catch (err) {
+        res.json({message: err});
+    }
+});
+
+//Get card from user's wish list
+router.get('/:id/wish_list/:multiverse_id', async (req, res) => {
+    try {
+        let card = await User.findOne(
+            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+            {_id: 0, wish_list: {$elemMatch: {multiverse_id: req.params.multiverse_id}}}
+        );
+        res.json(card)
+    } catch (err) {
+        res.json({message: err});
+    }
+});
+
+//Insert card to user's wish list
+router.post('/:id/wish_list', async (req, res) => {
+    try {
+        let card = {
+            multiverse_id: req.body.multiverse_id,
+            name: req.body.name,
+            set: req.body.set,
+            condition: req.body.condition,
+            wish_price: req.body.wish_price,
+            max_range: req.body.max_range
+        }
+
+        await User.update(
+            {_id: req.params.id, 'wish_list.multiverse_id': {$ne: card.multiverse_id}},
+            {$push: {wish_list: card}}
+        );
+
+        res.json(card)
+    } catch (err) {
+        res.json({message: err});
+    }
+});
+
+//Update card in user wish list
+router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
+    try {
+        let card = {
+            condition: req.body.condition,
+            wish_price: req.body.wish_price,
+            max_range: req.body.max_range
+        }
+
+        await User.updateOne(
+            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+            {
+                $set: {
+                    'wish_list.$.condition': card.condition,
+                    'wish_list.$.wish_price': card.wish_price,
+                    'wish_list.$.max_range': card.max_range
+                }
+            }
+        );
+
+        res.json(card)
+    } catch (err) {
+        res.json({message: err});
+    }
+});
+
+//Remove card from wish list
+router.delete('/:id/wish_list/:multiverse_id', async (req, res) => {
+    try {
+        await User.update(
+            {_id: req.params.id},
+            {$pull: {wish_list: {multiverse_id: req.params.multiverse_id}}}
+        );
+        res.json({message: 'Removed card from the wish list.'});
     } catch (err) {
         res.json({message: err});
     }

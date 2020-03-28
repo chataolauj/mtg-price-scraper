@@ -8,13 +8,19 @@ const UserSchema = mongoose.Schema({
     },
     password: {
         type: String,
-        require: true
+        required: true
     },
-    wishList: {
-        type: [{
-            name: String,
-            set: String
-        }]
+    wish_list: {
+        type: [
+            {
+                multiverse_id: Number,
+                name: String,
+                set: String,
+                condition: String,
+                wish_price: Number,
+                max_range: Number
+            }
+        ]
     },
     createdAt: {
         type: Date,
