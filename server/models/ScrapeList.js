@@ -38,7 +38,12 @@ const ScrapeListSchema = mongoose.Schema({
         ]
     },
     notify_list: {
-        type: Array
+        type: [
+            {
+                email: String,
+                price_range: Number
+            }
+        ]
     }
 });
 

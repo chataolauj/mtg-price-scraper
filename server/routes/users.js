@@ -63,6 +63,7 @@ router.delete('/:id', async (req, res) => {
 router.get('/:id/wish_list', async (req, res) => {
     try {
         let wish_list = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+        
         res.json(wish_list)
     } catch (err) {
         res.json({message: err});
@@ -77,10 +78,11 @@ router.get('/:id/wish_list/:multiverse_id', async (req, res) => {
             {_id: 0, 'wish_list.$': 1}
         );
 
+        res.status(200).json(card.wish_list[0]);
         console.log(card.wish_list[0]);
-        res.json(card.wish_list[0]);
+        
     } catch (err) {
-        res.json({message: err});
+        res.status(404).json({message: 'No such card in your wish list.'});
     }
 });
 
@@ -100,17 +102,12 @@ router.post('/:id/wish_list', async (req, res) => {
         let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': new_card.multiverse_id});
 
         if(!card_doc) {
-            User.update(
+            await User.update(
                 {_id: req.params.id},
-                {$push: {wish_list: new_card}},
-                (err) => {
-                    if(err) {
-                        res.json({message: err});
-                    }
-                    
-                    res.status(200).json({message: `${new_card.name} (${new_card.set_code}) was added to your wish list.`});
-                }
+                {$push: {wish_list: new_card}}
             );
+
+            res.status(200).json({message: `${new_card.name} (${new_card.set_code}) was added to your wish list.`});
         }
         else{
             res.status(409).json({message: `${new_card.name} (${new_card.set_code}) is already in your wish list.`});
@@ -123,39 +120,56 @@ router.post('/:id/wish_list', async (req, res) => {
 //Update card in user wish list
 router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
     try {
-        let card = {
+        let update = {
             condition: req.body.condition,
             wish_price: req.body.wish_price,
             max_range: req.body.max_range
         }
 
-        await User.updateOne(
-            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
-            {
-                $set: {
-                    'wish_list.$.condition': card.condition,
-                    'wish_list.$.wish_price': card.wish_price,
-                    'wish_list.$.max_range': card.max_range
-                }
-            }
-        );
+        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id});
 
-        res.json(card)
+        if(card_doc) {
+            await User.updateOne(
+                {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+                {
+                    $set: {
+                        'wish_list.$.condition': update.condition,
+                        'wish_list.$.wish_price': update.wish_price,
+                        'wish_list.$.max_range': update.max_range
+                    }
+                }
+            );
+
+            res.status(202).json({message: 'Card successfully updated.'});
+        }
+        else{
+            res.status(404).json({message: `No such card in your wish list.`});
+        }
     } catch (err) {
-        res.json({message: err});
+        res.status(404).json({message: err});
     }
 });
 
 //Remove card from wish list
 router.delete('/:id/wish_list/:multiverse_id', async (req, res) => {
     try {
-        await User.update(
-            {_id: req.params.id},
-            {$pull: {wish_list: {multiverse_id: req.params.multiverse_id}}}
-        );
-        res.json({message: 'Removed card from the wish list.'});
+        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id});
+        console.log(card_doc);
+
+        if(card_doc) {
+            await User.update(
+                {_id: req.params.id},
+                {$pull: {wish_list: {multiverse_id: req.params.multiverse_id}}}
+            );
+
+            res.status(200).json({message: 'Removed card from the wish list.'});
+        }
+        else{
+            res.status(404).json({message: 'No such card in your wish list.'});
+        }
+        
     } catch (err) {
-        res.json({message: err});
+        res.status(404).json({message: err});
     }
 });
 
