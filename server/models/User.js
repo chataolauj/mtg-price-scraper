@@ -15,7 +15,8 @@ const UserSchema = mongoose.Schema({
             {
                 multiverse_id: Number,
                 name: String,
-                set: String,
+                set_name: String,
+                set_code: String,
                 condition: String,
                 wish_price: Number,
                 max_range: Number
