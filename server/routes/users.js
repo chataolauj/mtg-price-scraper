@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User')
-const ObjectId = require('mongoose').Types.ObjectId;
 
 //Get all users
 router.get('/', (req, res) => {
@@ -65,6 +64,27 @@ router.get('/:id/wish_list', async (req, res) => {
         let wish_list = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
         
         res.json(wish_list)
+    } catch (err) {
+        res.json({message: err});
+    }
+});
+
+router.put('/:id/wish_list', async (req, res) => {
+    try {
+        if(req.query.clear == true) {
+            await User.update(
+                {_id: req.params.id}, 
+                {
+                    $set: {
+                        wish_list: []
+                    }
+                }
+            );
+            res.status(200).json({message: 'Your wish list has been cleared.'});
+        }
+        else {
+            res.status(204).send();
+        }
     } catch (err) {
         res.json({message: err});
     }
