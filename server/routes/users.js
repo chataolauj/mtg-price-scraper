@@ -19,23 +19,6 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//Insert a user
-router.post('/', (req, res) => {
-    const user = new User({
-        email: req.body.email,
-        password: req.body.password,
-        wish_list: req.body.wish_list
-    });
-
-    user.save()
-        .then(data => {
-            res.json(data);
-        })
-        .catch(err => {
-            res.json({ message: err })
-        });
-});
-
 //Update specific user information (password)
 router.patch('/:id', async (req, res) => {
     try {
@@ -146,7 +129,10 @@ router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
             max_range: req.body.max_range
         }
 
-        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id});
+        let card_doc = await User.findOne(
+            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+            {_id: 0, 'wish_list.$': 1}
+        );
 
         if(card_doc) {
             await User.updateOne(
@@ -160,7 +146,7 @@ router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
                 }
             );
 
-            res.status(202).json({message: 'Card successfully updated.'});
+            res.status(202).json({message: `${card_doc.wish_list[0].name} (${card_doc.wish_list[0].set_code}) successfully updated.`});
         }
         else{
             res.status(404).json({message: `No such card in your wish list.`});
@@ -173,8 +159,10 @@ router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
 //Remove card from wish list
 router.delete('/:id/wish_list/:multiverse_id', async (req, res) => {
     try {
-        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id});
-        console.log(card_doc);
+        let card_doc = await User.findOne(
+            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+            {_id: 0, 'wish_list.$': 1}
+        );
 
         if(card_doc) {
             await User.update(
@@ -182,14 +170,14 @@ router.delete('/:id/wish_list/:multiverse_id', async (req, res) => {
                 {$pull: {wish_list: {multiverse_id: req.params.multiverse_id}}}
             );
 
-            res.status(200).json({message: 'Removed card from the wish list.'});
+            res.status(200).send({message: `Removed ${card_doc.wish_list[0].name} (${card_doc.wish_list[0].set_code}) from your wish list.`});
         }
         else{
-            res.status(404).json({message: 'No such card in your wish list.'});
+            res.status(404).send({error: 'No such card in your wish list.'});
         }
         
     } catch (err) {
-        res.status(404).json({message: err});
+        res.status(404).json({error: err});
     }
 });
 
