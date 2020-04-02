@@ -26,8 +26,12 @@ async (req, res) => {
             res.status(200).send({message: `${user.email} is now registered.`});
         })
         .catch(err => {
-            res.status(409).send({error: `${user.email} is already in use.`});
+            res.status(409).send({error: `Email ${user.email} is already in use.`});
         });
+});
+
+router.post('/login', async (req, res) => {
+
 });
 
 module.exports = router;
