@@ -7,7 +7,13 @@ const {check, validationResult} = require('express-validator');
 router.post('/register', [
     check('email')
         .isEmail().withMessage('Please enter a valid email.')
-        .normalizeEmail()
+        .normalizeEmail(),
+    check('password')
+        .isLength({ min: 8}).withMessage('a min. of 8 characters')
+        .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
+        .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
+        .matches(/(?=.*\d)/).withMessage('one digit')
+        .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)')
 ], 
 async (req, res) => {
     const errors = validationResult(req);

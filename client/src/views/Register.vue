@@ -1,12 +1,22 @@
 <template>
     <div>
         <h1>Register</h1>
-        <ul v-if="error != ''" >
-            <li>{{ error }}</li>
+        <div v-if="error != ''">
+            <ul>
+                <li v-if='!Array.isArray(error)'>{{ error }}</li>
+                <li v-else v-for='(err, index) in email_errors' :item='err' :key='index'>{{ err.msg }}</li>
+            </ul>
+            <ul v-if="pw_errors.length">
+            <li>The password you entered does not contain:
+                <ul>
+                    <li v-for='(err, index) in pw_errors' :item='err' :key='index'>{{ err.msg }}</li>
+                </ul>
+            </li>
         </ul>
-        <input v-model='user.email' type='email' name='email' placeholder='Email' />
+        </div>
+        <input @keyup.enter='register(user)' v-model='user.email' type='email' name='email' placeholder='Email' />
         <br>
-        <input v-model='user.password' type='password' name='password' placeholder='Password' />
+        <input @keyup.enter='register(user)' v-model='user.password' type='password' name='password' placeholder='Password' />
         <br>
         <button @click="register(user)" type='submit'>Register</button>
     </div>
@@ -27,6 +37,22 @@ export default {
             error: ''
         }
     },
+    computed: {
+        email_errors: function() {
+            if(Array.isArray(this.error)) {
+                return this.error.filter(error => error.param === 'email');
+            }
+
+            return [];
+        },
+        pw_errors: function() {
+            if(Array.isArray(this.error)) {
+                return this.error.filter(error => error.param === 'password');
+            }
+
+            return [];
+        }
+    },
     methods: {
         async register(user) {
             try {
@@ -38,7 +64,7 @@ export default {
                 .catch(error => {
                     switch(error.response.status) {
                         case 422:
-                            this.error = error.response.data[0].msg;
+                            this.error = error.response.data;
                             break;
                         case 409:
                             this.error = error.response.data.error;
