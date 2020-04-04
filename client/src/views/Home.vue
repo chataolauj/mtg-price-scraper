@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import AuthService from '../services/AuthService'
 
 export default {
     name: 'Home',
@@ -21,15 +20,15 @@ export default {
     },
     methods: {
         async check_auth() {
-            await AuthService.check_auth()
+            await this.$axios.get('check_auth')
             .then(response => {
-                this.logged_in = response.data.logged_in;
-                console.log(response.data.logged_in);
+                this.logged_in = response.data.is_logged_in;
+                console.log(response.data.is_logged_in);
             })
             .catch(error => console.log(error));
         },
         async logout() {
-            await AuthService.logout()
+            await this.$axios.get('/logout')
             .then(response => {
                 this.logged_in = false;
                 console.log(response.data);

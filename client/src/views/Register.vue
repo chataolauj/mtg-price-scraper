@@ -29,7 +29,6 @@
 
 <script>
 /* eslint-disable no-unused-vars */
-import AuthService from '../services/AuthService'
 
 export default {
     name: 'Register',
@@ -69,7 +68,7 @@ export default {
     methods: {
         async register(credentials) {
             try {
-                await AuthService.register(credentials)
+                await this.$http.post('/register', credentials)
                 .then(response => {
                     console.log(response.data.message);
                     this.$router.push({name: 'login'});

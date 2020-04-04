@@ -71,7 +71,7 @@ router.post('/login', async (req, res, next) => {
                 if(err) return next(err);
                 console.log(req.session.cookie);
 
-                return res.status(200).send({message: 'Successfully logged in.', cookie: req.session.cookie});
+                return res.status(200).send({message: 'Successfully logged in.', user: req.user});
             })
         })(req, res, next);
     } catch (error) {
@@ -82,14 +82,18 @@ router.post('/login', async (req, res, next) => {
 router.get('/logout', (req, res) => {
     req.logout();
     res.status(200).send({ message: 'Succcesfully logged out.' });
-})
+});
 
 router.get('/check_auth', ensureAuthenticated, (req, res) => {
-    res.status(200).send({ logged_in: true});
-})
+    try {
+        res.status(200).send({ is_logged_in: true});
+    } catch (error) {
+        res.status(401).send({ message: 'Your currently not logged in.'})
+    }
+});
 
 router.get('/dashboard', ensureAuthenticated, (req, res) => {
     res.status(200).send({ message: 'You made it!' });
-})
+});
 
 module.exports = router;

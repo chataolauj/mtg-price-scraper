@@ -14,7 +14,6 @@
 
 <script>
 /* eslint-disable no-unused-vars */
-import AuthService from '../services/AuthService'
 
 export default {
     name: 'Login',
@@ -30,18 +29,21 @@ export default {
     methods: {
         async login(user) {
             try {
-                await AuthService.login(user)
+                await this.$store.dispatch('login', user)
                 .then(response => {
-                    console.log(response.data);
-                    this.$router.push({ name: 'home' })
+                    console.log(response);
+                    console.log(this.$store.state.user)
+                    this.$router.push('/');
                 })
                 .catch(error => {
-                    this.error = error.response.data.message;
-                    console.log(this.error)
+                    /* this.error = error.response.data.message;
+                    console.log(this.error) */
+                    console.log(error)
                 });
             } catch (error) {
-                this.error = error.response.data.message;
-                console.log(error.response.data.message)
+                /* this.error = error.response.data.message;
+                console.log(error.response.data.message) */
+                console.log(error.response)
             }
         }
     }

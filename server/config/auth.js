@@ -4,6 +4,6 @@ module.exports = {
             return next();
         } 
 
-        res.status(401).send({ message: 'Please login first.'} );
+        res.status(401).send({ message: 'You are currently not logged in.'} );
     }
 }
