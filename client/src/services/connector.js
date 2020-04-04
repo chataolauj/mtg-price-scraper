@@ -17,6 +17,7 @@ async function register(user) {
  */
 export default () => {
     return axios.create({
-        baseURL: 'http://localhost:5000'
+        baseURL: 'http://localhost:5000',
+        withCredentials: true
     })
 }

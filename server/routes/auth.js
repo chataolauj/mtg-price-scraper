@@ -2,18 +2,30 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User')
 const {check, validationResult} = require('express-validator');
+const bcrypt = require('bcrypt');
+const passport = require('passport');
+const {ensureAuthenticated} = require('../config/auth');
 
 //Insert/Register a user
 router.post('/register', [
     check('email')
+        .trim()
         .isEmail().withMessage('Please enter a valid email.')
         .normalizeEmail(),
     check('password')
+        .trim()
         .isLength({ min: 8}).withMessage('a min. of 8 characters')
         .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
         .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
         .matches(/(?=.*\d)/).withMessage('one digit')
-        .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)')
+        .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
+    check('confirm_pw').custom((value, {req}) => {
+        if(value !== req.body.password) {
+            throw new Error('Passwords do not match');
+        }
+
+        return true;
+    })
 ], 
 async (req, res) => {
     const errors = validationResult(req);
@@ -27,17 +39,57 @@ async (req, res) => {
         password: req.body.password
     });
 
-    user.save()
-        .then(data => {
-            res.status(200).send({message: `${user.email} is now registered.`});
-        })
-        .catch(err => {
-            res.status(409).send({error: `Email ${user.email} is already in use.`});
+    await bcrypt.genSalt(10, (err, salt) => {
+        if(err) throw err;
+
+        bcrypt.hash(user.password, salt, (err, hash) => {
+            if(err) throw err;
+
+            user.password = hash;
+
+            user.save()
+                .then(() => {
+                    res.status(200).send({message: `${user.email} is now registered.`});
+                })
+                .catch(() => {
+                    res.status(409).send({error: `Email '${user.email}' is already in use by another user.`});
+                });
         });
+    });
 });
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
+    try {
+        await passport.authenticate('local', (err, user, info) => {
+            if(err) return next(err);
 
+            if(!user) {
+                return res.status(401).send({ message: info.message})
+            }
+
+            req.logIn(user, (err) => {
+                if(err) return next(err);
+                console.log(req.session.cookie);
+
+                return res.status(200).send({message: 'Successfully logged in.', cookie: req.session.cookie});
+            })
+        })(req, res, next);
+    } catch (error) {
+        res.status(401).send({ message: 'Could not log in.' });
+    }
 });
+
+router.get('/logout', (req, res) => {
+    req.logout();
+    res.status(200).send({ message: 'Succcesfully logged out.' });
+})
+
+router.get('/check_auth', ensureAuthenticated, (req, res) => {
+    res.status(200).send({ logged_in: true});
+})
+
+router.get('/dashboard', ensureAuthenticated, (req, res) => {
+    res.status(200).send({ message: 'You made it!' });
+})
 
 module.exports = router;

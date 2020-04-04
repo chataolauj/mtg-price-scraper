@@ -1,9 +1,12 @@
 <template>
     <div>
         <h1>Login</h1>
+        <ul v-if="error != ''">
+            <li>{{ error }}</li>
+        </ul>
         <input v-model='user.email' type='email' name='email' placeholder='Email' />
         <br>
-        <input v-model='user.password' type='password' name='password' placeholder='Password' />
+        <input @keyup.enter="login(user)" v-model='user.password' type='password' name='password' placeholder='Password' />
         <br>
         <button @click="login(user)" type='submit'>Login</button>
     </div>
@@ -21,16 +24,24 @@ export default {
                 email: '',
                 password: ''
             },
-            erorr: ''
+            error: ''
         }
     },
     methods: {
         async login(user) {
             try {
-                await AuthService.login(user);
+                await AuthService.login(user)
+                .then(response => {
+                    console.log(response.data);
+                    this.$router.push({ name: 'home' })
+                })
+                .catch(error => {
+                    this.error = error.response.data.message;
+                    console.log(this.error)
+                });
             } catch (error) {
-                this.error = error.response.data;
-                console.log(this.error)
+                this.error = error.response.data.message;
+                console.log(error.response.data.message)
             }
         }
     }
