@@ -1,8 +1,6 @@
 import axios from 'axios'
 
-export default () => {
-    return axios.create({
-        baseURL: 'http://localhost:5000',
-        withCredentials: true
-    })
-}
+export let http = axios.create({
+    baseURL: 'http://localhost:5000',
+    withCredentials: true
+})

@@ -69,9 +69,13 @@ router.post('/login', async (req, res, next) => {
 
             req.logIn(user, (err) => {
                 if(err) return next(err);
-                console.log(req.session.cookie);
+                
+                let user  = {
+                    _id: req.user._id,
+                    email: req.user.email
+                }
 
-                return res.status(200).send({message: 'Successfully logged in.', user: req.user});
+                return res.status(200).send({message: 'Successfully logged in.', user: user});
             })
         })(req, res, next);
     } catch (error) {
@@ -85,11 +89,12 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/check_auth', ensureAuthenticated, (req, res) => {
-    try {
-        res.status(200).send({ is_logged_in: true});
-    } catch (error) {
-        res.status(401).send({ message: 'Your currently not logged in.'})
+    let user  = {
+        _id: req.user._id,
+        email: req.user.email
     }
+
+    res.status(200).send({ is_logged_in: true, user: user});
 });
 
 router.get('/dashboard', ensureAuthenticated, (req, res) => {

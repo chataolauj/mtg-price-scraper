@@ -1,8 +1,8 @@
 <template>
     <div>
         <h1>Home</h1>
-        <br>
-        <button v-if="logged_in" @click="logout()" type="submit">Logout</button>
+        <p v-if="this.$store.state.logged_in">Hello {{ this.$store.state.user.email }}</p>
+        <button v-if="this.$store.state.logged_in" @click="logout()" type="submit">Logout</button>
     </div>
 </template>
 
@@ -15,23 +15,11 @@ export default {
             logged_in: false
         }
     },
-    created() {
-        this.check_auth();
-    },
     methods: {
-        async check_auth() {
-            await this.$axios.get('check_auth')
-            .then(response => {
-                this.logged_in = response.data.is_logged_in;
-                console.log(response.data.is_logged_in);
-            })
-            .catch(error => console.log(error));
-        },
         async logout() {
-            await this.$axios.get('/logout')
+            await this.$store.dispatch('logout')
             .then(response => {
-                this.logged_in = false;
-                console.log(response.data);
+                console.log(response.data.message);
             })
             .catch(error => console.log(error));
         }

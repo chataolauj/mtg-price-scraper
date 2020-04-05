@@ -36,14 +36,12 @@ export default {
                     this.$router.push('/');
                 })
                 .catch(error => {
-                    /* this.error = error.response.data.message;
-                    console.log(this.error) */
-                    console.log(error)
+                    this.error = error.response.data.message;
+                    console.log(this.error)
                 });
             } catch (error) {
-                /* this.error = error.response.data.message;
-                console.log(error.response.data.message) */
-                console.log(error.response)
+                this.error = error.response.data.message;
+                console.log(error.response.data.message)
             }
         }
     }

@@ -11,6 +11,16 @@ Vue.prototype.$axios = axios.create({
   withCredentials: true
 })
 
+//check if logged in
+//if logged in then commit('logged_in', response.data.user)
+store.dispatch('check_auth')
+.then(response => {
+  console.log(response);
+})
+.catch(error => {
+  console.log(error.response.data.message);
+});
+
 new Vue({
   render: h => h(App),
   router,
