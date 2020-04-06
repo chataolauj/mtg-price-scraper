@@ -4,7 +4,7 @@ import { http } from './connector'
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
     state: {
         logged_in: '',
         user: {}
@@ -67,3 +67,5 @@ export default new Vuex.Store({
 
     }
 });
+
+export default store;
