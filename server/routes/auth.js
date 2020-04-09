@@ -97,8 +97,4 @@ router.get('/check_auth', ensureAuthenticated, (req, res) => {
     res.status(200).send({ is_logged_in: true, user: user});
 });
 
-router.get('/dashboard', ensureAuthenticated, (req, res) => {
-    res.status(200).send({ message: 'You made it!' });
-});
-
 module.exports = router;

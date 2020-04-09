@@ -20,18 +20,20 @@ const router =  new VueRouter({
             path: '/login',
             name: 'login',
             component: Login,
-            beforeEnter: (to, from, next) => {
-                if(store.state.logged_in) next({ name: 'home' })
-                else next();
+            beforeEnter: async (to, from, next) => {
+                await store.dispatch('check_auth')
+                .then(() => next('/'))
+                .catch(() => next());
             }
         },
         {
             path: '/register',
             name: 'register',
             component: Register,
-            beforeEnter: (to, from, next) => {
-                if(store.state.logged_in) next({ name: 'home' })
-                else next();
+            beforeEnter: async (to, from, next) => {
+                await store.dispatch('check_auth')
+                .then(() => { next('/'); })
+                .catch(() => { next(); });
             }
         },
         {
@@ -46,8 +48,6 @@ const router =  new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    console.log(store.state.logged_in ? 'Logged in...' : 'Not logged in...');
-
     if(to.meta.requiresAuth && !store.state.logged_in) {
         next({ name: 'login' });
     }
