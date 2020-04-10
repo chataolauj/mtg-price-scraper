@@ -3,12 +3,12 @@
         <h1>Wish List</h1>
         <button @click="logout()" type="submit">Logout</button>
         <p>{{ this.$store.state.user.email }}'s wish list.</p>
-        <button @click="getWishList()">Refresh</button>
+        <button @click="getWishList()">Refresh List</button>
         
         <div>
             <input v-model="card.name" type="text" name="card_name" placeholder="Enter a card name...">
-            <select v-model="card.condition" name="condition" id="">
-                <option value="Any">Any</option>
+            <select v-model="card.condition" name="condition">
+                <option value="Any" selected>Any</option>
                 <option value="Near Mint">Near Mint</option>
                 <option value="Lightly Played">Lightly Played</option>
                 <option value="Moderately Played">Moderately Played</option>
@@ -28,12 +28,15 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 import mtg from 'mtgsdk'
+import _ from 'lodash'
 
 export default {
     name: 'WishList',
     data() {
         return {
+            searched_cards: [],
             card: {
                 multiverse_id: null,
                 name: '',
@@ -50,6 +53,15 @@ export default {
         this.getWishList();
     },
     methods: {
+        debounceCall: _.debounce(function() { this.getCards() }, 500),
+        async getCards() {
+            await mtg.card.where({ name: this.card.name })
+            .then(cards => {
+                this.searched_cards = cards.slice(0, 30);
+                console.log(this.searched_cards);
+            })
+            .catch(error => console.log(error.response));
+        },
         async getWishList() {
             await this.$api.get(`/users/${this.$store.state.user._id}/wish_list`)
             .then(response => {
@@ -80,6 +92,13 @@ export default {
                 console.log(response.data.message);
             })
             .catch(error => console.log(error));
+        }
+    },
+    watch: {
+        'card.name'() {
+            if(this.card.name.length > 2) {
+                this.debounceCall();
+            }
         }
     }
 }

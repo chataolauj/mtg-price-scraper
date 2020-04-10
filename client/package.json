@@ -10,6 +10,8 @@
   "dependencies": {
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
+    "fs": "0.0.1-security",
+    "lodash": "^4.17.15",
     "mtgsdk": "^0.4.3",
     "vue": "^2.6.11",
     "vue-router": "^3.1.5",
