@@ -71,7 +71,7 @@ export default {
                 await this.$http.post('/register', credentials)
                 .then(response => {
                     console.log(response.data.message);
-                    this.$router.push({name: 'login'});
+                    this.$router.push('/login');
                 })
                 .catch(error => {
                     switch(error.response.status) {

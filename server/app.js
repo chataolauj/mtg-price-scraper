@@ -36,6 +36,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 //Routes
+app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
 app.use('/scrape-list', require('./routes/scrape_list'));
 app.use('', require('./routes/auth'));

@@ -19,6 +19,10 @@
             <input v-model="card.max_range" type="number" name="max_range" placeholder="Enter max range...">
             <button @click="addCard()">Add to Wish List</button>
         </div>
+        <ul v-if="queried_cards.length">
+            <li v-for="(card, index) in queried_cards" :item="card" :key="index">{{card.name}} - {{card.set_name}}</li>
+        </ul>
+        <p v-else>No results...</p>
 
         <ul v-if="wish_list.length">
             <li v-for="(card, index) in wish_list" :item="card" :key="index">{{card}}</li>
@@ -36,7 +40,7 @@ export default {
     name: 'WishList',
     data() {
         return {
-            searched_cards: [],
+            queried_cards: [],
             card: {
                 multiverse_id: null,
                 name: '',
@@ -44,7 +48,8 @@ export default {
                 set_code: '',
                 condition: '',
                 wish_price: null,
-                max_range: null
+                max_range: null,
+                image_uris: {}
             },
             wish_list: []
         }
@@ -53,17 +58,17 @@ export default {
         this.getWishList();
     },
     methods: {
-        debounceCall: _.debounce(function() { this.getCards() }, 500),
-        async getCards() {
-            await mtg.card.where({ name: this.card.name })
-            .then(cards => {
-                this.searched_cards = cards.slice(0, 30);
-                console.log(this.searched_cards);
+        delaySearch: _.debounce(function() { this.searchCards() }, 500),
+        async searchCards() {
+            await this.$http.get(`/cards?card_name=${this.card.name}`)
+            .then(response => {
+                this.queried_cards = response.data;
+                console.log(response.data);
             })
-            .catch(error => console.log(error.response));
+            .catch(error => console.log(error));
         },
         async getWishList() {
-            await this.$api.get(`/users/${this.$store.state.user._id}/wish_list`)
+            await this.$http.get(`/users/${this.$store.state.user._id}/wish_list`)
             .then(response => {
                 this.wish_list = response.data.wish_list;
                 console.log(this.wish_list);
@@ -81,7 +86,7 @@ export default {
 
             await mtg.set.find(this.card.set_code).then(result => this.card.set_name = result.set.name);
 
-            await this.$api.post(`/users/${this.$store.state.user._id}/wish_list`, this.card)
+            await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card)
             .then(() => this.getWishList())
             .catch(error => console.log(error));
         },
@@ -97,7 +102,7 @@ export default {
     watch: {
         'card.name'() {
             if(this.card.name.length > 2) {
-                this.debounceCall();
+                this.delaySearch();
             }
         }
     }
