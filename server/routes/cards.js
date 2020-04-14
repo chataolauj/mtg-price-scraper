@@ -10,6 +10,7 @@ router.get('/', async (req, res) => {
         let queried_cards = await Cards.aggregate([
             {
               $searchBeta: {
+                //index: 'regex',
                 text: {
                   query: card_name,
                   path: ["name", "set_name"],
@@ -18,18 +19,24 @@ router.get('/', async (req, res) => {
                       prefixLength: 2,
                       maxExpansions: 100
                   }
+                  //allowAnalyzedField: true
+                },
+                highlight: {
+                  path: ["name", "set_name"]
                 }
               }
             },
-            { $limit: 25 },
+            { $limit: 15 },
             {
               $project: {
                 _id: 0,
-                multiverse_id: 1,
                 name: 1,
                 set_name: 1,
                 set_code: 1,
-                image_uris: 1
+                image_uris: 1,
+                multiverse_id: 1,
+                /* score: { $meta: "searchScore"},
+                highlights: { $meta: "searchHighlights"} */
               }
             }
         ]);

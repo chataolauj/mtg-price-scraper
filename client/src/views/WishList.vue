@@ -6,7 +6,8 @@
         <button @click="getWishList()">Refresh List</button>
         
         <div>
-            <input v-model="card.name" type="text" name="card_name" placeholder="Enter a card name...">
+            <Search />
+            <!-- <input v-model="card.name" type="text" name="card_name" placeholder="Enter a card name..."> -->
             <select v-model="card.condition" name="condition">
                 <option value="Any" selected>Any</option>
                 <option value="Near Mint">Near Mint</option>
@@ -19,13 +20,9 @@
             <input v-model="card.max_range" type="number" name="max_range" placeholder="Enter max range...">
             <button @click="addCard()">Add to Wish List</button>
         </div>
-        <ul v-if="queried_cards.length">
-            <li v-for="(card, index) in queried_cards" :item="card" :key="index">{{card.name}} - {{card.set_name}}</li>
-        </ul>
-        <p v-else>No results...</p>
 
         <ul v-if="wish_list.length">
-            <li v-for="(card, index) in wish_list" :item="card" :key="index">{{card}}</li>
+            <li v-for="(card, index) in wish_list" :item="card" :key="index"><pre>{{card}}</pre></li>
         </ul>
         <p v-else>No cards in wish list...</p>
     </div>
@@ -33,11 +30,15 @@
 
 <script>
 /* eslint-disable no-unused-vars */
+import Search from './Search'
 import mtg from 'mtgsdk'
 import _ from 'lodash'
 
 export default {
     name: 'WishList',
+    components: {
+        Search
+    },
     data() {
         return {
             queried_cards: [],
@@ -71,7 +72,6 @@ export default {
             await this.$http.get(`/users/${this.$store.state.user._id}/wish_list`)
             .then(response => {
                 this.wish_list = response.data.wish_list;
-                console.log(this.wish_list);
             })
             .catch(error => console.log(error));
         },
