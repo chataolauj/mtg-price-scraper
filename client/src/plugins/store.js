@@ -20,6 +20,33 @@ const store = new Vuex.Store({
         }
     },
     actions: {
+        register({commit}, register_creds) {
+            return new Promise((resolve, reject) => {
+                http.post('/register', register_creds)
+                .then(response => {
+                    let curr_user = response.data.user;
+
+                    commit('logged_in', curr_user)
+                    resolve(response);
+                })
+                .catch(error => {
+                    let register_error = '';
+
+                    switch(error.response.status) {
+                        case 422:
+                            register_error = error.response.data;
+                            break;
+                        case 409:
+                            register_error = error.response.data.error;
+                            break;
+                        default:
+                            register_error = ''
+                    }
+
+                    reject(register_error);
+                });
+            });
+        },
         login({commit}, user) {
             return new Promise((resolve, reject) => {
                 http.post('/login', user)

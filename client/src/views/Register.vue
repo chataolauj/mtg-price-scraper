@@ -70,7 +70,7 @@ export default {
             try {
                 await this.$http.post('/register', credentials)
                 .then(response => {
-                    console.log(response.data.message);
+                    console.log(response.data);
                     this.$router.push('/login');
                 })
                 .catch(error => {

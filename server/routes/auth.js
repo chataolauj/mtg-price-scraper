@@ -49,7 +49,16 @@ async (req, res) => {
 
             user.save()
                 .then(() => {
-                    res.status(200).send({message: `${user.email} is now registered.`});
+                    req.logIn(user, (err) => {
+                        if(err) return next(err);
+                        
+                        let new_user  = {
+                            _id: req.user._id,
+                            email: req.user.email
+                        }
+        
+                        return res.status(200).send({message: `Welcome ${user.email}!`, user: new_user});
+                    });
                 })
                 .catch(() => {
                     res.status(409).send({error: `Email '${user.email}' is already in use by another user.`});
@@ -76,7 +85,7 @@ router.post('/login', async (req, res, next) => {
                 }
 
                 return res.status(200).send({message: 'Successfully logged in.', user: user});
-            })
+            });
         })(req, res, next);
     } catch (error) {
         res.status(401).send({ message: 'Could not log in.' });

@@ -100,27 +100,19 @@ export default {
         },
         async register(register_creds) {
             try {
-                await this.$http.post('/register', register_creds)
+                await this.$store.dispatch('register', register_creds)
                 .then(response => {
-                    console.log(response.data.message);
-                    this.$router.push('/login');
+                    console.log(response);
+                    console.log(this.$store.state.user)
+                    //this.$router.push('/');
                 })
                 .catch(error => {
-                    switch(error.response.status) {
-                        case 422:
-                            this.error = error.response.data;
-                            break;
-                        case 409:
-                            this.error = error.response.data.error;
-                            break;
-                        default:
-                            this.error = ''
-                    }
-
-                    console.log(error.response)
+                    this.register_error = error.response.data.message;
+                    console.log(this.register_error)
                 });
             } catch (error) {
-                console.error(error)
+                this.register_error = error.response.data.message;
+                console.log(error.response.data.message)
             }
         },
         closeDialog() {
