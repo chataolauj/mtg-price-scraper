@@ -39,7 +39,10 @@ export default {
     async logout() {
         await this.$store.dispatch('logout')
         .then(response => {
-            console.log(response.data.message);
+          if(this.$router.currentRoute.name == 'wish_list') {
+            this.$router.push('/');
+          }
+          console.log(response.data.message);
         })
         .catch(error => console.log(error));
     }

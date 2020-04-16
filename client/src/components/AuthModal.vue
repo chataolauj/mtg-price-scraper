@@ -36,6 +36,20 @@
                 <v-tab-item value="register">
                     <v-card>
                         <v-container>
+                            <div v-if="register_error != ''">
+                                <v-alert dense type="error" v-if='!Array.isArray(register_error)'>{{ register_error }}</v-alert>
+                                <div v-else>
+                                    <v-alert dense type="error" v-for='(err, index) in email_errors' :item='err' :key='index'>{{ err.msg }}</v-alert>
+                                </div>
+                                <div v-if="pw_errors.length">
+                                    <v-alert dense type="error">The password you entered does not contain:
+                                        <v-list-item v-for='(err, index) in pw_errors' :item='err' :key='index'>{{ err.msg }}</v-list-item>
+                                    </v-alert>
+                                </div>
+                                <div v-if="confirm_pw_errors.length && !pw_errors.length">
+                                    <v-alert dense type="error">Your passwords do not match.</v-alert>
+                                </div>
+                            </div>
                             <v-row>
                                 <v-col cols="12">
                                     <v-text-field v-model="register_creds.email" label="Email" required></v-text-field>
@@ -77,7 +91,30 @@ export default {
                 confirm_pw: ''
             },
             login_error: '',
-            register_error: null
+            register_error: ''
+        }
+    },
+    computed: {
+        email_errors() {
+            if(Array.isArray(this.register_error)) {
+                return this.register_error.filter(error => error.param === 'email');
+            }
+
+            return [];
+        },
+        pw_errors() {
+            if(Array.isArray(this.register_error)) {
+                return this.register_error.filter(error => error.param === 'password');
+            }
+
+            return [];
+        },
+        confirm_pw_errors() {
+            if(Array.isArray(this.register_error)) {
+                return this.register_error.filter(error => error.param === 'confirm_pw');
+            }
+
+            return [];
         }
     },
     methods: {
@@ -107,12 +144,11 @@ export default {
                     //this.$router.push('/');
                 })
                 .catch(error => {
-                    this.register_error = error.response.data.message;
+                    this.register_error = error;
                     console.log(this.register_error)
                 });
             } catch (error) {
-                this.register_error = error.response.data.message;
-                console.log(error.response.data.message)
+                this.register_error = error;
             }
         },
         closeDialog() {

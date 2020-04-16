@@ -21,7 +21,7 @@ router.post('/register', [
         .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
     check('confirm_pw').custom((value, {req}) => {
         if(value !== req.body.password) {
-            throw new Error('Passwords do not match');
+            throw new Error('Passwords do not match.');
         }
 
         return true;
