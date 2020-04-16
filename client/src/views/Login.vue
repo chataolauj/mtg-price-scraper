@@ -1,7 +1,7 @@
 <template>
     <div>
         <h1>Login</h1>
-        <ul v-if="error != ''">
+        <ul v-if="error.length">
             <li>{{ error }}</li>
         </ul>
         <input v-model='user.email' type='email' name='email' placeholder='Email' />

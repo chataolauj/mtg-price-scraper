@@ -49,6 +49,9 @@ export default {
             if(this.card.name.length > 2) {
                 this.delaySearch();
             }
+            else {
+                this.queried_cards = [];
+            }
         }
     }
 }
@@ -58,22 +61,38 @@ export default {
 * {
     box-sizing: border-box;
 }
-#search {
-    width: 50%;
-    margin: auto;
-    display: block;
 
+#search {
     input[type=text] {
         font-size: 1em;
         width: 100%;
-        padding: 10px 0px 10px 10px;
+        padding: 15px 0px 15px 15px;
+        border: 1px solid rgba(0, 0, 0, .3);
+        border-radius: 50px;
+        outline: none;
+
+        &:hover {
+            transition: .2s ease-in-out;
+            box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, .3);
+        }
+
+        &:focus {
+            transition: .2s ease-in-out;
+            //border-radius: 25px 25px 0px 0px;
+            box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, .3);
+        }
     }
 
     ul {
+        max-height: 296px;
         width: 100%;
+        overflow: hidden;
+        overflow-y: auto;
         padding: 0;
-        margin-top: 3px;
-        border: 1px solid grey;
+        margin: 2px auto;
+        border: 1px solid rgba(0, 0, 0, .3);
+        border-radius: 0px 0px 25px 25px;
+        box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, .3);
 
         li {
             padding: 5px 0px 5px 10px;;

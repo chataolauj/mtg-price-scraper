@@ -1,9 +1,8 @@
 <template>
     <div>
         <h1>Wish List</h1>
-        <button @click="logout()" type="submit">Logout</button>
         <p>{{ this.$store.state.user.email }}'s wish list.</p>
-        <button @click="getWishList()">Refresh List</button>
+        <v-btn @click="getWishList()">Refresh List</v-btn>
         
         <div>
             <Search />
@@ -30,7 +29,7 @@
 
 <script>
 /* eslint-disable no-unused-vars */
-import Search from './Search'
+import Search from '../components/Search'
 import mtg from 'mtgsdk'
 import _ from 'lodash'
 

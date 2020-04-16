@@ -1,15 +1,13 @@
 <template>
-    <div>
+    <div id="home">
         <h1>Home</h1>
-        <button v-if="this.$store.state.logged_in" @click="logout()" type="submit">Logout</button>
         <p v-if="this.$store.state.logged_in">Hello {{ this.$store.state.user.email }}</p>
-
-        <Search />
+        <Search id="search"/>
     </div>
 </template>
 
 <script>
-import Search from './Search'
+import Search from '../components/Search'
 
 export default {
     name: 'Home',
@@ -34,5 +32,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+#home {
+    height: 100%;
+    
+    #search {
+        width: 650px;
+        margin: 0 auto;
+    }
+}
 </style>
