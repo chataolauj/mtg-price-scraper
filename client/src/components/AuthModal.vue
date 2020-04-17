@@ -75,6 +75,8 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
+
 export default {
     name: 'AuthModal',
     data() {
@@ -122,9 +124,8 @@ export default {
             try {
                 await this.$store.dispatch('login', login_creds)
                 .then(response => {
-                    console.log(response);
-                    console.log(this.$store.state.user)
-                    //this.$router.push('/');
+                    console.log(this.$store.state.user.email)
+                    this.$emit('logged_in', true);
                 })
                 .catch(error => {
                     this.login_error = error.response.data.message;

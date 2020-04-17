@@ -1,10 +1,31 @@
 <template>
   <v-app>
     <v-app-bar app color="white" flat>
-      <AuthModal  v-if="!this.$store.state.logged_in"/>
-      <v-btn @click="logout()" v-if="this.$store.state.logged_in" x-large icon absolute right>
-        <v-icon>mdi-account</v-icon>
-      </v-btn>
+      <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
+
+      <v-menu offset-y v-if="this.$store.state.logged_in">
+        <template v-slot:activator="{ on: click}">
+          <v-btn id="btn" class="pa-0" v-on="click" x-large text absolute right :ripple="false">
+            <v-icon>mdi-account</v-icon>
+            {{ $store.state.user.email }}
+            <v-icon>mdi-menu-down</v-icon>
+          </v-btn>
+        </template>
+        <v-list>
+          <v-list-item to="/account_settings">
+            <v-icon class="mr-2">mdi-cog</v-icon>
+            <v-list-item-title>Settings</v-list-item-title>
+          </v-list-item>
+          <v-list-item to="/wish_list">
+          <v-icon class="mr-2">mdi-notebook-multiple</v-icon>
+            <v-list-item-title>Wish List</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="logout()">
+            <v-icon class="mr-2">mdi-logout-variant</v-icon>
+            <v-list-item-title>Logout</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
 
       <router-link to="/">Home</router-link>
       <router-link to="/wish_list" v-if="this.$store.state.logged_in">Wish List</router-link>
@@ -12,6 +33,12 @@
 
     <v-content>
       <v-container fluid>
+        <v-snackbar v-model="login_success" top color="success" :timeout="6000">
+          Successfully logged in!
+          <v-btn small icon color="error" class="pa-0 no-outline" @click="login_success = false">
+            <v-icon>mdi-close-circle</v-icon>
+          </v-btn>
+        </v-snackbar>
         <router-view></router-view>
       </v-container>
     </v-content>
@@ -26,16 +53,20 @@ export default {
   components: {
     AuthModal
   },
+  data() {
+    return {
+      login_success: false,
+      register_success: false
+    }
+  },
   beforeCreate() {
-    this.$store.dispatch('check_auth')
-    .then(response => {
-      console.log(response);
-    })
-    .catch(error => {
-      console.log(error.response.data.message);
-    });
+    this.$store.dispatch('check_auth').catch(error => console.log(error));
   },
   methods: {
+    showLoginSnack() {
+      this.login_success = true;
+      console.log(this.login_success)
+    },
     async logout() {
         await this.$store.dispatch('logout')
         .then(response => {
@@ -53,5 +84,13 @@ export default {
 <style lang="scss">
 * {
   box-sizing: border-box;
+}
+
+#btn {
+  text-transform: lowercase;
+
+  &::before {
+    color: transparent;
+  }
 }
 </style>

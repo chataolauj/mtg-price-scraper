@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './store'
 import Home from '@/views/Home'
+import AccountSettings from '@/views/AccountSettings'
 import Login from '@/views/Login'
 import Register from '@/views/Register'
 import WishList from '@/views/WishList'
@@ -35,6 +36,11 @@ const router =  new VueRouter({
                 .then(() => { next('/'); })
                 .catch(() => { next(); });
             }
+        },
+        {
+            path: '/account_settings',
+            name: 'account_settings',
+            component: AccountSettings
         },
         {
             path: '/wish_list',
