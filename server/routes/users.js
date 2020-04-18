@@ -100,8 +100,9 @@ router.post('/:id/wish_list', async (req, res) => {
             name: req.body.name,
             set_name: req.body.set_name,
             set_code: req.body.set_code,
-            condition: req.body.condition,
-            wish_price: req.body.wish_price
+            conditions: req.body.conditions,
+            wish_price: req.body.wish_price,
+            image_uris: req.body.image_uris
         }
 
         let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': new_card.multiverse_id});

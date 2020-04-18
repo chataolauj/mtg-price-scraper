@@ -10,7 +10,7 @@
                 menu-props="offsetY" label="Condition" class="pa-0" v-model="card.conditions"
             ></v-select>
             <v-text-field prefix="$" outlined label="Wish Price" v-model="card.wish_price"></v-text-field>
-            <v-btn x-large color="success">Add Card</v-btn>
+            <v-btn @click="addCard()" x-large color="success">Add Card</v-btn>
         </div>
 
         <ul v-if="wish_list.length">

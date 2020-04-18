@@ -17,8 +17,9 @@ const UserSchema = mongoose.Schema({
                 name: String,
                 set_name: String,
                 set_code: String,
-                condition: Array,
-                wish_price: Number
+                conditions: Array,
+                wish_price: Number,
+                image_uris: Object
             }
         ]
     },
