@@ -1,7 +1,7 @@
 <template>
     <v-dialog v-model="dialog" max-width="25%" persistent>
         <template v-slot:activator="{ on: click }">
-            <v-btn v-on="click" x-large text absolute right>
+            <v-btn id="auth-btn" :ripple="false" v-on="click" x-large text absolute right>
                 <v-icon small>mdi-login-variant</v-icon>
                 Login
             </v-btn>
@@ -22,7 +22,11 @@
                                     <v-text-field v-model="login_creds.email" label="Email" required></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
-                                    <v-text-field v-model="login_creds.password" @keyup.enter="login(login_creds)" label="Password" type="password" required></v-text-field>
+                                    <v-text-field 
+                                        v-model="login_creds.password" @keyup.enter="login(login_creds)" 
+                                        label="Password" :type="show_login_pass ? 'text' : 'password'" required 
+                                        :append-icon="show_login_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_login_pass = !show_login_pass"
+                                    ></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -55,10 +59,18 @@
                                     <v-text-field v-model="register_creds.email" label="Email" required></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
-                                    <v-text-field v-model="register_creds.password" label="Password" type="password" required></v-text-field>
+                                    <v-text-field 
+                                        v-model="register_creds.password" 
+                                        label="Password" :type="show_regis_pass ? 'text' : 'password'" required 
+                                        :append-icon="show_regis_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_regis_pass = !show_regis_pass"
+                                    ></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
-                                    <v-text-field v-model="register_creds.confirm_pw" @keyup.enter="register(register_creds)" label="Confirm Password" type="password" required></v-text-field>
+                                    <v-text-field 
+                                        v-model="register_creds.confirm_pw" @keyup.enter="register(register_creds)" 
+                                        label="Confirm Password" :type="show_confirm ? 'text' : 'password'" required
+                                        :append-icon="show_confirm ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_confirm = !show_confirm"
+                                    ></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -83,6 +95,9 @@ export default {
         return {
             tab: null,
             dialog: false,
+            show_login_pass: false,
+            show_regis_pass: false,
+            show_confirm: false,
             login_creds: {
                 email: '',
                 password: ''
@@ -167,5 +182,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+#auth-btn {
+    text-transform: capitalize;
+    font-size: 1.1em;
 
+    &::before {
+        color: transparent;
+  }
+}
 </style>
