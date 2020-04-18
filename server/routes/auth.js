@@ -94,7 +94,12 @@ router.post('/login', async (req, res, next) => {
 
 router.get('/logout', (req, res) => {
     req.logout();
-    res.status(200).send({ message: 'Succcesfully logged out.' });
+    req.session.destroy(error => {
+        if(error) throw error;
+
+        res.clearCookie('session_id');
+        res.status(200).send({ message: 'Succcesfully logged out!' });
+    });
 });
 
 router.get('/check_auth', ensureAuthenticated, (req, res) => {

@@ -1,23 +1,16 @@
 <template>
     <div>
         <h1>Wish List</h1>
-        <p>{{ this.$store.state.user.email }}'s wish list.</p>
         <v-btn @click="getWishList()">Refresh List</v-btn>
         
-        <div>
-            <Search />
-            <!-- <input v-model="card.name" type="text" name="card_name" placeholder="Enter a card name..."> -->
-            <select v-model="card.condition" name="condition">
-                <option value="Any" selected>Any</option>
-                <option value="Near Mint">Near Mint</option>
-                <option value="Lightly Played">Lightly Played</option>
-                <option value="Moderately Played">Moderately Played</option>
-                <option value="Heavily Played">Heavily Played</option>
-                <option value="Damaged">Damaged</option>
-            </select>
-            <input v-model="card.wish_price" type="number" name="wish_price" placeholder="Enter your wish price...">
-            <input v-model="card.max_range" type="number" name="max_range" placeholder="Enter max range...">
-            <button @click="addCard()">Add to Wish List</button>
+        <div class="d-flex">
+            <Search id="card-search" @selected_card="setCard"/>
+            <v-select 
+                :items="conditions" multiple chips deletable-chips outlined 
+                menu-props="offsetY" label="Condition" class="pa-0" v-model="card.conditions"
+            ></v-select>
+            <v-text-field prefix="$" outlined label="Wish Price" v-model="card.wish_price"></v-text-field>
+            <v-btn x-large color="success">Add Card</v-btn>
         </div>
 
         <ul v-if="wish_list.length">
@@ -30,7 +23,6 @@
 <script>
 /* eslint-disable no-unused-vars */
 import Search from '../components/Search'
-import mtg from 'mtgsdk'
 import _ from 'lodash'
 
 export default {
@@ -40,17 +32,16 @@ export default {
     },
     data() {
         return {
-            queried_cards: [],
             card: {
                 multiverse_id: null,
                 name: '',
                 set_name: '',
                 set_code: '',
-                condition: '',
+                conditions: [],
                 wish_price: null,
-                max_range: null,
                 image_uris: {}
             },
+            conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
             wish_list: []
         }
     },
@@ -58,15 +49,6 @@ export default {
         this.getWishList();
     },
     methods: {
-        delaySearch: _.debounce(function() { this.searchCards() }, 500),
-        async searchCards() {
-            await this.$http.get(`/cards?card_name=${this.card.name}`)
-            .then(response => {
-                this.queried_cards = response.data;
-                console.log(response.data);
-            })
-            .catch(error => console.log(error));
-        },
         async getWishList() {
             await this.$http.get(`/users/${this.$store.state.user._id}/wish_list`)
             .then(response => {
@@ -74,40 +56,31 @@ export default {
             })
             .catch(error => console.log(error));
         },
+        setCard(card) {
+            this.card.multiverse_id = card.multiverse_id;
+            this.card.name = card.name;
+            this.card.set_name = card.set_name;
+            this.card.set_code = card.set_code;
+            this.card.image_uris = card.image_uris;
+
+            console.log(this.card);
+        },
         async addCard() {
-            await mtg.card.where({ name: this.card.name })
-            .then(cards => {
-                this.card.multiverse_id = cards[0].multiverseid;
-                this.card.name = cards[0].name;
-                this.card.set_code = cards[0].set;
-            })
-            .catch(error => console.log(error.response));
-
-            await mtg.set.find(this.card.set_code).then(result => this.card.set_name = result.set.name);
-
             await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card)
             .then(() => this.getWishList())
-            .catch(error => console.log(error));
-        },
-        async logout() {
-            await this.$store.dispatch('logout')
-            .then(response => {
-                this.$router.push('/');
-                console.log(response.data.message);
-            })
             .catch(error => console.log(error));
         }
     },
     watch: {
-        'card.name'() {
-            if(this.card.name.length > 2) {
-                this.delaySearch();
-            }
+        'card.wish_price'() {
+            console.log(this.card.wish_price)
         }
     }
 }
 </script>
 
 <style lang="scss" scoped>
-
+#card-search {
+    width: 500px;
+}
 </style>

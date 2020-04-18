@@ -17,9 +17,8 @@ const UserSchema = mongoose.Schema({
                 name: String,
                 set_name: String,
                 set_code: String,
-                condition: String,
-                wish_price: Number,
-                max_range: Number
+                condition: Array,
+                wish_price: Number
             }
         ]
     },

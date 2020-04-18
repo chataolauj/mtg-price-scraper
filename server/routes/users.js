@@ -52,9 +52,12 @@ router.get('/:id/wish_list', async (req, res) => {
     }
 });
 
+//Clear wish list
 router.put('/:id/wish_list', async (req, res) => {
+    let clear = req.query.clear;
+
     try {
-        if(req.query.clear == true) {
+        if(clear == 'true') {
             await User.update(
                 {_id: req.params.id}, 
                 {
@@ -98,8 +101,7 @@ router.post('/:id/wish_list', async (req, res) => {
             set_name: req.body.set_name,
             set_code: req.body.set_code,
             condition: req.body.condition,
-            wish_price: req.body.wish_price,
-            max_range: req.body.max_range
+            wish_price: req.body.wish_price
         }
 
         let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': new_card.multiverse_id});

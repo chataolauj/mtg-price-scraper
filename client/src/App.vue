@@ -3,7 +3,7 @@
     <v-app-bar app color="white" flat>
       <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
 
-      <v-menu offset-y v-if="this.$store.state.logged_in">
+      <v-menu offset-y transition="slide-y-transition" v-if="this.$store.state.logged_in">
         <template v-slot:activator="{ on: click}">
           <v-btn id="btn" class="pa-0" v-on="click" x-large text absolute right :ripple="false">
             <v-icon>mdi-account</v-icon>
@@ -28,7 +28,6 @@
       </v-menu>
 
       <router-link to="/">Home</router-link>
-      <router-link to="/wish_list" v-if="this.$store.state.logged_in">Wish List</router-link>
     </v-app-bar>
 
     <v-content>
@@ -47,11 +46,13 @@
 
 <script>
 import AuthModal from './components/AuthModal'
+//import Search from './components/Search'
 
 export default {
   name: 'App',
   components: {
-    AuthModal
+    AuthModal,
+    //Search
   },
   data() {
     return {
