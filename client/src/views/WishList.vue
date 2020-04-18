@@ -10,7 +10,7 @@
                 menu-props="offsetY" label="Condition" class="pa-0" v-model="card.conditions"
             ></v-select>
             <v-text-field prefix="$" outlined label="Wish Price" v-model="card.wish_price"></v-text-field>
-            <v-btn @click="addCard()" x-large color="success">Add Card</v-btn>
+            <v-btn @click="addCard()" x-large :disabled="card.name == ''" color="success">Add Card</v-btn>
         </div>
 
         <ul v-if="wish_list.length">
@@ -67,8 +67,21 @@ export default {
         },
         async addCard() {
             await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card)
-            .then(() => this.getWishList())
-            .catch(error => console.log(error));
+            .then(response => {
+                console.log(response.data.message);
+
+                this.getWishList();
+                this.card = {
+                    multiverse_id: null,
+                    name: '',
+                    set_name: '',
+                    set_code: '',
+                    conditions: [],
+                    wish_price: null,
+                    image_uris: {}
+                };
+            })
+            .catch(error => console.log(error.response.data.message));
         }
     },
     watch: {

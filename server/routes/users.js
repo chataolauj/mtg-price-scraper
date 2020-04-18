@@ -95,17 +95,19 @@ router.get('/:id/wish_list/:multiverse_id', async (req, res) => {
 //Insert card to user's wish list
 router.post('/:id/wish_list', async (req, res) => {
     try {
+        let conditions = ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'];
+
         let new_card = {
             multiverse_id: req.body.multiverse_id,
             name: req.body.name,
             set_name: req.body.set_name,
             set_code: req.body.set_code,
-            conditions: req.body.conditions,
+            conditions: req.body.conditions.length ? req.body.conditions : conditions,
             wish_price: req.body.wish_price,
             image_uris: req.body.image_uris
         }
 
-        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.multiverse_id': new_card.multiverse_id});
+        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.name': new_card.name, 'wish_list.set_name': new_card.set_name});
 
         if(!card_doc) {
             await User.update(
@@ -113,10 +115,10 @@ router.post('/:id/wish_list', async (req, res) => {
                 {$push: {wish_list: new_card}}
             );
 
-            res.status(200).json({message: `${new_card.name} (${new_card.set_code}) was added to your wish list.`});
+            res.status(200).send({message: `${new_card.name} (${new_card.set_name}) was added to your wish list.`});
         }
         else{
-            res.status(409).json({message: `${new_card.name} (${new_card.set_code}) is already in your wish list.`});
+            res.status(409).send({message: `${new_card.name} (${new_card.set_name}) is already in your wish list.`});
         }
     } catch (err) {
         res.json({message: err});

@@ -7,12 +7,6 @@ const MTGSchema = mongoose.Schema({
     name: {
         type: String
     },
-    printed_name: {
-        type: String
-    },
-    printed_text: {
-      type: String
-    },
     tcgplayer_id: {
         type: Number
     },
