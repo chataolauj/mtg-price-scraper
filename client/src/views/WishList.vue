@@ -2,21 +2,43 @@
     <div>
         <h1>Wish List</h1>
         <v-btn @click="getWishList()">Refresh List</v-btn>
-        
-        <div class="d-flex">
-            <Search id="card-search" @selected_card="setCard"/>
-            <v-select 
-                :items="conditions" multiple chips deletable-chips outlined 
-                menu-props="offsetY" label="Condition" class="pa-0" v-model="card.conditions"
-            ></v-select>
-            <v-text-field prefix="$" outlined label="Wish Price" v-model="card.wish_price"></v-text-field>
-            <v-btn @click="addCard()" x-large :disabled="card.name == ''" color="success">Add Card</v-btn>
-        </div>
 
-        <ul v-if="wish_list.length">
-            <li v-for="(card, index) in wish_list" :item="card" :key="index"><pre>{{card}}</pre></li>
-        </ul>
-        <p v-else>No cards in wish list...</p>
+        <v-container fluid>
+            <v-row>
+                <div class="d-flex" style="width: 100%;">
+                    <Search id="card-search" @selected_card="setCard" :cardAdded="clearSearch"/>
+                    <v-select 
+                        :items="conditions" multiple outlined 
+                        menu-props="offsetY" label="Condition" v-model="card.conditions"
+                    >
+                    </v-select>
+                    <v-text-field prefix="$" outlined label="Wish Price" v-model="card.wish_price"></v-text-field>
+                    <v-btn @click="addCard()" x-large :disabled="card.name == ''" color="success">Add Card</v-btn>
+                </div>
+            </v-row>
+            <v-row>
+                <v-card class="my-2 mx-auto" style="width: 90%;" v-for="(card, index) in wish_list" :item="card" :key="index">
+                    <v-container>
+                        <v-row justify="space-around">
+                            <v-col cols="auto">
+                                <v-btn @click="deleteCard(card)" icon color="error">
+                                    <v-icon>mdi-delete</v-icon>
+                                </v-btn>
+                                <v-img :src="card.image_uris.small"></v-img>
+                            </v-col>
+                            <v-col class="d-flex flex-column justify-space-around" cols="auto">
+                                <v-card-text style="font-size: 1.2em" >Name: {{card.name}}</v-card-text>
+                                <v-card-text style="font-size: 1.2em" >Set: {{card.set_name}}</v-card-text>
+                                <v-card-text style="font-size: 1.2em" >Wish Price: ${{card.wish_price != null ? card.wish_price : 0.00}}</v-card-text>
+                            </v-col>
+                            <v-col cols="auto">
+
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </v-row>
+        </v-container>
     </div>
 </template>
 
@@ -42,7 +64,8 @@ export default {
                 image_uris: {}
             },
             conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
-            wish_list: []
+            wish_list: [],
+            clearSearch: false
         }
     },
     created() {
@@ -71,6 +94,7 @@ export default {
                 console.log(response.data.message);
 
                 this.getWishList();
+                
                 this.card = {
                     multiverse_id: null,
                     name: '',
@@ -80,13 +104,19 @@ export default {
                     wish_price: null,
                     image_uris: {}
                 };
+
+                this.clearSearch = !this.clearSearch;
             })
             .catch(error => console.log(error.response.data.message));
-        }
-    },
-    watch: {
-        'card.wish_price'() {
-            console.log(this.card.wish_price)
+        },
+        async deleteCard(card) {
+            await this.$http.delete(`/users/${this.$store.state.user._id}/wish_list?name=${card.name}&set_name=${card.set_name}`)
+            .then(response => {
+                console.log(response.data.message);
+
+                this.getWishList();
+            })
+            .catch(error => console.log(error));
         }
     }
 }
@@ -94,6 +124,6 @@ export default {
 
 <style lang="scss" scoped>
 #card-search {
-    width: 500px;
+    width: 450px;
 }
 </style>

@@ -77,18 +77,18 @@ router.put('/:id/wish_list', async (req, res) => {
 });
 
 //Get a card from user's wish list
-router.get('/:id/wish_list/:multiverse_id', async (req, res) => {
+router.get('/:id/wish_list', async (req, res) => {
     try {
-        let card = await User.findOne(
-            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+        let query = await User.findOne(
+            {_id: req.params.id, 'wish_list.name': req.query.card_name, 'wish_list.set_name': req.query.set_name},
             {_id: 0, 'wish_list.$': 1}
         );
 
-        res.status(200).json(card.wish_list[0]);
-        console.log(card.wish_list[0]);
+        res.status(200).json(query.wish_list[0]);
+        console.log(result.wish_list[0]);
         
     } catch (err) {
-        res.status(404).json({message: 'No such card in your wish list.'});
+        res.status(404).send({message: 'No such card in your wish list.'});
     }
 });
 
@@ -107,10 +107,15 @@ router.post('/:id/wish_list', async (req, res) => {
             image_uris: req.body.image_uris
         }
 
-        let card_doc = await User.findOne({_id: req.params.id, 'wish_list.name': new_card.name, 'wish_list.set_name': new_card.set_name});
+        let query = await User.findOne(
+            {_id: req.params.id, 'wish_list.name': new_card.name, 'wish_list.set_name': new_card.set_name},
+            {_id: 0, 'wish_list.$': 1}
+        );
 
-        if(!card_doc) {
-            await User.update(
+        console.log(query)
+
+        if(!query) {
+            await User.updateOne(
                 {_id: req.params.id},
                 {$push: {wish_list: new_card}}
             );
@@ -121,32 +126,30 @@ router.post('/:id/wish_list', async (req, res) => {
             res.status(409).send({message: `${new_card.name} (${new_card.set_name}) is already in your wish list.`});
         }
     } catch (err) {
-        res.json({message: err});
+        res.json({message: 'Something went wrong...'});
     }
 });
 
 //Update card in user wish list
-router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
+router.patch('/:id/wish_list', async (req, res) => {
     try {
         let update = {
-            condition: req.body.condition,
+            condition: req.body.conditions,
             wish_price: req.body.wish_price,
-            max_range: req.body.max_range
         }
 
-        let card_doc = await User.findOne(
-            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+        let query = await User.findOne(
+            {_id: req.params.id, 'wish_list.name': req.query.name, 'wish_list.set_name': req.query.set_name},
             {_id: 0, 'wish_list.$': 1}
         );
 
-        if(card_doc) {
+        if(query) {
             await User.updateOne(
-                {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+                {_id: req.params.id, 'wish_list.name': req.query.name, 'wish_list.set_name': req.query.set_name},
                 {
                     $set: {
-                        'wish_list.$.condition': update.condition,
-                        'wish_list.$.wish_price': update.wish_price,
-                        'wish_list.$.max_range': update.max_range
+                        'wish_list.$.condition': update.conditions,
+                        'wish_list.$.wish_price': update.wish_price
                     }
                 }
             );
@@ -162,27 +165,29 @@ router.patch('/:id/wish_list/:multiverse_id', async (req, res) => {
 });
 
 //Remove card from wish list
-router.delete('/:id/wish_list/:multiverse_id', async (req, res) => {
+router.delete('/:id/wish_list', async (req, res) => {
     try {
-        let card_doc = await User.findOne(
-            {_id: req.params.id, 'wish_list.multiverse_id': req.params.multiverse_id},
+        let query = await User.findOne(
+            {_id: req.params.id, 'wish_list.name': req.query.name, 'wish_list.set_name': req.query.set_name},
             {_id: 0, 'wish_list.$': 1}
         );
 
-        if(card_doc) {
-            await User.update(
+        console.log(query.wish_list[0]);
+
+        if(query) {
+            await User.updateOne(
                 {_id: req.params.id},
-                {$pull: {wish_list: {multiverse_id: req.params.multiverse_id}}}
+                {$pull: {wish_list: {name: req.query.name, set_name: req.query.set_name}}}
             );
 
-            res.status(200).send({message: `Removed ${card_doc.wish_list[0].name} (${card_doc.wish_list[0].set_code}) from your wish list.`});
+            res.status(200).send({message: `${query.wish_list[0].name} (${query.wish_list[0].set_name}) has been removed from your wish list.`});
         }
         else{
-            res.status(404).send({error: 'No such card in your wish list.'});
+            res.status(404).send({error: `${req.query.name} (${req.query.set_name}) is not in your wish list.`});
         }
         
     } catch (err) {
-        res.status(404).json({error: err});
+        res.status(404).send({error: err});
     }
 });
 
