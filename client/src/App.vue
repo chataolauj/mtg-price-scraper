@@ -1,6 +1,12 @@
 <template>
-  <v-app>
-    <v-app-bar app color="white" flat>
+  <v-app style="height: 100vh">
+    <v-app-bar app color="white" flat class="">
+      <router-link to="/">Home</router-link>
+      <v-spacer></v-spacer>
+
+      <Search v-show="this.$router.currentRoute.name != 'home'"/>
+      <v-spacer></v-spacer>
+
       <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
 
       <v-menu offset-y transition="slide-y-transition" v-if="this.$store.state.logged_in">
@@ -26,8 +32,6 @@
           </v-list-item>
         </v-list>
       </v-menu>
-
-      <router-link to="/">Home</router-link>
     </v-app-bar>
 
     <v-content>
@@ -46,13 +50,13 @@
 
 <script>
 import AuthModal from './components/AuthModal'
-//import Search from './components/Search'
+import Search from './components/Search'
 
 export default {
   name: 'App',
   components: {
     AuthModal,
-    //Search
+    Search
   },
   data() {
     return {

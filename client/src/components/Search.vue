@@ -3,17 +3,12 @@
         <v-menu offset-y transition="slide-y-transition" class="mt-n4">
             <template v-slot:activator="{ on: focus }">
                 <v-text-field 
-                    v-on="focus"
+                    v-on="focus" hide-details
                     :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
                     v-model="card_name" @focus="isFocused = true" @blur="isFocused = false">
                 </v-text-field>
             </template>
-            <v-list v-if="!queried_cards.length">
-                <v-list-item>
-                    <v-list-item-title>No results...</v-list-item-title>
-                </v-list-item>
-            </v-list>
-            <v-list v-else class="pa-0 overflow-y-auto" max-height="300" two-line>
+            <v-list class="pa-0 overflow-y-auto" max-height="300" two-line>
                 <v-list-item @click="setCard(card)" v-for="(card, index) in queried_cards" :item="card" :key="index">
                     <v-list-item-content>
                         <v-list-item-title class="mb-2">{{card.name}}</v-list-item-title>

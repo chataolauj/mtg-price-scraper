@@ -76,22 +76,6 @@ router.put('/:id/wish_list', async (req, res) => {
     }
 });
 
-//Get a card from user's wish list
-router.get('/:id/wish_list', async (req, res) => {
-    try {
-        let query = await User.findOne(
-            {_id: req.params.id, 'wish_list.name': req.query.card_name, 'wish_list.set_name': req.query.set_name},
-            {_id: 0, 'wish_list.$': 1}
-        );
-
-        res.status(200).json(query.wish_list[0]);
-        console.log(result.wish_list[0]);
-        
-    } catch (err) {
-        res.status(404).send({message: 'No such card in your wish list.'});
-    }
-});
-
 //Insert card to user's wish list
 router.post('/:id/wish_list', async (req, res) => {
     try {
@@ -103,7 +87,7 @@ router.post('/:id/wish_list', async (req, res) => {
             set_name: req.body.set_name,
             set_code: req.body.set_code,
             conditions: req.body.conditions.length ? req.body.conditions : conditions,
-            wish_price: req.body.wish_price,
+            wish_price: req.body.wish_price != null ? req.body.wish_price : 0.00,
             image_uris: req.body.image_uris
         }
 
@@ -111,8 +95,6 @@ router.post('/:id/wish_list', async (req, res) => {
             {_id: req.params.id, 'wish_list.name': new_card.name, 'wish_list.set_name': new_card.set_name},
             {_id: 0, 'wish_list.$': 1}
         );
-
-        console.log(query)
 
         if(!query) {
             await User.updateOne(
@@ -130,8 +112,24 @@ router.post('/:id/wish_list', async (req, res) => {
     }
 });
 
+//Get a card from user's wish list
+router.get('/:id/wish_list/card/:card_id', async (req, res) => {
+    try {
+        let query = await User.findOne(
+            {_id: req.params.id, 'wish_list._id': req.params.card_id},
+            {_id: 0, 'wish_list.$': 1}
+        );
+
+        console.log(query.wish_list[0]);
+        res.status(200).json(query.wish_list[0]);
+        
+    } catch (err) {
+        res.status(404).send({message: 'No such card in your wish list.'});
+    }
+});
+
 //Update card in user wish list
-router.patch('/:id/wish_list', async (req, res) => {
+router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
     try {
         let update = {
             condition: req.body.conditions,
@@ -139,16 +137,16 @@ router.patch('/:id/wish_list', async (req, res) => {
         }
 
         let query = await User.findOne(
-            {_id: req.params.id, 'wish_list.name': req.query.name, 'wish_list.set_name': req.query.set_name},
+            {_id: req.params.id, 'wish_list._id': req.params.card_id},
             {_id: 0, 'wish_list.$': 1}
         );
 
         if(query) {
             await User.updateOne(
-                {_id: req.params.id, 'wish_list.name': req.query.name, 'wish_list.set_name': req.query.set_name},
+                {_id: req.params.id, 'wish_list._id': req.params.card_id},
                 {
                     $set: {
-                        'wish_list.$.condition': update.conditions,
+                        'wish_list.$.conditions': update.conditions,
                         'wish_list.$.wish_price': update.wish_price
                     }
                 }
@@ -165,29 +163,29 @@ router.patch('/:id/wish_list', async (req, res) => {
 });
 
 //Remove card from wish list
-router.delete('/:id/wish_list', async (req, res) => {
+router.delete('/:id/wish_list/card/:card_id', async (req, res) => {
     try {
         let query = await User.findOne(
-            {_id: req.params.id, 'wish_list.name': req.query.name, 'wish_list.set_name': req.query.set_name},
+            {_id: req.params.id, 'wish_list._id': req.params.card_id},
             {_id: 0, 'wish_list.$': 1}
         );
 
-        console.log(query.wish_list[0]);
-
         if(query) {
+            let card_doc = query.wish_list[0];
+
             await User.updateOne(
                 {_id: req.params.id},
-                {$pull: {wish_list: {name: req.query.name, set_name: req.query.set_name}}}
+                {$pull: {wish_list: {_id: req.params.card_id}}}
             );
 
-            res.status(200).send({message: `${query.wish_list[0].name} (${query.wish_list[0].set_name}) has been removed from your wish list.`});
+            res.status(200).send({message: `${card_doc.name} (${card_doc.set_name}) has been removed from your wish list.`});
         }
         else{
-            res.status(404).send({error: `${req.query.name} (${req.query.set_name}) is not in your wish list.`});
+            res.status(404).send({error: `${card_doc.name} (${card_doc.set_name}) is not in your wish list.`});
         }
         
     } catch (err) {
-        res.status(404).send({error: err});
+        res.status(404).send({message: `No such card is not in your wish list.`});
     }
 });
 
