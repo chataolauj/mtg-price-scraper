@@ -128,8 +128,7 @@ export default {
                 close_color: ''
             },
             deleteDialog: {},
-            edit: {},
-            showEdit: false
+            edit: {}
         }
     },
     created() {
@@ -145,7 +144,7 @@ export default {
                     this.edit = {};
 
                     for(let i = 0; i < this.wish_list.length; i++) {
-                        this.edit[this.wish_list[i]._id] = false;
+                        this.$set(this.edit, this.wish_list[i]._id, false);
                     }
 
                     console.log(this.edit)
@@ -196,12 +195,10 @@ export default {
             });
         },
         editCard(card) {
-            this.edit[card._id] = !this.edit[card._id];
-            console.log(this.edit);
+            this.$set(this.edit, card._id, true);
         },
         saveEdit(card) {
-            this.edit[card._id] = false;
-            console.log(this.edit);
+            this.$set(this.edit, card._id, false);
         },
         async deleteCard(card) {
             await this.$http.delete(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`)
