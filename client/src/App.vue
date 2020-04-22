@@ -1,10 +1,10 @@
 <template>
   <v-app style="height: 100vh">
-    <v-app-bar app color="white" flat class="">
+    <v-app-bar app :color="app_bar.color" :flat="app_bar.isFlat" class="">
       <router-link to="/">Home</router-link>
       <v-spacer></v-spacer>
 
-      <Search v-show="this.$router.currentRoute.name != 'home'"/>
+      <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'"/>
       <v-spacer></v-spacer>
 
       <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
@@ -35,7 +35,7 @@
     </v-app-bar>
 
     <v-content>
-      <v-container fluid>
+      <v-container fluid style="width: 80%;">
         <v-snackbar v-model="login_success" top color="success" :timeout="6000">
           Successfully logged in!
           <v-btn small icon color="error" class="pa-0 no-outline" @click="login_success = false">
@@ -61,7 +61,12 @@ export default {
   data() {
     return {
       login_success: false,
-      register_success: false
+      register_success: false,
+      app_bar: {
+        isFlat: this.$router.currentRoute.name == 'home' ? true :  false,
+        color: this.$router.currentRoute.name == 'home' ? 'white' : 'amber accent-3'
+      }
+
     }
   },
   beforeCreate() {
