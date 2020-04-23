@@ -152,7 +152,7 @@ router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
                 }
             );
 
-            res.status(202).json({message: `${query.wish_list[0].name} (${query.wish_list[0].set_name}) successfully updated.`});
+            res.status(202).json({message: `${query.wish_list[0].name} (${query.wish_list[0].set_name}) was successfully updated!`});
         }
         else{
             res.status(404).json({message: `No such card in your wish list.`});

@@ -1,11 +1,6 @@
 <template>
     <v-row justify="center" class="d-flex flex-column mx-0">
-        <v-snackbar v-model="showSnack" top :color="snackbar.color" :timeout="5000">
-          {{snackbar.msg}}
-          <v-btn small icon :color="snackbar.close_color" class="pa-0 pr-2 no-outline" @click="showSnack = false">
-            <v-icon>mdi-close-circle</v-icon>
-          </v-btn>
-        </v-snackbar>
+        <Snackbar :snack="snackbar"/>
         <v-col cols="12" class="d-flex justify-center align-center"> <!-- Header -->
             <h1 class="mr-2">Wish List</h1>
             <v-btn @click="getWishList()" icon color="">
@@ -108,12 +103,14 @@
 <script>
 /* eslint-disable no-unused-vars */
 import Search from '../components/Search'
+import Snackbar from '../components/Snackbar'
 import _ from 'lodash'
 
 export default {
     name: 'WishList',
     components: {
-        Search
+        Search,
+        Snackbar
     },
     data() {
         return {
@@ -130,11 +127,7 @@ export default {
             wish_list: [],
             clearSearch: false,
             showSnack: false,
-            snackbar: {
-                msg: '',
-                color: '',
-                close_color: ''
-            },
+            snackbar: {},
             deleteDialog: {},
             editCard: {}
         }
@@ -174,10 +167,12 @@ export default {
 
                 this.getWishList();
 
-                this.snackbar.msg = response.data.message;
-                this.snackbar.color = 'success';
-                this.snackbar.close_color = 'error';
-                this.showSnack = true;
+                this.snackbar = {
+                    msg: response.data.message,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
                 
                 this.card_to_add = {
                     multiverse_id: null,
@@ -194,10 +189,12 @@ export default {
             .catch(error => {
                 console.log(error.response.data.message)
 
-                this.snackbar.msg = error.response.data.message;
-                this.snackbar.color = 'error';
-                this.snackbar.close_color = 'white';
-                this.showSnack = true;
+                this.snackbar = {
+                    msg: error.response.data.message,
+                    color: 'error',
+                    close_color: 'white',
+                    show: true
+                }
             });
         },
         async saveEdit(card) {
@@ -206,19 +203,23 @@ export default {
             await this.$http.patch(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`, card)
             .then(response => {
                 console.log(response.data.message);
-                
-                this.snackbar.msg = response.data.message;
-                this.snackbar.color = 'success';
-                this.snackbar.close_color = 'error';
-                this.showSnack = true;
+
+                this.snackbar = {
+                    msg: response.data.message,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
             })
             .catch(error => {
                 console.log(error.response.data.message)
 
-                this.snackbar.msg = error.response.data.message;
-                this.snackbar.color = 'error';
-                this.snackbar.close_color = 'white';
-                this.showSnack = true;
+                this.snackbar = {
+                    msg: error.response.data.message,
+                    color: 'error',
+                    close_color: 'white',
+                    show: true
+                }
             });
         },
         async deleteCard(card) {
@@ -230,18 +231,22 @@ export default {
 
                 this.getWishList();
 
-                this.snackbar.msg = response.data.message;
-                this.snackbar.color = 'success';
-                this.snackbar.close_color = 'error';
-                this.showSnack = true;
+                this.snackbar = {
+                    msg: response.data.message,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
             })
             .catch(error => {
                 console.log(error.response)
 
-                this.snackbar.msg = error.response.data.message;
-                this.snackbar.color = 'error';
-                this.snackbar.close_color = 'white';
-                this.showSnack = true;
+                this.snackbar = {
+                    msg: error.response.data.message,
+                    color: 'error',
+                    close_color: 'white',
+                    show: true
+                }
             });
         }
     }
