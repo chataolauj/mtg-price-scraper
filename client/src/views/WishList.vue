@@ -19,15 +19,15 @@
 
                 <v-select 
                     :items="conditions" multiple outlined hide-details
-                    menu-props="offsetY" label="Condition" v-model="card.conditions"
+                    menu-props="offsetY" label="Condition" v-model="card_to_add.conditions"
                 >
                 </v-select>
                 <v-spacer></v-spacer>
 
-                <v-text-field  prefix="$" outlined hide-details label="Wish Price" v-model="card.wish_price"></v-text-field>
+                <v-text-field prefix="$" outlined hide-details label="Wish Price" v-model="card_to_add.wish_price"></v-text-field>
                 <v-spacer></v-spacer>
 
-                <v-btn @click="addCard()" style="height: 56px" x-large :disabled="card.name == ''" color="success">Add Card</v-btn>
+                <v-btn @click="addCard()" style="height: 56px" x-large :disabled="card_to_add.name == ''" color="success">Add Card</v-btn>
             </v-toolbar>
         </v-col>
         <div class="d-flex justify-center" v-if="!wish_list.length">
@@ -42,7 +42,7 @@
                                 <v-col cols="auto" class="d-flex flex-column justify-center align-center">
                                     <v-checkbox class="ma-0"></v-checkbox>
                                 </v-col>
-                                <v-col cols="auto" class="d-flex flex-column"> 
+                                <v-col cols="auto" class="d-flex flex-column align-center"> 
                                     <v-img :src="card.image_uris.small"></v-img> 
                                     <v-col cols="auto" class="d-flex justify-center align-center"> <!--  Card action buttons -->
                                         <v-dialog v-model="deleteDialog[card._id]" max-width="25%"> <!-- Delete Dialog -->
@@ -61,10 +61,10 @@
                                                 </v-card-actions>
                                             </v-card>
                                         </v-dialog>
-                                        <v-btn v-show="!edit[card._id]" @click="editCard(card)" icon color="success">
+                                        <v-btn v-show="!editCard[card._id]" @click="$set(editCard, card._id, true)" icon color="success">
                                             <v-icon>mdi-pencil</v-icon>
                                         </v-btn>
-                                        <v-btn v-show="edit[card._id]" @click="saveEdit(card)" icon color="success">
+                                        <v-btn v-show="editCard[card._id]" @click="saveEdit(card)" icon color="success">
                                             <v-icon>mdi-floppy</v-icon>
                                         </v-btn>
                                     </v-col>
@@ -72,8 +72,8 @@
                                 <v-col class="d-flex flex-column" cols="6"> <!-- Card details -->
                                     <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>
                                     <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
-                                    <div>
-                                        <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{card.wish_price.toFixed(2)}}</v-card-text>
+                                    <div v-if="!editCard[card._id]">
+                                        <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{card.wish_price}}</v-card-text>
                                         <v-card-text class="pa-0 body-1">Condition(s):</v-card-text>
                                         <v-chip-group column>
                                             <v-chip 
@@ -83,6 +83,14 @@
                                                 {{condition}}
                                             </v-chip>
                                         </v-chip-group>
+                                    </div>
+                                    <div v-else> <!-- Editable details -->
+                                        <v-text-field class="mb-2" prefix="$" solo hide-details label="Wish Price" v-model="card.wish_price"></v-text-field>
+                                        <v-select 
+                                            :items="conditions" multiple solo hide-details
+                                            menu-props="offsetY" label="Condition" v-model="card.conditions"
+                                        >
+                                        </v-select>
                                     </div>
                                 </v-col>
                             </v-row>
@@ -109,7 +117,7 @@ export default {
     },
     data() {
         return {
-            card: {
+            card_to_add: {
                 multiverse_id: null,
                 name: '',
                 set_name: '',
@@ -128,7 +136,7 @@ export default {
                 close_color: ''
             },
             deleteDialog: {},
-            edit: {}
+            editCard: {}
         }
     },
     created() {
@@ -146,23 +154,21 @@ export default {
                     for(let i = 0; i < this.wish_list.length; i++) {
                         this.$set(this.edit, this.wish_list[i]._id, false);
                     }
-
-                    console.log(this.edit)
                 }
             })
             .catch(error => console.log(error));
         },
         setCard(card) {
-            this.card.multiverse_id = card.multiverse_id;
-            this.card.name = card.name;
-            this.card.set_name = card.set_name;
-            this.card.set_code = card.set_code;
-            this.card.image_uris = card.image_uris;
+            this.card_to_add.multiverse_id = card.multiverse_id;
+            this.card_to_add.name = card.name;
+            this.card_to_add.set_name = card.set_name;
+            this.card_to_add.set_code = card.set_code;
+            this.card_to_add.image_uris = card.image_uris;
 
-            console.log(this.card);
+            console.log(this.card_to_add);
         },
         async addCard() {
-            await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card)
+            await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card_to_add)
             .then(response => {
                 console.log(response.data.message);
 
@@ -173,7 +179,7 @@ export default {
                 this.snackbar.close_color = 'error';
                 this.showSnack = true;
                 
-                this.card = {
+                this.card_to_add = {
                     multiverse_id: null,
                     name: '',
                     set_name: '',
@@ -194,11 +200,26 @@ export default {
                 this.showSnack = true;
             });
         },
-        editCard(card) {
-            this.$set(this.edit, card._id, true);
-        },
-        saveEdit(card) {
-            this.$set(this.edit, card._id, false);
+        async saveEdit(card) {
+            this.$set(this.editCard, card._id, false);
+
+            await this.$http.patch(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`, card)
+            .then(response => {
+                console.log(response.data.message);
+                
+                this.snackbar.msg = response.data.message;
+                this.snackbar.color = 'success';
+                this.snackbar.close_color = 'error';
+                this.showSnack = true;
+            })
+            .catch(error => {
+                console.log(error.response.data.message)
+
+                this.snackbar.msg = error.response.data.message;
+                this.snackbar.color = 'error';
+                this.snackbar.close_color = 'white';
+                this.showSnack = true;
+            });
         },
         async deleteCard(card) {
             await this.$http.delete(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`)

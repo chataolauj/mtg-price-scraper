@@ -132,7 +132,7 @@ router.get('/:id/wish_list/card/:card_id', async (req, res) => {
 router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
     try {
         let update = {
-            condition: req.body.conditions,
+            conditions: req.body.conditions,
             wish_price: req.body.wish_price,
         }
 
@@ -152,13 +152,13 @@ router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
                 }
             );
 
-            res.status(202).json({message: `${card_doc.wish_list[0].name} (${card_doc.wish_list[0].set_code}) successfully updated.`});
+            res.status(202).json({message: `${query.wish_list[0].name} (${query.wish_list[0].set_name}) successfully updated.`});
         }
         else{
             res.status(404).json({message: `No such card in your wish list.`});
         }
     } catch (err) {
-        res.status(404).json({message: err});
+        res.status(404).send({message: err});
     }
 });
 
