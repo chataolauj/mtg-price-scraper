@@ -68,6 +68,7 @@
                                     <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>
                                     <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
                                     <div v-if="!editCard[card._id]">
+                                        <v-card-text class="pa-0 mb-2 body-1">Foil: {{card.isFoil ? 'Yes' : 'No'}}</v-card-text>
                                         <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{card.wish_price}}</v-card-text>
                                         <v-card-text class="pa-0 body-1">Condition(s):</v-card-text>
                                         <v-chip-group column>
@@ -80,6 +81,7 @@
                                         </v-chip-group>
                                     </div>
                                     <div v-else> <!-- Editable details -->
+                                        <v-card-text>Foil: </v-card-text><v-switch v-model="card.isFoil" :label="card.isFoil ? 'Yes' : 'No'"></v-switch>
                                         <v-text-field class="mb-2" prefix="$" solo hide-details label="Wish Price" v-model="card.wish_price"></v-text-field>
                                         <v-select 
                                             :items="conditions" multiple solo hide-details
@@ -124,7 +126,8 @@ export default {
                 set_code: '',
                 conditions: [],
                 wish_price: null,
-                image_uris: {}
+                image_uris: {},
+                isFoil: null
             },
             conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
             wish_list: [],

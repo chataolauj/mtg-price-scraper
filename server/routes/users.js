@@ -88,7 +88,8 @@ router.post('/:id/wish_list', async (req, res) => {
             set_code: req.body.set_code,
             conditions: req.body.conditions.length ? req.body.conditions : conditions,
             wish_price: req.body.wish_price != null ? req.body.wish_price : 0.00,
-            image_uris: req.body.image_uris
+            image_uris: req.body.image_uris,
+            isFoil: req.body.isFoil != null ? req.body.isFoil : false
         }
 
         let query = await User.findOne(
@@ -134,6 +135,7 @@ router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
         let update = {
             conditions: req.body.conditions,
             wish_price: req.body.wish_price,
+            isFoil: req.body.isFoil
         }
 
         let query = await User.findOne(
@@ -147,7 +149,8 @@ router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
                 {
                     $set: {
                         'wish_list.$.conditions': update.conditions,
-                        'wish_list.$.wish_price': update.wish_price
+                        'wish_list.$.wish_price': update.wish_price,
+                        'wish_list.$.isFoil': update.isFoil
                     }
                 }
             );

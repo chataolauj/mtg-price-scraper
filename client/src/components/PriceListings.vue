@@ -1,6 +1,6 @@
 <template>
     <v-card>
-        <v-tabs v-model="tab" background-color="amber accent-3" show-arrows>
+        <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
             <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
                 {{site.name}}
             </v-tab>
@@ -8,11 +8,13 @@
         <v-tabs-items v-model="tab">
             <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
                 <v-card>
-                    <v-card-title>Link: <a :href="site.url"> {{site.url}}</a></v-card-title>
+                    <v-card-title>Link: <a :href="site.url">{{site.url}}</a></v-card-title>
                     <v-data-table
-                        :headers="headers"
-                        :items="site.listing"
-                        :items-per-page="5"
+                        :headers="headers" 
+                        :items="site.listing" 
+                        :items-per-page="5" 
+                        :sort-by="['price', 'qty']"
+                        multi-sort
                     ></v-data-table>
                 </v-card>
             </v-tab-item>
@@ -58,11 +60,11 @@ export default {
             for(let i = 0; i < 15; i++) {
                 this.websites.push({
                     name: `site${i}`,
-                    url: `tcgplayer.com`,
+                    url: `site${i}.com`,
                     listing: []
                 });
 
-                for(let j = 0; j < 15; j++) {
+                for(let j = 0; j < Math.floor(Math.random() * 15); j++) {
                     this.websites[i].listing.push({
                         qty: Math.floor(Math.random() * 4) + 1,
                         condition: this.conditions[Math.floor(Math.random() * 5)],

@@ -4,7 +4,10 @@ const ScrapeListSchema = mongoose.Schema({
     name: {
         type: String
     },
-    set: {
+    set_name: {
+        type: String
+    },
+    set_code: {
         type: String
     },
     lang: {
@@ -13,18 +16,23 @@ const ScrapeListSchema = mongoose.Schema({
     multiverse_id: {
         type: Number
     },
-    listings: {
+    websites: {
         type: [
             {
                 website: String,
                 url: String,
-                condition: String,
-                usd: Number,
-                usd_foil: Number,
-                eur: Number,
-                eur_foil: Number,
-                qty: Number,
-                seller: String
+                listings: {
+                    type: [
+                        {
+                            qty: Number,
+                            condition: String,
+                            usd: Number,
+                            usd_foil: Number,
+                            eur: Number,
+                            eur_foil: Number
+                        }
+                    ]
+                }
             }
         ]
     },
@@ -40,7 +48,7 @@ const ScrapeListSchema = mongoose.Schema({
         type: [
             {
                 email: String,
-                price_range: Number
+                wish_price: Number
             }
         ]
     }

@@ -19,7 +19,8 @@ const UserSchema = mongoose.Schema({
                 set_code: String,
                 conditions: Array,
                 wish_price: Number,
-                image_uris: Object
+                image_uris: Object,
+                isFoil: Boolean
             }
         ]
     },
