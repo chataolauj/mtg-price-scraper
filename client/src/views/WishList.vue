@@ -32,7 +32,7 @@
             <v-card class="mb-6" style="width: 100%;" v-for="(card, index) in wish_list" :item="card" :key="index">
                 <v-container fluid>
                     <v-row justify="space-around">
-                        <v-col cols="6">
+                        <v-col cols="6"> <!-- Card Details -->
                             <v-row>
                                 <v-col cols="auto" class="d-flex flex-column justify-center align-center">
                                     <v-checkbox class="ma-0"></v-checkbox>
@@ -64,7 +64,7 @@
                                         </v-btn>
                                     </v-col>
                                 </v-col>
-                                <v-col class="d-flex flex-column" cols="6"> <!-- Card details -->
+                                <v-col class="d-flex flex-column" cols="6"> <!-- Wish Price & Conditions -->
                                     <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>
                                     <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
                                     <div v-if="!editCard[card._id]">
@@ -90,8 +90,8 @@
                                 </v-col>
                             </v-row>
                         </v-col>
-                        <v-col cols="6">
-                            Prices will go here...
+                        <v-col cols="6"> <!-- Price Listings -->
+                            <PriceListings />
                         </v-col>
                     </v-row>
                 </v-container>
@@ -102,15 +102,18 @@
 
 <script>
 /* eslint-disable no-unused-vars */
-import Search from '../components/Search'
 import Snackbar from '../components/Snackbar'
+import Search from '../components/Search'
+import PriceListings from '../components/PriceListings'
+
 import _ from 'lodash'
 
 export default {
     name: 'WishList',
     components: {
+        Snackbar,
         Search,
-        Snackbar
+        PriceListings
     },
     data() {
         return {

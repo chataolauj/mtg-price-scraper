@@ -11,10 +11,9 @@ const ScrapeListSchema = mongoose.Schema({
         type: Array
     },
     multiverse_id: {
-        type: Number,
-        unique: true
+        type: Number
     },
-    lowest_listings: {
+    listings: {
         type: [
             {
                 website: String,
@@ -33,7 +32,7 @@ const ScrapeListSchema = mongoose.Schema({
         type: [
             {
                 website: String,
-                url: String
+                base_url: String
             }
         ]
     },
