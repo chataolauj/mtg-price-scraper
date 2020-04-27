@@ -96,9 +96,6 @@ router.get('/card/websites', async (req, res) => {
             {_id: 0, websites: 1}
         );
 
-        console.log(card)
-        console.log(query)
-
         if(query) {
             res.status(200).send(query);
         }

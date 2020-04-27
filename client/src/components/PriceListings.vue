@@ -73,6 +73,11 @@ export default {
                 console.log(error.response);
             });
         }
+    },
+    watch: {
+        card() {
+            this.getCardWebsites(this.card);
+        }
     }
 }
 </script>
