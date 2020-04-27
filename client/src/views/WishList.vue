@@ -22,7 +22,7 @@
                 <v-text-field prefix="$" outlined hide-details label="Wish Price" v-model="card_to_add.wish_price"></v-text-field>
                 <v-spacer></v-spacer>
 
-                <v-btn @click="addCard()" style="height: 56px" x-large :disabled="card_to_add.name == ''" color="success">Add Card</v-btn>
+                <v-btn @click="addCard()" style="height: 56px" x-large :loading="isLoading" :disabled="card_to_add.name == ''" color="success">Add Card</v-btn>
             </v-toolbar>
         </v-col>
         <div class="d-flex justify-center" v-if="!wish_list.length">
@@ -93,7 +93,7 @@
                             </v-row>
                         </v-col>
                         <v-col cols="6"> <!-- Price Listings -->
-                            <PriceListings />
+                            <PriceListings :card="card"/>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -132,10 +132,10 @@ export default {
             conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
             wish_list: [],
             clearSearch: false,
-            showSnack: false,
             snackbar: {},
             deleteDialog: {},
-            editCard: {}
+            editCard: {},
+            isLoading: false,
         }
     },
     created() {
@@ -163,13 +163,22 @@ export default {
             this.card_to_add.set_name = card.set_name;
             this.card_to_add.set_code = card.set_code;
             this.card_to_add.image_uris = card.image_uris;
-
-            console.log(this.card_to_add);
         },
         async addCard() {
+            this.isLoading = true;
+            
             await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card_to_add)
-            .then(response => {
-                console.log(response.data.message);
+            .then(async (response) => {
+                await this.$http.post('/scrape-list', this.card_to_add);
+
+                let notify = {
+                    email: this.$store.state.user.email,
+                    wish_price: this.card_to_add.wish_price,
+                    name: this.card_to_add.name,
+                    set_name: this.card_to_add.set_name
+                }
+
+                await this.$http.post('/scrape-list/card/notify-list', notify);
 
                 this.getWishList();
 
@@ -179,7 +188,10 @@ export default {
                     close_color: 'white',
                     show: true
                 }
+
+                this.isLoading = false;
                 
+                //find a better way of doing this
                 this.card_to_add = {
                     multiverse_id: null,
                     name: '',
@@ -187,7 +199,8 @@ export default {
                     set_code: '',
                     conditions: [],
                     wish_price: null,
-                    image_uris: {}
+                    image_uris: {},
+                    isFoil: false
                 };
 
                 this.clearSearch = !this.clearSearch;
@@ -207,8 +220,17 @@ export default {
             this.$set(this.editCard, card._id, false);
 
             await this.$http.patch(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`, card)
-            .then(response => {
+            .then(async response => {
                 console.log(response.data.message);
+
+                let notify = {
+                    email: this.$store.state.user.email,
+                    wish_price: card.wish_price,
+                    name: card.name,
+                    set_name: card.set_name
+                }
+
+                await this.$http.patch('/scrape-list/card/notify-list', notify);
 
                 this.snackbar = {
                     msg: response.data.message,

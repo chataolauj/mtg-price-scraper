@@ -2,18 +2,19 @@
     <v-card>
         <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
             <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
-                {{site.name}}
+                {{site.website}}
             </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
             <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
                 <v-card>
-                    <v-card-title>Link: <a :href="site.url">{{site.url}}</a></v-card-title>
+                    <v-card-title><a :href="site.url" target="_blank">{{site.url}}</a></v-card-title>
                     <v-data-table
                         :headers="headers" 
-                        :items="site.listing" 
+                        :items="site.listings" 
                         :items-per-page="5" 
-                        :sort-by="['price', 'qty']"
+                        :sort-by="['usd', 'qty']"
+                        :sort-desc="[false, true]"
                         multi-sort
                     ></v-data-table>
                 </v-card>
@@ -25,6 +26,9 @@
 <script>
 export default {
     name: 'PriceListings',
+    props: {
+        card: Object
+    },
     data() {
         return {
             tab: null,
@@ -32,7 +36,7 @@ export default {
             conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
             headers: [
                 {
-                    text: 'Quantity',
+                    text: 'Qty.',
                     align: 'start',
                     sortable: true,
                     value: 'qty'
@@ -43,36 +47,31 @@ export default {
                 },
                 {
                     text: 'Price (USD)',
-                    value: 'price'
+                    value: 'usd'
                 },
                 {
-                    text: 'Percent Difference (%)',
+                    text: 'Shipping (USD)',
+                    value: 'shipping'
+                },
+                {
+                    text: '(%) Diff.',
                     value: 'percent_diff'
                 },
             ]
         }
     },
     created() {
-        this.generateData();
+        this.getCardWebsites(this.card);
     },
     methods: {
-        generateData() {
-            for(let i = 0; i < 15; i++) {
-                this.websites.push({
-                    name: `site${i}`,
-                    url: `site${i}.com`,
-                    listing: []
-                });
-
-                for(let j = 0; j < Math.floor(Math.random() * 15); j++) {
-                    this.websites[i].listing.push({
-                        qty: Math.floor(Math.random() * 4) + 1,
-                        condition: this.conditions[Math.floor(Math.random() * 5)],
-                        price: +(Math.random() * Math.floor(100)).toFixed(2),
-                        percent_diff: +(Math.random() * 100).toFixed(2)
-                    });
-                }
-            }
+        async getCardWebsites(card) {
+            await this.$http.get(`/scrape-list/card/websites?name=${card.name}&set_name=${card.set_name}`)
+            .then(response => {
+                this.websites = response.data.websites
+            })
+            .catch(error => {
+                console.log(error.response);
+            });
         }
     }
 }

@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 async function scrapeTCG(card_name, set_name, isFoil) {
-    const url = `https://shop.tcgplayer.com/magic/${set_name.toLowerCase().replace(/\s+/g, "-")}/${card_name.toLowerCase().replace(/\s+/g, '-')}`;
+    const url = `https://shop.tcgplayer.com/magic/${set_name.toLowerCase().replace(/:?,?\s+/g, "-")}/${card_name.toLowerCase().replace(/:?,?\s+/g, '-')}`;
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setViewport({width: 1920, height: 1080});

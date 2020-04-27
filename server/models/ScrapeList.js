@@ -10,12 +10,6 @@ const ScrapeListSchema = mongoose.Schema({
     set_code: {
         type: String
     },
-    lang: {
-        type: Array
-    },
-    multiverse_id: {
-        type: Number
-    },
     websites: {
         type: [
             {
@@ -29,18 +23,16 @@ const ScrapeListSchema = mongoose.Schema({
                             usd: Number,
                             usd_foil: Number,
                             eur: Number,
-                            eur_foil: Number
+                            eur_foil: Number,
+                            shipping: Number,
+                            total_price: Number
                         }
                     ]
+                },
+                createdAt: {
+                    type: Date,
+                    default: Date.now
                 }
-            }
-        ]
-    },
-    scrape_urls: {
-        type: [
-            {
-                website: String,
-                base_url: String
             }
         ]
     },
@@ -54,4 +46,4 @@ const ScrapeListSchema = mongoose.Schema({
     }
 });
 
-module.exports = mongoose.model('scrape_list', ScrapeListSchema);
+module.exports = mongoose.model('scrape_list', ScrapeListSchema, 'scrape_list');
