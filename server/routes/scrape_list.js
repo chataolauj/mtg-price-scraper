@@ -3,14 +3,14 @@ const router = express.Router();
 const ScrapeList = require('../models/ScrapeList');
 const { getWebsites } = require('../src/scrape')
 
-//Get all cards from scrape list; will only be used by external microservice
+//Get cards with non-empty notify_list array
 router.get('/', async (req, res) => {
     ScrapeList.find()
         .sort({ date: -1 })
         .then(cards => res.json(cards));
 });
 
-//Scrapes for card
+//Scrapes then adds card to collection if it doesn't already exist
 router.post('/', async (req, res) => {
     try {
         const new_card = new ScrapeList({
@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-//Update card's websites array with new listings; will only be used by external microservice
+//Update card's websites array with new website listings; will only be used by external microservice
 router.put('/card', async (req, res) => {
     try {
         let card = {
@@ -152,7 +152,7 @@ router.patch('/card/notify-list', async (req, res) => {
 
         let user = {
             email: req.body.email,
-            wish_price: req.body.wish_price
+            wish_price: req.body.wish_price == null? 0 : req.body.wish_price
         }
 
         let query = await ScrapeList.findOne(
@@ -170,6 +170,36 @@ router.patch('/card/notify-list', async (req, res) => {
         }
         else {
             res.status(404).send({ message: `Could not find ${user.email} in ${card.name}'s (${card.set_name}) notify list.`});
+        }
+    } catch (error) {
+        res.send({ message: error });
+    }
+});
+
+router.delete('/card/notify-list', async (req, res) => {
+    try {
+        let card = {
+            name: req.query.card_name,
+            set_name: req.query.set_name
+        }
+
+        let user_email = req.query.email;
+
+        let query = await ScrapeList.findOne(
+            {name: card.name, set_name: card.set_name, 'notify_list.email': user_email},
+            {_id: 0, 'notify_list.$': 1}
+        );
+
+        if(query) {
+            await ScrapeList.updateOne(
+                {name: card.name, set_name: card.set_name},
+                {$pull: {notify_list: {email: user_email}}}
+            );
+
+            res.status(200).send({ message: `${user_email} successfully removed from ${card.name}'s (${card.set_name}) notify list.`});
+        }
+        else {
+            res.status(404).send({ message: `Could not find ${user_email} in ${card.name}'s (${card.set_name}) notify list.`});
         }
     } catch (error) {
         res.send({ message: error });

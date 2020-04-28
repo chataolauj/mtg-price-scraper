@@ -220,7 +220,7 @@ export default {
             this.$set(this.editCard, card._id, false);
 
             await this.$http.patch(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`, card)
-            .then(async response => {
+            .then(async (response) => {
                 console.log(response.data.message);
 
                 let notify = {
@@ -252,10 +252,18 @@ export default {
         },
         async deleteCard(card) {
             await this.$http.delete(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`)
-            .then(response => {
+            .then(async (response) => {
                 console.log(response.data.message);
 
                 delete this.deleteDialog[card._id];
+
+                let notify = {
+                    email: this.$store.state.user.email,
+                    name: card.name,
+                    set_name: card.set_name
+                }
+
+                await this.$http.delete(`/scrape-list/card/notify-list?email=${this.$store.state.user.email}&card_name=${card.name}&set_name=${card.set_name}`);
 
                 this.getWishList();
 
