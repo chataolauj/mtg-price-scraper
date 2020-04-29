@@ -27,7 +27,8 @@
 export default {
     name: 'PriceListings',
     props: {
-        card: Object
+        card: Object,
+        user_price: Number
     },
     data() {
         return {
@@ -68,15 +69,35 @@ export default {
             await this.$http.get(`/scrape-list/card/websites?name=${card.name}&set_name=${card.set_name}`)
             .then(response => {
                 this.websites = response.data.websites
+
+                this.calcDiff(card.wish_price)
             })
             .catch(error => {
                 console.log(error.response);
             });
+        },
+        calcDiff(wish_price) {
+            for(let website of this.websites) {
+                for (let listing of website.listings) {
+                    let price_diff = (listing.usd - wish_price).toFixed(2);
+                    let percent_diff = (((listing.usd - wish_price) / wish_price) * 100).toFixed(2);
+
+                    if(price_diff > 0) {
+                        this.$set(listing, 'percent_diff', "$" + price_diff + " or " + percent_diff + "% more");
+                    }
+                    else {
+                        this.$set(listing, 'percent_diff', "$" + Math.abs(price_diff) + " or " + Math.abs(percent_diff) + "% less");
+                    }
+                }
+            }
         }
     },
     watch: {
         card() {
             this.getCardWebsites(this.card);
+        },
+        user_price() {
+            this.calcDiff(this.user_price);
         }
     }
 }

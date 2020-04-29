@@ -93,7 +93,7 @@
                             </v-row>
                         </v-col>
                         <v-col cols="6"> <!-- Price Listings -->
-                            <PriceListings :card="card"/>
+                            <PriceListings :card="card" :user_price="+card.wish_price"/>
                         </v-col>
                     </v-row>
                 </v-container>
