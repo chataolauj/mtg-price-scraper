@@ -8,10 +8,10 @@
         <v-tabs-items v-model="tab">
             <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
                 <v-card>
-                    <v-card-title><a :href="site.url" target="_blank">{{site.url}}</a></v-card-title>
+                    <!-- <v-card-title><a :href="site.url" target="_blank">{{site.url}}</a></v-card-title> -->
                     <v-data-table
                         :headers="headers" 
-                        :items="site.listings" 
+                        :items="filtered_listings" 
                         :items-per-page="5" 
                         :sort-by="['usd', 'qty']"
                         :sort-desc="[false, true]"
@@ -24,17 +24,20 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
+
 export default {
     name: 'PriceListings',
     props: {
         card: Object,
+        conditions: Array,
         user_price: Number
     },
     data() {
         return {
             tab: null,
             websites: [],
-            conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
+            filtered_listings: [],
             headers: [
                 {
                     text: 'Qty.',
@@ -67,27 +70,33 @@ export default {
     methods: {
         async getCardWebsites(card) {
             await this.$http.get(`/scrape-list/card/websites?name=${card.name}&set_name=${card.set_name}`)
-            .then(response => {
-                this.websites = response.data.websites
+            .then(async response => {
+                this.websites = response.data.websites;
 
-                this.calcDiff(card.wish_price)
+                this.filterListings();
+                this.calcDiff(card.wish_price);
             })
             .catch(error => {
-                console.log(error.response);
+                console.log(error);
             });
         },
-        calcDiff(wish_price) {
+        filterListings() {
             for(let website of this.websites) {
-                for (let listing of website.listings) {
-                    let price_diff = (listing.usd - wish_price).toFixed(2);
-                    let percent_diff = (((listing.usd - wish_price) / wish_price) * 100).toFixed(2);
+               this.filtered_listings = website.listings.filter(listing => {
+                    return this.conditions.includes(listing.condition)
+                })
+            }
+        },
+        calcDiff(wish_price) {
+            for(let listing of this.filtered_listings) {
+                let price_diff = (listing.usd - wish_price).toFixed(2);
+                let percent_diff = (((listing.usd - wish_price) / wish_price) * 100).toFixed(2);
 
-                    if(price_diff > 0) {
-                        this.$set(listing, 'percent_diff', "$" + price_diff + " or " + percent_diff + "% more");
-                    }
-                    else {
-                        this.$set(listing, 'percent_diff', "$" + Math.abs(price_diff) + " or " + Math.abs(percent_diff) + "% less");
-                    }
+                if(price_diff > 0) {
+                    this.$set(listing, 'percent_diff', "$" + price_diff + " or " + percent_diff + "% more");
+                }
+                else {
+                    this.$set(listing, 'percent_diff', "$" + Math.abs(price_diff) + " or " + Math.abs(percent_diff) + "% less");
                 }
             }
         }
@@ -98,6 +107,9 @@ export default {
         },
         user_price() {
             this.calcDiff(this.user_price);
+        },
+        conditions() {
+            this.filterListings();
         }
     }
 }
