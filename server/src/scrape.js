@@ -1,12 +1,18 @@
 const puppeteer = require('puppeteer');
 
 async function scrapeTCG(card_name, set_name, isFoil) {
+    if(set_name == 'Mystery Booster') {
+        set_name = 'Mystery Booster Cards';
+    }
+
     const url = `https://shop.tcgplayer.com/magic/${set_name.toLowerCase().replace(/:?,?\s+/g, "-")}/${card_name.toLowerCase().replace(/:?,?\s+/g, '-')}`;
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.setViewport({width: 1920, height: 1080});
     await page.goto(url, { waitUntil: 'networkidle2'});
-    
+
+    await page.select('#priceTableContainer > #product-price-table > .sort-toolbar > .sort-toolbar__option:nth-child(4) > .sort-toolbar__select', '25');
+
     let website = {
         website: 'TCGPlayer',
         url: url,
@@ -14,6 +20,8 @@ async function scrapeTCG(card_name, set_name, isFoil) {
     };
 
     try {
+        await page.waitFor(() => document.querySelectorAll('div.product-listing .seller__name').length == 25);
+
         product_listings = await page.evaluate((isFoil) => {
             let conditions = Array.from(document.querySelectorAll('div.product-listing .condition')).map(condition => condition.innerText);
             let prices = Array.from(document.querySelectorAll('div.product-listing .product-listing__price')).map(price => +price.innerText.replace(/\$/g, ''));
@@ -45,6 +53,8 @@ async function scrapeTCG(card_name, set_name, isFoil) {
 
             return listings;
         }, isFoil);
+
+        console.log(product_listings.length)
 
         website.listings = product_listings;
 

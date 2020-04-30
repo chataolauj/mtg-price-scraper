@@ -32,11 +32,14 @@
             <v-card class="mb-6" style="width: 100%;" v-for="(card, index) in wish_list" :item="card" :key="index">
                 <v-container fluid>
                     <v-row justify="space-around">
-                        <v-col cols="6"> <!-- Card Details -->
+                        <v-col cols="1" class="d-flex flex-column justify-center align-center">
+                            <v-checkbox class="ma-0"></v-checkbox>
+                        </v-col>
+                        <v-col cols="5"> <!-- Card Details -->
                             <v-row>
-                                <v-col cols="auto" class="d-flex flex-column justify-center align-center">
+                                <!-- <v-col cols="auto" class="d-flex flex-column justify-center align-center">
                                     <v-checkbox class="ma-0"></v-checkbox>
-                                </v-col>
+                                </v-col> -->
                                 <v-col cols="auto" class="d-flex flex-column align-center"> 
                                     <v-img :src="card.image_uris.small"></v-img> 
                                     <v-col cols="auto" class="d-flex justify-center align-center"> <!--  Card action buttons -->
@@ -221,7 +224,6 @@ export default {
 
             await this.$http.patch(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`, card)
             .then(async (response) => {
-                console.log(response.data.message);
 
                 let notify = {
                     email: this.$store.state.user.email,
@@ -253,8 +255,6 @@ export default {
         async deleteCard(card) {
             await this.$http.delete(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`)
             .then(async (response) => {
-                console.log(response.data.message);
-
                 delete this.deleteDialog[card._id];
 
                 let notify = {

@@ -45,7 +45,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-//Update card's websites array with new website listings; will only be used by external microservice
+//Update card's websites array with new website listings
 router.put('/card', async (req, res) => {
     try {
         let card = {
@@ -67,7 +67,7 @@ router.put('/card', async (req, res) => {
                     {$set: {websites: card.websites}}
                 );
 
-                res.status(200).json({ websites: card.websites});
+                res.status(200).send({ message: `Listings for ${card.name} (${card.set_name}) was successfully updated!`});
             }
             else {
                 res.status(404).send({ message: `No prices found for ${card.name} (${card.set_name}).`});

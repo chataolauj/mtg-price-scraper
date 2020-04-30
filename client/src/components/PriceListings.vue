@@ -1,5 +1,7 @@
 <template>
     <v-card>
+        <Snackbar :snack="snackbar"/>
+        <v-btn @click="scrape()" block :loading="isLoading">Update Listings</v-btn>
         <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
             <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
                 {{site.website}}
@@ -8,7 +10,8 @@
         <v-tabs-items v-model="tab">
             <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
                 <v-card>
-                    <!-- <v-card-title><a :href="site.url" target="_blank">{{site.url}}</a></v-card-title> -->
+                    <v-card-title class="d-block text-truncate">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-title>
+                    <v-card-text>Last update: {{site.createdAt}}</v-card-text>
                     <v-data-table
                         :headers="headers" 
                         :items="filtered_listings" 
@@ -25,9 +28,13 @@
 
 <script>
 /* eslint-disable no-unused-vars */
+import Snackbar from '../components/Snackbar'
 
 export default {
     name: 'PriceListings',
+    components: {
+        Snackbar
+    },
     props: {
         card: Object,
         conditions: Array,
@@ -61,7 +68,9 @@ export default {
                     text: '(%) Diff.',
                     value: 'percent_diff'
                 },
-            ]
+            ],
+            snackbar: {},
+            isLoading: false,
         }
     },
     created() {
@@ -74,10 +83,36 @@ export default {
                 this.websites = response.data.websites;
 
                 this.filterListings();
-                this.calcDiff(card.wish_price);
             })
             .catch(error => {
                 console.log(error);
+            });
+        },
+        async scrape() {
+            this.isLoading = true;
+
+            await this.$http.put('/scrape-list/card', this.card)
+            .then(async (response) => {
+                await this.getCardWebsites(this.card);
+
+                this.isLoading = false;
+
+                this.snackbar = {
+                    msg: response.data.message,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
+            })
+            .catch(error => {
+                console.log(error)
+
+                this.snackbar = {
+                    msg: error.response.data.message,
+                    color: 'error',
+                    close_color: 'white',
+                    show: true
+                }
             });
         },
         filterListings() {
@@ -86,6 +121,8 @@ export default {
                     return this.conditions.includes(listing.condition)
                 })
             }
+
+            this.calcDiff(this.user_price);
         },
         calcDiff(wish_price) {
             for(let listing of this.filtered_listings) {
