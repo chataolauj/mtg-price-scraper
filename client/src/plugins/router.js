@@ -6,6 +6,7 @@ import AccountSettings from '@/views/AccountSettings'
 import Login from '@/views/Login'
 import Register from '@/views/Register'
 import WishList from '@/views/WishList'
+import ScrapeResults from '@/views/ScrapeResults'
 
 Vue.use(VueRouter);
 
@@ -49,6 +50,11 @@ const router =  new VueRouter({
             meta: {
                 requiresAuth: true
             }
+        },
+        {
+            path: '/scrape-results',
+            name: 'scrape-results',
+            component: ScrapeResults
         }
     ]
 });
