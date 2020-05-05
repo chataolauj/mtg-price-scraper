@@ -54,7 +54,8 @@ const router =  new VueRouter({
         {
             path: '/scrape-results',
             name: 'scrape-results',
-            component: ScrapeResults
+            component: ScrapeResults,
+            props: true
         }
     ]
 });

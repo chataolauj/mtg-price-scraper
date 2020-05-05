@@ -4,7 +4,7 @@
             <router-link to="/">Home</router-link>
             <v-spacer></v-spacer>
 
-            <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'"/>
+            <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'" @selected_card="scrape" :cardAdded="clearSearch"/>
             <v-spacer></v-spacer>
 
             <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+/* eslint-disable no-unused-vars */
 import AuthModal from './components/AuthModal'
 import Search from './components/Search'
 
@@ -62,7 +63,10 @@ export default {
             app_bar: {
                 isFlat: this.$router.currentRoute.name == 'home' ? true :  false,
                 color: this.$router.currentRoute.name == 'home' ? 'white' : 'amber accent-3'
-            }
+            },
+            card: {},
+            isLoading: false,
+            clearSearch: false
         }
     },
     beforeCreate() {
@@ -76,11 +80,33 @@ export default {
             await this.$store.dispatch('logout')
             .then(response => {
                 if(this.$router.currentRoute.name == 'wish_list') {
-                this.$router.push('/');
+                    this.$router.push('/');
                 }
                 console.log(response.data.message);
             })
             .catch(error => console.log(error));
+        },
+        async scrape(card) {
+            this.card = card;
+
+            await this.$http.post('/scrape-list', this.card)
+            .then(async (response) => {
+                if(response.status == 200 || response.status == 204) {
+                    await this.$http.put('/scrape-list/card', this.card)
+                    .then(() => {
+                        if(this.$router.currentRoute.name != 'scrape-results') {
+                            this.clearSearch = !this.clearSearch;
+
+                            this.$router.push({name: 'scrape-results', params: { card: this.card } });
+                        }
+                        else {
+                            this.$router.push({params: { card: this.card } });
+                        }
+                    })
+                    .catch(error => console.log(error.response));
+                }
+            })
+            .catch(error => console.log(error.response));
         }
     }
 }

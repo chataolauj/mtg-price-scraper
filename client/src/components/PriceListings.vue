@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <Snackbar :snack="snackbar"/>
-        <v-btn @click="scrape()" block :loading="isLoading">Update Listings</v-btn>
+        <v-btn v-if="this.$router.currentRoute.name == 'wish_list'" @click="scrape()" block :loading="isLoading">Update Listings</v-btn>
         <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
             <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
                 {{site.website}}
@@ -14,7 +14,7 @@
                     <v-card-text>Last update: {{site.createdAt}}</v-card-text>
                     <v-data-table
                         :headers="headers" 
-                        :items="filtered_listings" 
+                        :items="$router.currentRoute.name == 'wish_list' ? filtered_listings : site.listings" 
                         :items-per-page="5" 
                         :sort-by="['usd', 'qty']"
                         :sort-desc="[false, true]"
@@ -82,7 +82,16 @@ export default {
             .then(async response => {
                 this.websites = response.data.websites;
 
-                this.filterListings();
+                if(this.conditions) {
+                    this.filterListings();
+                }
+                else {
+                    for(let website of this.websites) {
+                        website.listings.map(listing => {
+                            this.$set(listing, 'percent_diff', 'N/A');
+                        })
+                    }
+                }
             })
             .catch(error => {
                 console.log(error);
