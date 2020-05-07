@@ -5,7 +5,19 @@
                 <v-text-field 
                     v-on="focus" hide-details
                     :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
-                    v-model="card_name" @focus="isFocused = true" @blur="isFocused = false">
+                    v-model="card_name" @focus="isFocused = true" @blur="isFocused = false"
+                    :loading="loading && isHomeRoute"
+                >
+                    <template v-slot:progress>
+                        <v-progress-circular
+                            class="mt-3"
+                            v-if="loading"
+                            indeterminate
+                            color="primary"
+                            :width="2"
+                            :size="30"
+                        ></v-progress-circular>
+                    </template>
                 </v-text-field>
             </template>
             <v-list class="pa-0 overflow-y-auto" max-height="300" two-line>
@@ -26,7 +38,8 @@ import _ from 'lodash'
 export default {
     name: 'Search',
     props: {
-        cardAdded: Boolean
+        cardAdded: Boolean,
+        loading: Boolean
     },
     data() {
         return {

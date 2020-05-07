@@ -11,7 +11,7 @@
                 </v-col>
                 <v-col cols="8" class="d-flex flex-column">
                     <PriceListings :card="card"/>
-                    <v-btn @click="addCard()" block color="success" :loading="isLoading" class="mt-4">Add to Wish List</v-btn>
+                    <v-btn v-if="this.$store.state.logged_in" @click="addCard()" block color="success" :loading="isLoading" class="mt-4">Add to Wish List</v-btn>
                 </v-col>
             </v-row>
         </v-col>
@@ -37,6 +37,9 @@ export default {
             card_to_add: {},
             snackbar: {}
         }
+    },
+    created() {
+        console.log(this.card)
     },
     methods: {
         async addCard() {

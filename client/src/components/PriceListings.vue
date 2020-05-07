@@ -134,15 +134,24 @@ export default {
             this.calcDiff(this.user_price);
         },
         calcDiff(wish_price) {
-            for(let listing of this.filtered_listings) {
-                let price_diff = (listing.usd - wish_price).toFixed(2);
-                let percent_diff = (((listing.usd - wish_price) / wish_price) * 100).toFixed(2);
+            if(wish_price > 0) {
+                for(let listing of this.filtered_listings) {
+                    let price_diff = (listing.usd - wish_price).toFixed(2);
+                    let percent_diff = (((listing.usd - wish_price) / wish_price) * 100).toFixed(2);
 
-                if(price_diff > 0) {
-                    this.$set(listing, 'percent_diff', "$" + price_diff + " or " + percent_diff + "% more");
+                    if(price_diff > 0) {
+                        this.$set(listing, 'percent_diff', "$" + price_diff + " or " + percent_diff + "% more");
+                    }
+                    else {
+                        this.$set(listing, 'percent_diff', "$" + Math.abs(price_diff) + " or " + Math.abs(percent_diff) + "% less");
+                    }
                 }
-                else {
-                    this.$set(listing, 'percent_diff', "$" + Math.abs(price_diff) + " or " + Math.abs(percent_diff) + "% less");
+            }
+            else {
+                for(let website of this.websites) {
+                    website.listings.map(listing => {
+                        this.$set(listing, 'percent_diff', 'N/A');
+                    })
                 }
             }
         }

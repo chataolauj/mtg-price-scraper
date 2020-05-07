@@ -4,7 +4,7 @@
             <router-link to="/">Home</router-link>
             <v-spacer></v-spacer>
 
-            <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'" @selected_card="scrape" :cardAdded="clearSearch"/>
+            <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
             <v-spacer></v-spacer>
 
             <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
@@ -35,8 +35,14 @@
         </v-app-bar>
 
         <v-content>
+            <v-progress-linear
+                v-if="isLoading"
+                indeterminate
+                absolute
+                color="primary"
+            ></v-progress-linear>
             <v-container fluid style="width: 80%;">
-                <router-view></router-view>
+                <router-view :card="card"></router-view>
             </v-container>
         </v-content>
     </v-app>
@@ -87,26 +93,38 @@ export default {
             .catch(error => console.log(error));
         },
         async scrape(card) {
-            this.card = card;
+            console.log(this.card)
+            console.log(this.$router.currentRoute.name)
+            this.isLoading = true;
 
-            await this.$http.post('/scrape-list', this.card)
+            await this.$http.post('/scrape-list', card)
             .then(async (response) => {
                 if(response.status == 200 || response.status == 204) {
-                    await this.$http.put('/scrape-list/card', this.card)
+                    await this.$http.put('/scrape-list/card', card)
                     .then(() => {
-                        if(this.$router.currentRoute.name != 'scrape-results') {
-                            this.clearSearch = !this.clearSearch;
+                        this.isLoading = false;
+                        this.clearSearch = !this.clearSearch;
 
-                            this.$router.push({name: 'scrape-results', params: { card: this.card } });
+                        if(this.$router.currentRoute.name != 'scrape-results') {
+                            this.$router.push({name: 'scrape-results', params: { card: card } });
                         }
                         else {
-                            this.$router.push({params: { card: this.card } });
+                            this.card = card;
+                            console.log(this.card)
                         }
                     })
-                    .catch(error => console.log(error.response));
+                    .catch(error => {
+                        console.log(error.response)
+
+                        this.isLoading = false;
+                    });
                 }
             })
-            .catch(error => console.log(error.response));
+            .catch(error => {
+                console.log(error.response)
+
+                this.isLoading = false;
+            });
         }
     }
 }
