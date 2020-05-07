@@ -1,5 +1,6 @@
 <template>
     <div id="home">
+        <Snackbar :snack="snackbar"/>
         <h1>Home</h1>
         <Search id="search" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
     </div>
@@ -7,15 +8,18 @@
 
 <script>
 /* eslint-disable no-unused-vars */
+import Snackbar from '../components/Snackbar'
 import Search from '../components/Search'
 
 export default {
     name: 'Home',
     components: {
+        Snackbar,
         Search
     },
     data() {
         return {
+            snackbar: {},
             clearSearch: false,
             isLoading: false
         }
@@ -31,13 +35,19 @@ export default {
                     .then(() => {
                         this.isLoading = false;
                         this.clearSearch = !this.clearSearch;
-                        
-                        this.$router.push({name: 'scrape-results', params: { card: card } });
+                        this.$router.push({name: 'scrape-results', params: { card: card, card_set: card.set_name, card_name: card.name } });
                     })
                     .catch(error => {
                         console.log(error.response)
 
                         this.isLoading = false;
+
+                        this.snackbar = {
+                            msg: error.response.data.message,
+                            color: 'error',
+                            close_color: 'white',
+                            show: true
+                        }
                     });
                 }
             })
@@ -45,6 +55,13 @@ export default {
                 console.log(error.response)
 
                 this.isLoading = false;
+
+                this.snackbar = {
+                    msg: error.response.data.message,
+                    color: 'error',
+                    close_color: 'white',
+                    show: true
+                }
             });
         }
     }

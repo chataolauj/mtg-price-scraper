@@ -52,7 +52,7 @@ const router =  new VueRouter({
             }
         },
         {
-            path: '/scrape-results',
+            path: '/scrape-results/:card_set/:card_name',
             name: 'scrape-results',
             component: ScrapeResults,
             props: true

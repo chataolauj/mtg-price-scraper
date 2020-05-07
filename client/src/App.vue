@@ -26,7 +26,7 @@
                 <v-icon class="mr-2">mdi-notebook-multiple</v-icon>
                     <v-list-item-title>Wish List</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="logout()">
+                <v-list-item @click="logout()" to="/">
                     <v-icon class="mr-2">mdi-logout-variant</v-icon>
                     <v-list-item-title>Logout</v-list-item-title>
                 </v-list-item>
@@ -41,6 +41,9 @@
                 absolute
                 color="primary"
             ></v-progress-linear>
+
+            <Snackbar :snack="snackbar"/>
+
             <v-container fluid style="width: 80%;">
                 <router-view :card="card"></router-view>
             </v-container>
@@ -50,12 +53,14 @@
 
 <script>
 /* eslint-disable no-unused-vars */
+import Snackbar from './/components/Snackbar'
 import AuthModal from './components/AuthModal'
 import Search from './components/Search'
 
 export default {
     name: 'App',
     components: {
+        Snackbar,
         AuthModal,
         Search
     },
@@ -104,19 +109,19 @@ export default {
                     .then(() => {
                         this.isLoading = false;
                         this.clearSearch = !this.clearSearch;
-
-                        if(this.$router.currentRoute.name != 'scrape-results') {
-                            this.$router.push({name: 'scrape-results', params: { card: card } });
-                        }
-                        else {
-                            this.card = card;
-                            console.log(this.card)
-                        }
+                        this.$router.push({name: 'scrape-results', params: { card: card, card_set: card.set_name, card_name: card.name } });
                     })
                     .catch(error => {
                         console.log(error.response)
 
                         this.isLoading = false;
+
+                        this.snackbar = {
+                            msg: error.response.data.message,
+                            color: 'error',
+                            close_color: 'white',
+                            show: true
+                        }
                     });
                 }
             })
@@ -124,18 +129,25 @@ export default {
                 console.log(error.response)
 
                 this.isLoading = false;
+
+                this.snackbar = {
+                    msg: error.response.data.message,
+                    color: 'error',
+                    close_color: 'white',
+                    show: true
+                }
             });
         }
     },
     watch: {
         $route(to, from) {
-            if(to.path != '/') {
-                this.app_bar.isFlat = false;
-                this.app_bar.color = "amber accent-3";
-            }
-            else {
+            if(to.path == '/') {
                 this.app_bar.isFlat = true;
                 this.app_bar.color = "white";
+            }
+            else {
+                this.app_bar.isFlat = false;
+                this.app_bar.color = "amber accent-3";
             }
         }
     }
