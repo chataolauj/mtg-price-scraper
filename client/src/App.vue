@@ -1,6 +1,6 @@
 <template>
   <v-app style="height: 100vh">
-        <v-app-bar app :color="app_bar.color" :flat="app_bar.isFlat" class="">
+        <v-app-bar app :color="app_bar.color" :flat="app_bar.isFlat">
             <router-link to="/">Home</router-link>
             <v-spacer></v-spacer>
 
@@ -67,8 +67,8 @@ export default {
                 close_color: ''
             },
             app_bar: {
-                isFlat: this.$router.currentRoute.name == 'home' ? true :  false,
-                color: this.$router.currentRoute.name == 'home' ? 'white' : 'amber accent-3'
+                isFlat: true,
+                color: 'white'
             },
             card: {},
             isLoading: false,
@@ -125,6 +125,18 @@ export default {
 
                 this.isLoading = false;
             });
+        }
+    },
+    watch: {
+        $route(to, from) {
+            if(to.path != '/') {
+                this.app_bar.isFlat = false;
+                this.app_bar.color = "amber accent-3";
+            }
+            else {
+                this.app_bar.isFlat = true;
+                this.app_bar.color = "white";
+            }
         }
     }
 }

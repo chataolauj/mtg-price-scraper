@@ -7,6 +7,7 @@
                     :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
                     v-model="card_name" @focus="isFocused = true" @blur="isFocused = false"
                     :loading="loading && isHomeRoute"
+                    prepend-inner-icon="mdi-magnify"
                 >
                     <template v-slot:progress>
                         <v-progress-circular
