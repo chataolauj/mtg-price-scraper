@@ -26,7 +26,7 @@
                 <v-icon class="mr-2">mdi-notebook-multiple</v-icon>
                     <v-list-item-title>Wish List</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="logout()" to="/">
+                <v-list-item @click="logout()">
                     <v-icon class="mr-2">mdi-logout-variant</v-icon>
                     <v-list-item-title>Logout</v-list-item-title>
                 </v-list-item>
@@ -90,16 +90,12 @@ export default {
         async logout() {
             await this.$store.dispatch('logout')
             .then(response => {
-                if(this.$router.currentRoute.name == 'wish_list') {
-                    this.$router.push('/');
-                }
+                this.$router.push('/');
                 console.log(response.data.message);
             })
             .catch(error => console.log(error));
         },
         async scrape(card) {
-            console.log(this.card)
-            console.log(this.$router.currentRoute.name)
             this.isLoading = true;
 
             await this.$http.post('/scrape-list', card)

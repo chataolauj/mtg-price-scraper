@@ -150,12 +150,12 @@ export default {
                     this.$emit('logged_in', true);
                 })
                 .catch(error => {
-                    this.isloading = true;
+                    this.isloading = false;
                     this.login_error = error.response.data.message;
                     console.log(this.login_error)
                 });
             } catch (error) {
-                this.isloading = true;
+                this.isloading = false;
                 this.login_error = error.response.data.message;
                 console.log(error.response.data.message)
             }
@@ -169,15 +169,14 @@ export default {
                     this.isloading = true;
                     console.log(response);
                     console.log(this.$store.state.user)
-                    //this.$router.push('/');
                 })
                 .catch(error => {
-                    this.isloading = true;
+                    this.isloading = false;
                     this.register_error = error;
                     console.log(this.register_error)
                 });
             } catch (error) {
-                this.isloading = true;
+                this.isloading = false;
                 this.register_error = error;
             }
         },

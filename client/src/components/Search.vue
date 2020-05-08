@@ -6,13 +6,13 @@
                     v-on="focus" hide-details
                     :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
                     v-model="card_name" @focus="isFocused = true" @blur="isFocused = false"
-                    :loading="loading && isHomeRoute"
+                    :loading="searchLoading || selectedLoading && isHomeRoute"
                     prepend-inner-icon="mdi-magnify"
                 >
                     <template v-slot:progress>
                         <v-progress-circular
                             class="mt-3"
-                            v-if="loading"
+                            v-if="searchLoading || selectedLoading"
                             indeterminate
                             color="primary"
                             :width="2"
@@ -47,7 +47,9 @@ export default {
             isHomeRoute: true,
             isFocused: false,
             queried_cards: [],
-            card_name: ''
+            card_name: '',
+            searchLoading: false,
+            selectedLoading: false
         }
     },
     mounted() {
@@ -56,15 +58,24 @@ export default {
         }
     },
     methods: {
-        delaySearch: _.debounce(function() { this.searchCards() }, 500),
-        async searchCards() {
+        delaySearch() {
+            this.searchLoading = true;
+
+            this.searchCards();
+        },
+        searchCards: _.debounce(async function() {
             await this.$http.get(`/cards?card_name=${this.card_name}`)
             .then(response => {
                 console.log(response.data)
                 this.queried_cards = response.data;
+                this.searchLoading = false;
             })
-            .catch(error => console.log(error));
-        },
+            .catch(error => {
+                console.log(error)
+
+                this.searchLoading = false;
+            });
+        }, 500),
         setCard(card) {
             this.$emit('selected_card', card);
             this.card_name = `${card.name} - ${card.set_name}`;
@@ -72,13 +83,16 @@ export default {
         }
     },
     watch: {
-        card_name() {
-            if(this.card_name.length > 2) {
+        card_name(newValue) {
+            if(this.card_name.length > 2 && !newValue.includes('-')) {
                 this.delaySearch();
             }
             else {
                 this.queried_cards = [];
             }
+        },
+        loading() {
+            this.selectedLoading = this.loading;
         },
         cardAdded() {
             this.card_name = '';
