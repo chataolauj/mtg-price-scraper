@@ -3,8 +3,6 @@ import VueRouter from 'vue-router'
 import store from './store'
 import Home from '@/views/Home'
 import AccountSettings from '@/views/AccountSettings'
-import Login from '@/views/Login'
-import Register from '@/views/Register'
 import WishList from '@/views/WishList'
 import ScrapeResults from '@/views/ScrapeResults'
 
@@ -19,33 +17,13 @@ const router =  new VueRouter({
             component: Home
         },
         {
-            path: '/login',
-            name: 'login',
-            component: Login,
-            beforeEnter: async (to, from, next) => {
-                await store.dispatch('check_auth')
-                .then(() => next('/'))
-                .catch(() => next());
-            }
-        },
-        {
-            path: '/register',
-            name: 'register',
-            component: Register,
-            beforeEnter: async (to, from, next) => {
-                await store.dispatch('check_auth')
-                .then(() => { next('/'); })
-                .catch(() => { next(); });
-            }
-        },
-        {
-            path: '/account_settings',
-            name: 'account_settings',
+            path: '/account-settings',
+            name: 'account-settings',
             component: AccountSettings
         },
         {
-            path: '/wish_list',
-            name: 'wish_list',
+            path: '/wish-list',
+            name: 'wish-list',
             component: WishList,
             meta: {
                 requiresAuth: true
@@ -62,7 +40,7 @@ const router =  new VueRouter({
 
 router.beforeEach((to, from, next) => {
     if(to.meta.requiresAuth && !store.state.logged_in) {
-        next({ name: 'login' });
+        next({ name: 'home' });
     }
     else {
         next();

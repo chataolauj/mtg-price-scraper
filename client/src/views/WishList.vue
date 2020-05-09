@@ -3,7 +3,7 @@
         <Snackbar :snack="snackbar"/>
         <v-col cols="12" class="d-flex justify-center align-center"> <!-- Header -->
             <h1 class="mr-2">Wish List</h1>
-            <v-btn @click="getWishList()" icon color="">
+            <v-btn @click="getWishList()" :loading="refresh" icon color="">
                 <v-icon>mdi-refresh</v-icon>
             </v-btn>
         </v-col>
@@ -139,6 +139,7 @@ export default {
             deleteDialog: {},
             editCard: {},
             isLoading: false,
+            refresh: false
         }
     },
     created() {
@@ -146,9 +147,13 @@ export default {
     },
     methods: {
         async getWishList() {
+            this.refresh = true;
+
             await this.$http.get(`/users/${this.$store.state.user._id}/wish_list`)
             .then(response => {
                 this.wish_list = response.data.wish_list;
+
+                this.refresh = false;
 
                 if(this.wish_list.length > 0) {
                     this.edit = {};
@@ -158,7 +163,11 @@ export default {
                     }
                 }
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                console.log(error)
+
+                this.refresh = false;
+            });
         },
         setCard(card) {
             this.card_to_add.multiverse_id = card.multiverse_id;

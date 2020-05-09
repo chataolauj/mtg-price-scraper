@@ -89,11 +89,6 @@ export default {
                 this.isLoading = false;
             });
         }
-    },
-    watch: {
-        card() {
-            console.log(this.card)
-        }
     }
 }
 </script>

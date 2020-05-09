@@ -49,7 +49,8 @@ export default {
             queried_cards: [],
             card_name: '',
             searchLoading: false,
-            selectedLoading: false
+            selectedLoading: false,
+            selected: false
         }
     },
     mounted() {
@@ -66,7 +67,6 @@ export default {
         searchCards: _.debounce(async function() {
             await this.$http.get(`/cards?card_name=${this.card_name}`)
             .then(response => {
-                console.log(response.data)
                 this.queried_cards = response.data;
                 this.searchLoading = false;
             })
@@ -78,13 +78,14 @@ export default {
         }, 500),
         setCard(card) {
             this.$emit('selected_card', card);
+            this.selected = true;
             this.card_name = `${card.name} - ${card.set_name}`;
             this.queried_cards = [];
         }
     },
     watch: {
-        card_name(newValue) {
-            if(this.card_name.length > 2 && !newValue.includes('-')) {
+        card_name() {
+            if(this.card_name.length > 2 && !this.selected) {
                 this.delaySearch();
             }
             else {
@@ -96,6 +97,7 @@ export default {
         },
         cardAdded() {
             this.card_name = '';
+            this.selected = false;
         }
     }
 }

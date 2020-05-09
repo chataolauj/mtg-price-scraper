@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <Snackbar :snack="snackbar"/>
-        <v-btn v-if="this.$router.currentRoute.name == 'wish_list'" @click="scrape()" block :loading="isLoading">Update Listings</v-btn>
+        <v-btn v-if="this.$router.currentRoute.name == 'wish-list'" @click="scrape()" block :loading="isLoading">Update Listings</v-btn>
         <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
             <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
                 {{site.website}}
@@ -14,7 +14,7 @@
                     <v-card-text>Last update: {{site.createdAt}}</v-card-text>
                     <v-data-table
                         :headers="headers" 
-                        :items="$router.currentRoute.name == 'wish_list' ? filtered_listings : site.listings" 
+                        :items="$router.currentRoute.name == 'wish-list' ? filtered_listings : site.listings" 
                         :items-per-page="5" 
                         :sort-by="['usd', 'qty']"
                         :sort-desc="[false, true]"
@@ -114,7 +114,9 @@ export default {
                 }
             })
             .catch(error => {
-                console.log(error)
+                console.log(error.response)
+
+                this.isLoading = false;
 
                 this.snackbar = {
                     msg: error.response.data.message,

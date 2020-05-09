@@ -18,11 +18,11 @@
                 </v-btn>
                 </template>
                 <v-list>
-                <v-list-item to="/account_settings">
+                <v-list-item to="/account-settings">
                     <v-icon class="mr-2">mdi-cog</v-icon>
                     <v-list-item-title>Settings</v-list-item-title>
                 </v-list-item>
-                <v-list-item to="/wish_list">
+                <v-list-item to="/wish-list">
                 <v-icon class="mr-2">mdi-notebook-multiple</v-icon>
                     <v-list-item-title>Wish List</v-list-item-title>
                 </v-list-item>
@@ -105,7 +105,11 @@ export default {
                     .then(() => {
                         this.isLoading = false;
                         this.clearSearch = !this.clearSearch;
-                        this.$router.push({name: 'scrape-results', params: { card: card, card_set: card.set_name, card_name: card.name } });
+                        this.$router.push({name: 'scrape-results', params: {
+                            card: card, 
+                            card_set: card.set_name.toLowerCase().replace(/:?,?\s+/g, "-"), 
+                            card_name: card.name.toLowerCase().replace(/:?,?\s+/g, "-")
+                        }});
                     })
                     .catch(error => {
                         console.log(error.response)

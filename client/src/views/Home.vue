@@ -35,7 +35,11 @@ export default {
                     .then(() => {
                         this.isLoading = false;
                         this.clearSearch = !this.clearSearch;
-                        this.$router.push({name: 'scrape-results', params: { card: card, card_set: card.set_name, card_name: card.name } });
+                        this.$router.push({name: 'scrape-results', params: {
+                            card: card, 
+                            card_set: card.set_name.toLowerCase().replace(/:?,?\s+/g, "-"), 
+                            card_name: card.name.toLowerCase().replace(/:?,?\s+/g, "-")
+                        }});
                     })
                     .catch(error => {
                         console.log(error.response)
