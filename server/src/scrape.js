@@ -1,8 +1,17 @@
 const puppeteer = require('puppeteer');
 
+function delay(timeout) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, timeout);
+    });
+}
+
 async function scrapeTCG(card_name, set_name, isFoil) {
     if(set_name == 'Mystery Booster') {
         set_name = 'Mystery Booster Cards';
+    }
+    else if(set_name == 'Secret Lair Drop Promos') {
+        set_name = 'Secret Lair Drop Series';
     }
 
     const url = `https://shop.tcgplayer.com/magic/${set_name.toLowerCase().replace(/:?,?\s+/g, "-")}/${card_name.toLowerCase().replace(/:?,?\s+/g, '-')}`;
@@ -20,7 +29,7 @@ async function scrapeTCG(card_name, set_name, isFoil) {
     };
 
     try {
-        await page.waitFor(() => document.querySelectorAll('div.product-listing .seller__name').length == 25);
+        await delay(2000);
 
         product_listings = await page.evaluate((isFoil) => {
             let conditions = Array.from(document.querySelectorAll('div.product-listing .condition')).map(condition => condition.innerText);
