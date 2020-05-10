@@ -5,9 +5,23 @@ const { getWebsites } = require('../src/scrape')
 
 //Get cards with non-empty notify_list array
 router.get('/', async (req, res) => {
-    ScrapeList.find()
-        .sort({ date: -1 })
-        .then(cards => res.json(cards));
+    try {
+        if(req.query.nonEmptyNotify == 'true') {
+            await ScrapeList.find(
+                { "notify_list.0": { $exists: true } }
+            )
+            .then(cards => {console.log(cards); res.status(200).json(cards)})
+            .catch(error => res.status(404).send({ message: error }));
+        }
+        else {
+            ScrapeList.find()
+            .sort({ date: -1 })
+            .then(cards => res.status(200).json(cards))
+            .catch(error => res.status(404).send({ message: error }));
+        }
+    } catch (error) {
+        res.status(400).send({ message: error });
+    }
 });
 
 //Scrapes then adds card to collection if it doesn't already exist
