@@ -11,6 +11,11 @@ async function connect() {
     );
 }
 
+async function disconnect() {
+    await mongoose.disconnect();
+}
+
 module.exports = {
-    connect
+    connect,
+    disconnect
 };

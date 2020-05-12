@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
             await ScrapeList.find(
                 { "notify_list.0": { $exists: true } }
             )
-            .then(cards => {console.log(cards); res.status(200).json(cards)})
+            .then(cards => res.status(200).json(cards))
             .catch(error => res.status(404).send({ message: error }));
         }
         else {

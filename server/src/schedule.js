@@ -33,7 +33,7 @@ async function getScrapeList() {
 
 console.log('Running scrape schedule...')
  
-cron.schedule('* */4 * * *', async () => {
+cron.schedule('0 */4 * * *', async () => {
     await db.connect();
     await main();
     db.disconnect();
