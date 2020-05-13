@@ -32,17 +32,17 @@
             <v-card class="mb-6" style="width: 100%;" v-for="(card, index) in wish_list" :item="card" :key="index">
                 <v-container fluid>
                     <v-row justify="space-around">
-                        <v-col cols="1" class="d-flex flex-column justify-center align-center">
+                        <!-- <v-col cols="1" class="d-flex flex-column justify-center align-center">
                             <v-checkbox class="ma-0"></v-checkbox>
-                        </v-col>
-                        <v-col cols="5"> <!-- Card Details -->
+                        </v-col> -->
+                        <v-col cols="6"> <!-- Card Details -->
                             <v-row>
                                 <!-- <v-col cols="auto" class="d-flex flex-column justify-center align-center">
                                     <v-checkbox class="ma-0"></v-checkbox>
                                 </v-col> -->
-                                <v-col cols="auto" class="d-flex flex-column align-center"> 
-                                    <v-img :src="card.image_uris.small"></v-img> 
-                                    <v-col cols="auto" class="d-flex justify-center align-center"> <!--  Card action buttons -->
+                                <v-col cols="6" class="d-flex flex-column align-center"> 
+                                    <v-img :src="card.image_uris.normal" contain></v-img> 
+                                    <div class="d-flex justify-center align-center"> <!--  Card action buttons -->
                                         <v-dialog v-model="deleteDialog[card._id]" max-width="25%"> <!-- Delete Dialog -->
                                             <template v-slot:activator="{ on: remove }">
                                                 <v-btn v-on="remove" icon color="error">
@@ -65,7 +65,7 @@
                                         <v-btn v-show="editCard[card._id]" @click="saveEdit(card)" icon color="success">
                                             <v-icon>mdi-floppy</v-icon>
                                         </v-btn>
-                                    </v-col>
+                                    </div>
                                 </v-col>
                                 <v-col class="d-flex flex-column" cols="6"> <!-- Wish Price & Conditions -->
                                     <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>

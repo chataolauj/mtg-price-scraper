@@ -19,7 +19,10 @@ const router =  new VueRouter({
         {
             path: '/account-settings',
             name: 'account-settings',
-            component: AccountSettings
+            component: AccountSettings,
+            meta: {
+                requiresAuth: true
+            }
         },
         {
             path: '/wish-list',

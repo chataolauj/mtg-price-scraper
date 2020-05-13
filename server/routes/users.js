@@ -2,13 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User')
 
-//Get all users
-router.get('/', (req, res) => {
-    User.find()
-        .sort({ date: -1 })
-        .then(users => res.json(users));
-});
-
 //Get specific user by their ObjectId
 router.get('/:id', async (req, res) => {
     try {

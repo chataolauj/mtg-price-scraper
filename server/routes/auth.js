@@ -7,65 +7,67 @@ const passport = require('passport');
 const {ensureAuthenticated} = require('../config/auth');
 
 //Insert/Register a user
-router.post('/register', [
-    check('email')
-        .trim()
-        .isEmail().withMessage('Please enter a valid email.')
-        .normalizeEmail(),
-    check('password')
-        .trim()
-        .isLength({ min: 8}).withMessage('a min. of 8 characters')
-        .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
-        .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
-        .matches(/(?=.*\d)/).withMessage('one digit')
-        .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
-    check('confirm_pw').custom((value, {req}) => {
-        if(value !== req.body.password) {
-            throw new Error('Passwords do not match.');
+router.post('/register', 
+    [
+        check('email')
+            .trim()
+            .isEmail().withMessage('Please enter a valid email.')
+            .normalizeEmail(),
+        check('password')
+            .trim()
+            .isLength({ min: 8}).withMessage('a min. of 8 characters')
+            .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
+            .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
+            .matches(/(?=.*\d)/).withMessage('one digit')
+            .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
+        check('confirm_pw').custom((value, {req}) => {
+            if(value !== req.body.password) {
+                throw new Error('Passwords do not match.');
+            }
+
+            return true;
+        })
+    ], 
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(422).send(errors.array());
         }
 
-        return true;
-    })
-], 
-async (req, res) => {
-    const errors = validationResult(req);
+        const user = new User({
+            email: req.body.email,
+            password: req.body.password
+        });
 
-    if(!errors.isEmpty()) {
-        return res.status(422).send(errors.array());
-    }
-
-    const user = new User({
-        email: req.body.email,
-        password: req.body.password
-    });
-
-    await bcrypt.genSalt(10, (err, salt) => {
-        if(err) throw err;
-
-        bcrypt.hash(user.password, salt, (err, hash) => {
+        await bcrypt.genSalt(10, (err, salt) => {
             if(err) throw err;
 
-            user.password = hash;
+            bcrypt.hash(user.password, salt, (err, hash) => {
+                if(err) throw err;
 
-            user.save()
-                .then(() => {
-                    req.logIn(user, (err) => {
-                        if(err) return next(err);
-                        
-                        let new_user  = {
-                            _id: req.user._id,
-                            email: req.user.email
-                        }
-        
-                        return res.status(200).send({message: `Welcome ${user.email}!`, user: new_user});
+                user.password = hash;
+
+                user.save()
+                    .then(() => {
+                        req.logIn(user, (err) => {
+                            if(err) return next(err);
+                            
+                            let new_user  = {
+                                _id: req.user._id,
+                                email: req.user.email
+                            }
+            
+                            return res.status(200).send({message: `Welcome ${user.email}!`, user: new_user});
+                        });
+                    })
+                    .catch(() => {
+                        res.status(409).send({error: `Email '${user.email}' is already in use by another user.`});
                     });
-                })
-                .catch(() => {
-                    res.status(409).send({error: `Email '${user.email}' is already in use by another user.`});
-                });
+            });
         });
-    });
-});
+    }
+);
 
 router.post('/login', async (req, res, next) => {
     try {
@@ -110,5 +112,64 @@ router.get('/check_auth', ensureAuthenticated, (req, res) => {
 
     res.status(200).send({ is_logged_in: true, user: user});
 });
+
+router.patch('/change-password', 
+    [
+        check('curr_password').custom(async (curr_password, {req}) => {
+            let user = await User.findOne({email: req.body.email});
+
+            let isMatch = await bcrypt.compare(curr_password, user.password).then((result) => {
+                return result;
+            });
+
+            if(!isMatch) {
+                throw new Error('Incorrect current password.');
+            }
+        }),
+        check('new_password')
+            .trim()
+            .isLength({ min: 8}).withMessage('a min. of 8 characters')
+            .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
+            .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
+            .matches(/(?=.*\d)/).withMessage('one digit')
+            .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
+        check('confirm_new_pw').custom((value, {req}) => {
+            if(value !== req.body.new_password) {
+                throw new Error('Your new passwords do not match.');
+            }
+
+            return true;
+        })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(422).send(errors.array());
+        }
+
+        try {
+            await bcrypt.genSalt(10, (err, salt) => {
+                if(err) throw err;
+        
+                bcrypt.hash(req.body.new_password, salt, async (err, hash) => {
+                    if(err) throw err;
+        
+                    await User.updateOne(
+                        {email: req.body.email},
+                        {$set: {password: hash}},
+                        (err) => {
+                            if(err) throw err;
+
+                            res.status(200).send({ message: 'Your password was successfully updated!'});
+                        }
+                    )
+                });
+            });
+        } catch (error) {
+            res.status(400).send({ message: error });
+        }
+    }
+);
 
 module.exports = router;

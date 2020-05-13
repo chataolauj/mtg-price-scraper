@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <Snackbar :snack="snackbar"/>
-        <v-btn v-if="this.$router.currentRoute.name == 'wish-list'" @click="scrape()" block :loading="isLoading">Update Listings</v-btn>
+        <!-- <v-btn v-if="this.$router.currentRoute.name == 'wish-list'" @click="scrape()" block :loading="isLoading">Update Listings</v-btn> -->
         <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
             <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
                 {{site.website}}
@@ -10,8 +10,18 @@
         <v-tabs-items v-model="tab">
             <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
                 <v-card>
-                    <v-card-title class="d-block text-truncate">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-title>
-                    <v-card-text>Last update: {{site.createdAt}}</v-card-text>
+                    <v-card-text class="d-block text-truncate pb-0">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-text>
+                    <v-row align="center">
+                        <v-col cols="auto" class="py-0 pr-0">
+                            <v-card-text class="pr-1 pb-3">Last update: {{site.createdAt}}</v-card-text>
+                        </v-col>
+                        <v-col class="pa-0">
+                            <v-btn v-if="$router.currentRoute.name == 'wish-list'" @click="scrape()" icon small :loading="isLoading">
+                                <v-icon>mdi-refresh</v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                    
                     <v-data-table
                         :headers="headers" 
                         :items="$router.currentRoute.name == 'wish-list' ? filtered_listings : site.listings" 
