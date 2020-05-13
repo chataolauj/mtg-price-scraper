@@ -145,7 +145,7 @@ export default {
             try {
                 await this.$store.dispatch('login', login_creds)
                 .then(response => {
-                    this.isloading = true;
+                    this.isloading = false;
                     console.log(this.$store.state.user.email)
                     this.$emit('logged_in', true);
                 })
@@ -166,7 +166,7 @@ export default {
             try {
                 await this.$store.dispatch('register', register_creds)
                 .then(response => {
-                    this.isloading = true;
+                    this.isloading = false;
                     console.log(response);
                     console.log(this.$store.state.user)
                 })

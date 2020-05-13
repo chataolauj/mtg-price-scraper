@@ -65,7 +65,7 @@ export default {
                     set_name: this.card_to_add.set_name
                 }
 
-                await this.$http.post('/scrape-list/card/notify-list', notify);
+                await this.$http.post(`/scrape-list/${this.card_to_add.set_name}/${this.card_to_add.name}/notify-list`, notify);
                 
                 this.snackbar = {
                     msg: response.data.message,

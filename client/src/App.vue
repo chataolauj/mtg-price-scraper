@@ -101,13 +101,13 @@ export default {
             await this.$http.post('/scrape-list', card)
             .then(async (response) => {
                 if(response.status == 200 || response.status == 204) {
-                    await this.$http.put('/scrape-list/card', card)
+                    await this.$http.put(`/scrape-list/${card.set_name}/${card.name}/websites`)
                     .then(() => {
                         this.isLoading = false;
                         this.clearSearch = !this.clearSearch;
                         this.$router.push({name: 'scrape-results', params: {
                             card: card, 
-                            card_set: card.set_name.toLowerCase().replace(/:?,?\s+/g, "-"), 
+                            set_name: card.set_name.toLowerCase().replace(/:?,?\s+/g, "-"), 
                             card_name: card.name.toLowerCase().replace(/:?,?\s+/g, "-")
                         }});
                     })

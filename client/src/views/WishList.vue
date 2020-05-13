@@ -84,7 +84,14 @@
                                         </v-chip-group>
                                     </div>
                                     <div v-else> <!-- Editable details -->
-                                        <v-card-text>Foil: </v-card-text><v-switch v-model="card.isFoil" :label="card.isFoil ? 'Yes' : 'No'"></v-switch>
+                                        <v-row align="center">
+                                            <v-col cols="auto" class="pa-0">
+                                                <v-card-text>Foil: </v-card-text>
+                                            </v-col>
+                                            <v-col cols="auto" class="pa-0">
+                                                <v-switch v-model="card.isFoil" :label="card.isFoil ? 'Yes' : 'No'"></v-switch>
+                                            </v-col>
+                                        </v-row>
                                         <v-text-field class="mb-2" prefix="$" solo hide-details label="Wish Price" v-model="card.wish_price"></v-text-field>
                                         <v-select 
                                             :items="conditions" multiple solo hide-details
@@ -190,7 +197,7 @@ export default {
                     set_name: this.card_to_add.set_name
                 }
 
-                await this.$http.post('/scrape-list/card/notify-list', notify);
+                await this.$http.post(`/scrape-list/${this.card_to_add.set_name}/${this.card_to_add.name}/notify-list`, notify);
 
                 this.getWishList();
 
@@ -241,7 +248,7 @@ export default {
                     set_name: card.set_name
                 }
 
-                await this.$http.patch('/scrape-list/card/notify-list', notify);
+                await this.$http.patch(`/scrape-list/${card.set_name}/${card.name}/notify-list`, notify);
 
                 this.snackbar = {
                     msg: response.data.message,
@@ -266,13 +273,7 @@ export default {
             .then(async (response) => {
                 delete this.deleteDialog[card._id];
 
-                let notify = {
-                    email: this.$store.state.user.email,
-                    name: card.name,
-                    set_name: card.set_name
-                }
-
-                await this.$http.delete(`/scrape-list/card/notify-list?email=${this.$store.state.user.email}&card_name=${card.name}&set_name=${card.set_name}`);
+                await this.$http.delete(`/scrape-list/${card.set_name}/${card.name}/notify-list?email=${this.$store.state.user.email}`);
 
                 this.getWishList();
 

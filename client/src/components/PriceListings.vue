@@ -88,7 +88,7 @@ export default {
     },
     methods: {
         async getCardWebsites(card) {
-            await this.$http.get(`/scrape-list/card/websites?name=${card.name}&set_name=${card.set_name}`)
+            await this.$http.get(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async response => {
                 this.websites = response.data.websites;
 
@@ -110,7 +110,7 @@ export default {
         async scrape() {
             this.isLoading = true;
 
-            await this.$http.put('/scrape-list/card', this.card)
+            await this.$http.put(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async (response) => {
                 await this.getCardWebsites(this.card);
 

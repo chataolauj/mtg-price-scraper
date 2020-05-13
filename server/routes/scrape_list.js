@@ -60,11 +60,11 @@ router.post('/', async (req, res) => {
 });
 
 //Update card's websites array with new website listings
-router.put('/card', async (req, res) => {
+router.put('/:set_name/:card_name/websites', async (req, res) => {
     try {
         let card = {
-            name: req.body.name,
-            set_name: req.body.set_name
+            name: req.params.card_name,
+            set_name: req.params.set_name
         }
 
         let query = await ScrapeList.findOne(
@@ -98,11 +98,11 @@ router.put('/card', async (req, res) => {
 });
 
 //Get card websites
-router.get('/card/websites', async (req, res) => {
+router.get('/:set_name/:card_name/websites', async (req, res) => {
     try {
         let card = {
-            name: req.query.name,
-            set_name: req.query.set_name
+            name: req.params.card_name,
+            set_name: req.params.set_name
         }
 
         let query = await ScrapeList.findOne(
@@ -123,16 +123,16 @@ router.get('/card/websites', async (req, res) => {
 });
 
 //Insert new object {email, wish price} to notify list
-router.post('/card/notify-list', async (req, res) => {
+router.post('/:set_name/:card_name/notify-list', async (req, res) => {
     try {
         let card = {
-            name: req.body.name,
-            set_name: req.body.set_name
+            name: req.params.card_name,
+            set_name: req.params.set_name
         }
 
         let new_user = {
             email: req.body.email,
-            wish_price: req.body.wish_price
+            wish_price: req.body.wish_price != null ? req.body.wish_price : 0
         }
 
         let query = await ScrapeList.findOne(
@@ -157,16 +157,16 @@ router.post('/card/notify-list', async (req, res) => {
 });
 
 //Update user information in notify list
-router.patch('/card/notify-list', async (req, res) => {
+router.patch('/:set_name/:card_name/notify-list', async (req, res) => {
     try {
         let card = {
-            name: req.body.name,
-            set_name: req.body.set_name
+            name: req.params.card_name,
+            set_name: req.params.set_name
         }
 
         let user = {
             email: req.body.email,
-            wish_price: req.body.wish_price == null? 0 : req.body.wish_price
+            wish_price: req.body.wish_price == null ? 0 : req.body.wish_price
         }
 
         let query = await ScrapeList.findOne(
@@ -190,11 +190,11 @@ router.patch('/card/notify-list', async (req, res) => {
     }
 });
 
-router.delete('/card/notify-list', async (req, res) => {
+router.delete('/:set_name/:card_name/notify-list', async (req, res) => {
     try {
         let card = {
-            name: req.query.card_name,
-            set_name: req.query.set_name
+            name: req.params.card_name,
+            set_name: req.params.set_name
         }
 
         let user_email = req.query.email;
