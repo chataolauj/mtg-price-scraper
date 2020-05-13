@@ -2,7 +2,12 @@
     <v-row>
         <Snackbar :snack="snackbar"/>
         <h1>Account Settings</h1>
-        <v-col cols="12">
+        <v-col cols="12"> <!-- Change Email -->
+            <h2>Change Email</h2>
+
+            <v-divider class="mb-5"></v-divider>
+        </v-col>
+        <v-col cols="12"> <!-- Change Password -->
             <h2>Change Password</h2>
 
             <v-divider class="mb-5"></v-divider>
@@ -62,10 +67,12 @@
                 </v-col>
             </v-row>
         </v-col>
-        <v-col>
+        <v-col cols="12"> <!-- Delete Account -->
             <h2>Delete Account</h2>
 
-            <v-divider></v-divider>
+            <v-divider class="mb-5"></v-divider>
+
+            <v-btn color="error">Delete Account</v-btn>
         </v-col>
     </v-row>
 </template>
@@ -129,9 +136,19 @@ export default {
             await this.$http.patch('/change-password', this.update_creds)
             .then(response => {
                 this.isLoading = false;
+
+                this.update_creds = {
+                    email: this.$store.state.user.email,
+                    curr_password: '',
+                    new_password: '',
+                    confirm_new_pw: ''
+                }
+
                 this.update_errors = '';
 
-                console.log(response.data.message)
+                this.show_curr_pass = false
+                this.show_new_pass = false
+                this.show_confirm_new = false
 
                 this.snackbar = {
                     msg: response.data.message,
