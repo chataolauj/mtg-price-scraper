@@ -19,22 +19,22 @@
                             <v-alert dense type="error" v-if="login_error.length">{{login_error}}</v-alert>
                             <v-row>
                                 <v-col cols="12">
-                                    <v-text-field v-model="login_creds.email" label="Email" :disabled="isloading" required></v-text-field>
+                                    <v-text-field v-model="login_creds.email" label="Email" :disabled="isLoading" required></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-text-field 
                                         v-model="login_creds.password" @keyup.enter="login(login_creds)" 
                                         label="Password" :type="show_login_pass ? 'text' : 'password'" required 
                                         :append-icon="show_login_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_login_pass = !show_login_pass"
-                                        :disabled="isloading"
+                                        :disabled="isLoading"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-container>
                         <v-card-actions> <!-- Login Action Buttons -->
                             <v-spacer></v-spacer>
-                            <v-btn @click="closeDialog()" color="error" :disabled="isloading">Cancel</v-btn>
-                            <v-btn @click="login(login_creds)" color="primary" :loading="isloading">Login</v-btn>
+                            <v-btn @click="closeDialog()" color="error" :disabled="isLoading">Cancel</v-btn>
+                            <v-btn @click="login(login_creds)" color="primary" :loading="isLoading">Login</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-tab-item>
@@ -57,14 +57,14 @@
                             </div>
                             <v-row>
                                 <v-col cols="12">
-                                    <v-text-field v-model="register_creds.email" label="Email" :disabled="isloading" required></v-text-field>
+                                    <v-text-field v-model="register_creds.email" label="Email" :disabled="isLoading" required></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
                                     <v-text-field 
                                         v-model="register_creds.password" 
                                         label="Password" :type="show_regis_pass ? 'text' : 'password'" required 
                                         :append-icon="show_regis_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_regis_pass = !show_regis_pass"
-                                        :disabled="isloading"
+                                        :disabled="isLoading"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="12">
@@ -72,15 +72,15 @@
                                         v-model="register_creds.confirm_pw" @keyup.enter="register(register_creds)" 
                                         label="Confirm Password" :type="show_confirm ? 'text' : 'password'" required
                                         :append-icon="show_confirm ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_confirm = !show_confirm"
-                                        :disabled="isloading"
+                                        :disabled="isLoading"
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
                         </v-container>
                         <v-card-actions> <!-- Register Action Buttons -->
                             <v-spacer></v-spacer>
-                            <v-btn @click="closeDialog()" color="error" :disabled="isloading">Cancel</v-btn>
-                            <v-btn @click="register(register_creds)" color="success" :loading="isloading">Register</v-btn>
+                            <v-btn @click="closeDialog()" color="error" :disabled="isLoading">Cancel</v-btn>
+                            <v-btn @click="register(register_creds)" color="success" :loading="isLoading">Register</v-btn>
                         </v-card-actions>
                     </v-card>
                 </v-tab-item>
@@ -105,7 +105,7 @@ export default {
                 email: '',
                 password: ''
             },
-            isloading: false,
+            isLoading: false,
             register_creds: {
                 email: '',
                 password: '',
@@ -140,43 +140,43 @@ export default {
     },
     methods: {
         async login(login_creds) {
-            this.isloading = true;
+            this.isLoading = true;
 
             try {
                 await this.$store.dispatch('login', login_creds)
                 .then(response => {
-                    this.isloading = false;
+                    this.isLoading = false;
                     console.log(this.$store.state.user.email)
                     this.$emit('logged_in', true);
                 })
                 .catch(error => {
-                    this.isloading = false;
+                    this.isLoading = false;
                     this.login_error = error.response.data.message;
                     console.log(this.login_error)
                 });
             } catch (error) {
-                this.isloading = false;
+                this.isLoading = false;
                 this.login_error = error.response.data.message;
                 console.log(error.response.data.message)
             }
         },
         async register(register_creds) {
-            this.isloading = true;
+            this.isLoading = true;
 
             try {
                 await this.$store.dispatch('register', register_creds)
                 .then(response => {
-                    this.isloading = false;
+                    this.isLoading = false;
                     console.log(response);
                     console.log(this.$store.state.user)
                 })
                 .catch(error => {
-                    this.isloading = false;
+                    this.isLoading = false;
                     this.register_error = error;
                     console.log(this.register_error)
                 });
             } catch (error) {
-                this.isloading = false;
+                this.isLoading = false;
                 this.register_error = error;
             }
         },

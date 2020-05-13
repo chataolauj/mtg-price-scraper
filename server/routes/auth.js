@@ -128,6 +128,17 @@ router.patch('/change-password',
         }),
         check('new_password')
             .trim()
+            .custom(async (new_password, {req}) => {
+                let user = await User.findOne({email: req.body.email});
+    
+                let isMatch = await bcrypt.compare(new_password, user.password).then((result) => {
+                    return result;
+                });
+    
+                if(isMatch) {
+                    throw new Error('cannot be the same as your current password');
+                }
+            })
             .isLength({ min: 8}).withMessage('a min. of 8 characters')
             .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
             .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
