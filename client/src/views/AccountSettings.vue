@@ -95,7 +95,39 @@
 
             <v-divider class="mb-5"></v-divider>
 
-            <v-btn color="error">Delete Account</v-btn>
+            <v-dialog v-model="deleteDialog" max-width="25%" persistent>
+                <template v-slot:activator="{ on: click}">
+                    <v-btn v-on="click" color="error">Delete Account</v-btn>
+                </template>
+
+                <v-card>
+                    <v-container>
+                        
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card-title class="headline">Delete Account</v-card-title>
+                                <v-card-text v-if="!wantToDelete" class="body-1">Are you sure you want to delete your account?</v-card-text>
+                                <v-text-field 
+                                    v-else v-model="delete_pw" class="px-4"
+                                    label="Password" :type="show_delete_pass ? 'text' : 'password'" required 
+                                    :append-icon="show_delete_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_delete_pass = !show_delete_pass"
+                                    :disabled="isLoading"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                    <v-card-actions v-if="!wantToDelete">
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="deleteDialog = false">No</v-btn>
+                        <v-btn color="error" text @click="wantToDelete = true">Yes</v-btn>
+                    </v-card-actions>
+                    <v-card-actions v-else>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="deleteDialog = false; wantToDelete = false">Cancel</v-btn>
+                        <v-btn color="error" text @click="deleteAccount()">Delete</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
         </v-col>
     </v-row>
 </template>
@@ -110,10 +142,12 @@ export default {
     },
     data() {
         return {
+            snackbar: {},
             email_creds: {
                 curr_email: this.$store.state.user.email,
                 new_email: ''
             },
+            email_error: '',
             password_creds: {
                 curr_password: '',
                 new_password: '',
@@ -123,9 +157,11 @@ export default {
             show_new_pass: false,
             show_confirm_new: false,
             isLoading: false,
-            email_error: '',
             password_errors: '',
-            snackbar: {}
+            delete_pw: '',
+            deleteDialog: false,
+            wantToDelete: false,
+            show_delete_pass: false
         }
     },
     computed: {
@@ -214,6 +250,10 @@ export default {
                 this.isLoading = false;
                 this.email_error = error.response.data[0].msg;
             });
+        },
+        async deleteAccount() {
+            this.wantToDelete = false;
+            this.deleteDialog = false;
         }
     }
 }
