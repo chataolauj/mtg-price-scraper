@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User')
+const {check, validationResult} = require('express-validator');
+const bcrypt = require('bcrypt');
 
 //Get specific user by their ObjectId
 router.get('/:id', async (req, res) => {
@@ -12,16 +14,115 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-//Update specific user information (password)
-router.patch('/:id', async (req, res) => {
-    try {
-        let user = await User.findById(req.params.id);
-        await User.updateOne({_id: req.params.id}, {$set: {password: req.body.password}});
-        res.json({message: user.email +  `'s information has been updated.`});
-    } catch(err) {
-        res.json({message: err})
+//Update specific user email
+router.patch('/:id/change-email', 
+    [
+        check('new_email')
+            .trim()
+            .isEmail().withMessage('Please enter a valid email.')
+            .normalizeEmail()
+            .custom(async (email) => {
+                return await User.findOne({email: email})
+                .then(user => {
+                    if(user) {
+                        return Promise.reject(`${email} already in use.`)
+                    }
+                });
+            })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(422).send(errors.array());
+        }
+
+        try {
+            await User.updateOne(
+                {_id: req.params.id},
+                {$set: {email: req.body.new_email}},
+                (err) => {
+                    if(err) throw err;
+                    
+                    res.status(200).send({ message: `Your email was successfully updated to ${req.body.new_email}`});
+                }
+            )
+        } catch (error) {
+            res.status(400).send({ message: error });
+        }
     }
-});
+)
+
+//Update specific user password
+router.patch('/:id/change-password', 
+    [
+        check('curr_password').custom(async (curr_password, {req}) => {
+            let user = await User.findOne({_id: req.params.id});
+
+            let isMatch = await bcrypt.compare(curr_password, user.password).then((result) => {
+                return result;
+            });
+
+            if(!isMatch) {
+                throw new Error('Incorrect current password.');
+            }
+        }),
+        check('new_password')
+            .trim()
+            .custom(async (new_password, {req}) => {
+                let user = await User.findOne({_id: req.params.id});
+    
+                let isMatch = await bcrypt.compare(new_password, user.password).then((result) => {
+                    return result;
+                });
+    
+                if(isMatch) {
+                    throw new Error('cannot be the same as your current password');
+                }
+            })
+            .isLength({ min: 8}).withMessage('a min. of 8 characters')
+            .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
+            .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
+            .matches(/(?=.*\d)/).withMessage('one digit')
+            .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
+        check('confirm_new_pw').custom((value, {req}) => {
+            if(value !== req.body.new_password) {
+                throw new Error('Your new passwords do not match.');
+            }
+
+            return true;
+        })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(422).send(errors.array());
+        }
+
+        try {
+            await bcrypt.genSalt(10, (err, salt) => {
+                if(err) throw err;
+        
+                bcrypt.hash(req.body.new_password, salt, async (err, hash) => {
+                    if(err) throw err;
+        
+                    await User.updateOne(
+                        {_id: req.params.id},
+                        {$set: {password: hash}},
+                        (err) => {
+                            if(err) throw err;
+
+                            res.status(200).send({ message: 'Your password was successfully updated!'});
+                        }
+                    )
+                });
+            });
+        } catch (error) {
+            res.status(400).send({ message: error });
+        }
+    }
+);
 
 //Delete user
 router.delete('/:id', async (req, res) => {

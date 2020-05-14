@@ -17,6 +17,9 @@ const store = new Vuex.Store({
         logged_out(state) {
             state.logged_in = false;
             state.user = {};
+        },
+        change_email(state, new_email) {
+            state.user.email = new_email;
         }
     },
     actions: {
