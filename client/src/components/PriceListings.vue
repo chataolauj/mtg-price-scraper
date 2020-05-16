@@ -90,7 +90,7 @@ export default {
         async getCardWebsites(card) {
             await this.$http.get(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async response => {
-                this.websites = response.data.websites;
+                this.websites = response.data;
 
                 if(this.conditions) {
                     this.filterListings();
@@ -112,7 +112,8 @@ export default {
 
             await this.$http.put(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async (response) => {
-                await this.getCardWebsites(this.card);
+                console.log(response.data.websites)
+                this.websites = response.data.websites;
 
                 this.isLoading = false;
 

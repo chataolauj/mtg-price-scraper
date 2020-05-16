@@ -48,7 +48,7 @@
                                 </div>
                                 <div v-if="pw_errors.length">
                                     <v-alert dense type="error">The password you entered does not contain:
-                                        <v-list-item v-for='(err, index) in pw_errors' :item='err' :key='index'>{{ err.msg }}</v-list-item>
+                                        <v-list-item v-for='(err, index) in pw_errors' :item='err' :key='index'>- {{ err.msg }}</v-list-item>
                                     </v-alert>
                                 </div>
                                 <div v-if="confirm_pw_errors.length && !pw_errors.length">

@@ -13,9 +13,8 @@
             <v-row>
                 <v-col cols="6">
                     <v-text-field 
-                        v-model="email_creds.new_email" outlined
-                        label="New Email" type="email" required 
-                        :disabled="isLoading"
+                        v-model="email_creds.new_email" @keyup.enter="changeEmail()" outlined
+                        label="New Email" type="email" required
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -23,7 +22,7 @@
                 <v-col cols="4">
                     <v-btn color="info" 
                         @click="changeEmail()"
-                        :loading="isLoading"
+                        :loading="emailLoading"
                     >
                         Update Email
                     </v-btn>
@@ -52,30 +51,30 @@
             <v-row>
                 <v-col cols="6">
                     <v-text-field 
-                        v-model="password_creds.curr_password" outlined
+                        v-model="password_creds.curr_password" @keyup.enter="changePassword()" outlined
                         label="Current Password" :type="show_curr_pass ? 'text' : 'password'" required 
                         :append-icon="show_curr_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_curr_pass = !show_curr_pass"
-                        :disabled="isLoading"
+                        :disabled="pwLoading"
                     ></v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="6">
                     <v-text-field 
-                        v-model="password_creds.new_password" outlined
+                        v-model="password_creds.new_password" @keyup.enter="changePassword()" outlined
                         label="New Password" :type="show_new_pass ? 'text' : 'password'" required 
                         :append-icon="show_new_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_new_pass = !show_new_pass"
-                        :disabled="isLoading"
+                        :disabled="pwLoading"
                     ></v-text-field>
                 </v-col>
             </v-row>
             <v-row>
                 <v-col cols="6">
                     <v-text-field 
-                        v-model="password_creds.confirm_new_pw" outlined
+                        v-model="password_creds.confirm_new_pw" @keyup.enter="changePassword()" outlined
                         label="Confirm New Password" :type="show_confirm_new ? 'text' : 'password'" required 
                         :append-icon="show_confirm_new ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_confirm_new = !show_confirm_new"
-                        :disabled="isLoading"
+                        :disabled="pwLoading"
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -83,7 +82,7 @@
                 <v-col cols="4">
                     <v-btn color="info" 
                         @click="changePassword()"
-                        :loading="isLoading"
+                        :loading="pwLoading"
                     >
                         Update Password
                     </v-btn>
@@ -102,16 +101,17 @@
 
                 <v-card>
                     <v-container>
-                        
                         <v-row>
                             <v-col cols="12">
                                 <v-card-title class="headline">Delete Account</v-card-title>
-                                <v-card-text v-if="!wantToDelete" class="body-1">Are you sure you want to delete your account?</v-card-text>
+                                <div class="px-4">
+                                    <v-alert dense type="error" v-if="delete_error != ''">{{ delete_error }}</v-alert>
+                                </div>
+                                <v-card-text v-if="!wantToDelete" class="body-1">Are you sure you want to delete your account? This can't be undone once you do so.</v-card-text>
                                 <v-text-field 
-                                    v-else v-model="delete_pw" class="px-4"
+                                    v-else v-model="delete_creds.password" @keyup.enter="deleteAccount()" class="px-4"
                                     label="Password" :type="show_delete_pass ? 'text' : 'password'" required 
                                     :append-icon="show_delete_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_delete_pass = !show_delete_pass"
-                                    :disabled="isLoading"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -123,8 +123,8 @@
                     </v-card-actions>
                     <v-card-actions v-else>
                         <v-spacer></v-spacer>
-                        <v-btn text @click="deleteDialog = false; wantToDelete = false">Cancel</v-btn>
-                        <v-btn color="error" text @click="deleteAccount()">Delete</v-btn>
+                        <v-btn text @click="cancelDelete()" :disabled="deleteLoading">Cancel</v-btn>
+                        <v-btn @click="deleteAccount()" color="error" text :loading="deleteLoading" :disabled="delete_creds.password == ''">Delete</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -153,15 +153,21 @@ export default {
                 new_password: '',
                 confirm_new_pw: ''
             },
+            emailLoading: false,
             show_curr_pass: false,
             show_new_pass: false,
             show_confirm_new: false,
-            isLoading: false,
+            pwLoading: false,
             password_errors: '',
-            delete_pw: '',
+            delete_creds: {
+                email: this.$store.state.user.email,
+                password: ''
+            },
             deleteDialog: false,
             wantToDelete: false,
-            show_delete_pass: false
+            show_delete_pass: false,
+            deleteLoading: false,
+            delete_error: ''
         }
     },
     computed: {
@@ -188,16 +194,46 @@ export default {
         }
     },
     methods: {
+        async changeEmail() {
+            if(this.email_creds.new_email == '') {
+                return this.email_error = 'New Email field is required.';
+            }
+
+            this.emailLoading = true;
+            console.log(this.email_creds)
+
+            await this.$http.patch(`/users/${this.$store.state.user._id}/change-email`, this.email_creds)
+            .then(response => {
+                this.emailLoading = false;
+                
+                this.$store.commit('change_email', this.email_creds.new_email);
+                this.email_error = '';
+                this.email_creds.curr_email = this.$store.state.user.email;
+                this.email_creds.new_email = ''
+
+                this.snackbar = {
+                    msg: response.data.message,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
+            })
+            .catch(error => {
+                console.log(this.email_creds)
+                this.emailLoading = false;
+                this.email_error = error.response.data[0].msg;
+            });
+        },
         async changePassword() {
             if(this.password_creds.curr_password == '' || this.password_creds.new_password == '' || this.password_creds.confirm_new_pw == '') {
                 return this.password_errors = 'All fields are required.';
             }
             
-            this.isLoading = true;
+            this.pwLoading = true;
 
             await this.$http.patch(`/users/${this.$store.state.user._id}/change-password`, this.password_creds)
             .then(response => {
-                this.isLoading = false;
+                this.pwLoading = false;
 
                 this.password_creds = {
                     curr_password: '',
@@ -219,41 +255,36 @@ export default {
                 }
             })
             .catch(error => {
-                this.isLoading = false;
+                this.pwLoading = false;
                 this.password_errors = error.response.data;
                 console.log(error.response)
             });
         },
-        async changeEmail() {
-            if(this.email_creds.new_email == '') {
-                return this.email_error = 'New Email field is required.';
-            }
+        async deleteAccount() {
+            this.deleteLoading = true;
 
-            this.isLoading = true;
-
-            await this.$http.patch(`/users/${this.$store.state.user._id}/change-email`, this.email_creds)
+            await this.$http.delete(`/users/${this.$store.state.user._id}`, { data: { email: this.delete_creds.email, password: this.delete_creds.password} } )
             .then(response => {
-                this.isLoading = false;
                 
-                this.$store.commit('change_email', this.email_creds.new_email);
-                this.email_error = '';
-                this.email_creds.new_email = ''
-
-                this.snackbar = {
-                    msg: response.data.message,
-                    color: 'success',
-                    close_color: 'white',
-                    show: true
-                }
+                this.$store.dispatch('logout')
+                .then(() => {
+                    this.$emit('account_deleted', response.data.message);
+                    this.$router.push('/');
+                })
+                .catch(error => console.log(error));
             })
             .catch(error => {
-                this.isLoading = false;
-                this.email_error = error.response.data[0].msg;
+                console.log(error.response)
+                this.deleteLoading = false;
+                this.delete_error = error.response.data[0].msg
             });
         },
-        async deleteAccount() {
-            this.wantToDelete = false;
+        cancelDelete() {
             this.deleteDialog = false;
+            this.wantToDelete = false;
+            this.show_delete_pass = false;
+            this.delete_creds.password = '';
+            this.delete_error = '';
         }
     }
 }

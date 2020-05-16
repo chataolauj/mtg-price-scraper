@@ -19,7 +19,7 @@ router.post('/register',
             .matches(/(?=.*[a-z])/).withMessage('one lowercase letter')
             .matches(/(?=.*[A-Z])/).withMessage('one uppercase letter')
             .matches(/(?=.*\d)/).withMessage('one digit')
-            .matches(/(?=.*[!@#$*_.])/).withMessage('one special character (!@#$*_.)'),
+            .matches(/(?=.*[!@#$*_.])/).withMessage('one of these special characters (!*@_#.$*)'),
         check('confirm_pw').custom((value, {req}) => {
             if(value !== req.body.password) {
                 throw new Error('Passwords do not match.');

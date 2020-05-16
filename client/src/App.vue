@@ -18,18 +18,19 @@
                 </v-btn>
                 </template>
                 <v-list>
-                <v-list-item to="/account-settings">
-                    <v-icon class="mr-2">mdi-cog</v-icon>
-                    <v-list-item-title>Settings</v-list-item-title>
-                </v-list-item>
-                <v-list-item to="/wish-list">
-                <v-icon class="mr-2">mdi-notebook-multiple</v-icon>
-                    <v-list-item-title>Wish List</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click="logout()">
-                    <v-icon class="mr-2">mdi-logout-variant</v-icon>
-                    <v-list-item-title>Logout</v-list-item-title>
-                </v-list-item>
+                    <v-list-item to="/wish-list">
+                        <v-icon class="mr-2">mdi-notebook-multiple</v-icon>
+                        <v-list-item-title>Wish List</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item to="/account-settings">
+                        <v-icon class="mr-2">mdi-cog</v-icon>
+                        <v-list-item-title>Settings</v-list-item-title>
+                    </v-list-item>
+                    
+                    <v-list-item @click="logout()">
+                        <v-icon class="mr-2">mdi-logout-variant</v-icon>
+                        <v-list-item-title>Logout</v-list-item-title>
+                    </v-list-item>
                 </v-list>
             </v-menu>
         </v-app-bar>
@@ -45,7 +46,7 @@
             <Snackbar :snack="snackbar"/>
 
             <v-container fluid style="width: 80%;">
-                <router-view :card="card"></router-view>
+                <router-view @account_deleted="showSnack"></router-view>
             </v-container>
         </v-content>
     </v-app>
@@ -66,11 +67,7 @@ export default {
     },
     data() {
         return {
-            snackbar: {
-                msg: '',
-                color: '',
-                close_color: ''
-            },
+            snackbar: {},
             app_bar: {
                 isFlat: true,
                 color: 'white'
@@ -84,13 +81,21 @@ export default {
         this.$store.dispatch('check_auth').catch(error => console.log(error));
     },
     methods: {
-        showLoginSnack() {
-            
+        showSnack(msg) {
+            this.snackbar = {
+                msg: msg,
+                color: 'success',
+                close_color: 'white',
+                show: true
+            }
         },
         async logout() {
             await this.$store.dispatch('logout')
             .then(response => {
-                this.$router.push('/');
+                if(this.$router.currentRoute.name != 'home') {
+                    this.$router.push('/');
+                }
+                
                 console.log(response.data.message);
             })
             .catch(error => console.log(error));

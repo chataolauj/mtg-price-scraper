@@ -59,6 +59,31 @@ router.post('/', async (req, res) => {
     }
 });
 
+//Get card websites
+router.get('/:set_name/:card_name/websites', async (req, res) => {
+    try {
+        let card = {
+            name: req.params.card_name,
+            set_name: req.params.set_name
+        }
+
+        let query = await ScrapeList.findOne(
+            {name: card.name, set_name: card.set_name},
+            {_id: 0, websites: 1}
+        );
+
+        if(query) {
+            res.status(200).send(query.websites);
+        }
+        else {
+            res.status(404).send({ message: `${card.name} (${card.set_name}) not found.` });
+        }
+        
+    } catch (error) {
+        res.send({ message: error });
+    }
+});
+
 //Update card's websites array with new website listings
 router.put('/:set_name/:card_name/websites', async (req, res) => {
     try {
@@ -81,7 +106,12 @@ router.put('/:set_name/:card_name/websites', async (req, res) => {
                     {$set: {websites: card.websites}}
                 );
 
-                res.status(200).send({ message: `Listings for ${card.name} (${card.set_name}) was successfully updated!`});
+                query = await ScrapeList.findOne(
+                    {name: card.name, set_name: card.set_name},
+                    {_id: 0, websites: 1}
+                ); 
+
+                res.status(200).send({ message: `Listings for ${card.name} (${card.set_name}) was successfully updated!`, websites: query.websites});
             }
             else {
                 res.status(404).send({ message: `No prices found for ${card.name} (${card.set_name}).`});
@@ -90,35 +120,8 @@ router.put('/:set_name/:card_name/websites', async (req, res) => {
         else {
             res.status(404).send({ message: `${card.name} (${card.set_name}) not found.`});
         }
-    
-        
     } catch (error) {
         res.send({ message: error })
-    }
-});
-
-//Get card websites
-router.get('/:set_name/:card_name/websites', async (req, res) => {
-    try {
-        let card = {
-            name: req.params.card_name,
-            set_name: req.params.set_name
-        }
-
-        let query = await ScrapeList.findOne(
-            {name: card.name, set_name: card.set_name},
-            {_id: 0, websites: 1}
-        );
-
-        if(query) {
-            res.status(200).send(query);
-        }
-        else {
-            res.status(404).send({ message: `${card.name} (${card.set_name}) not found.` });
-        }
-        
-    } catch (error) {
-        res.send({ message: error });
     }
 });
 

@@ -20,6 +20,8 @@ async function scrapeTCG(card_name, set_name, isFoil) {
     await page.setViewport({width: 1920, height: 1080});
     await page.goto(url, { waitUntil: 'networkidle2'});
 
+    await delay(2000);
+
     await page.select('#priceTableContainer > #product-price-table > .sort-toolbar > .sort-toolbar__option:nth-child(4) > .sort-toolbar__select', '25');
 
     let website = {

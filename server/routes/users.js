@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User')
+const ScrapeList = require('../models/ScrapeList');
 const {check, validationResult} = require('express-validator');
 const bcrypt = require('bcrypt');
 
@@ -21,11 +22,15 @@ router.patch('/:id/change-email',
             .trim()
             .isEmail().withMessage('Please enter a valid email.')
             .normalizeEmail()
-            .custom(async (email) => {
-                return await User.findOne({email: email})
+            .custom(async (new_email, {req}) => {
+                return await User.findOne({email: new_email})
                 .then(user => {
                     if(user) {
-                        return Promise.reject(`${email} already in use.`)
+                        if(user.email == req.body.curr_email) {
+                            return Promise.reject(`New email must be different from your current email.`)
+                        }
+
+                        return Promise.reject(`${new_email} is already in use.`)
                     }
                 });
             })
@@ -38,6 +43,18 @@ router.patch('/:id/change-email',
         }
 
         try {
+            let query = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+
+            await query.wish_list.forEach(async (card) => {
+                await ScrapeList.updateOne(
+                    {name: card.name, set_name: card.set_name, 'notify_list.email': req.body.curr_email},
+                    {$set: {'notify_list.$.email': req.body.new_email}}
+                );
+            })
+
+            console.log(req.body.curr_email)
+            console.log(req.body.new_email)
+
             await User.updateOne(
                 {_id: req.params.id},
                 {$set: {email: req.body.new_email}},
@@ -125,24 +142,56 @@ router.patch('/:id/change-password',
 );
 
 //Delete user
-router.delete('/:id', async (req, res) => {
-    try {
-        let user = await User.findById(req.params.id);
-        await User.findByIdAndRemove(req.params.id);
-        res.json({message: 'Removed ' + user.email + ' from the database.'});
-    } catch (err) {
-        res.json({message: err});
+router.delete('/:id', 
+    [
+        check('password').custom(async (password, {req}) => {
+            let user = await User.findOne({_id: req.params.id});
+
+            let isMatch = await bcrypt.compare(password, user.password).then((result) => {
+                console.log(result)
+                return result;
+            });
+
+            if(!isMatch) {
+                throw new Error('Incorrect password.');
+            }
+        })
+    ],
+    async (req, res) => {
+        const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(422).send(errors.array());
+        }
+
+        let user_email = req.body.email;
+
+        try {
+            let query = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+
+            await query.wish_list.forEach(async (card) => 
+                await ScrapeList.updateOne(
+                    {name: card.name, set_name: card.set_name},
+                    {$pull: {notify_list: {email: user_email}}}
+                )
+            )
+
+            await User.deleteOne({_id: req.params.id});
+            res.status(200).send({message: 'Your account has been deleted.'});
+        } catch (err) {
+            res.send({message: err});
+        }
     }
-});
+);
 
 //Get user wish list
 router.get('/:id/wish_list', async (req, res) => {
     try {
-        let wish_list = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+        let query = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
         
-        res.json(wish_list)
+        res.status(200).json(query.wish_list)
     } catch (err) {
-        res.json({message: err});
+        res.send({message: err});
     }
 });
 

@@ -158,7 +158,7 @@ export default {
 
             await this.$http.get(`/users/${this.$store.state.user._id}/wish_list`)
             .then(response => {
-                this.wish_list = response.data.wish_list;
+                this.wish_list = response.data;
 
                 this.refresh = false;
 
