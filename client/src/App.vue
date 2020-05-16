@@ -7,7 +7,7 @@
             <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
             <v-spacer></v-spacer>
 
-            <AuthModal  v-if="!this.$store.state.logged_in" @logged_in="showLoginSnack()"/>
+            <AuthModal  v-show="!this.$store.state.logged_in" @logged_in="showSnack()"/>
 
             <v-menu offset-y transition="slide-y-transition" v-if="this.$store.state.logged_in">
                 <template v-slot:activator="{ on: click}">

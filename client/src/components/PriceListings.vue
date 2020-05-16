@@ -112,7 +112,6 @@ export default {
 
             await this.$http.put(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async (response) => {
-                console.log(response.data.websites)
                 this.websites = response.data.websites;
 
                 this.isLoading = false;

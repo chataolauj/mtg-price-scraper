@@ -1,7 +1,9 @@
 <template>
     <v-row>
         <Snackbar :snack="snackbar"/>
-        <h1>Account Settings</h1>
+        <v-col cols="12">
+            <h1>Account Settings</h1>
+        </v-col>
         <v-col cols="12"> <!-- Change Email -->
             <h2>Change Email</h2>
 

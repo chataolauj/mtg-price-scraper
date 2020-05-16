@@ -5,6 +5,7 @@ import Home from '@/views/Home'
 import AccountSettings from '@/views/AccountSettings'
 import WishList from '@/views/WishList'
 import ScrapeResults from '@/views/ScrapeResults'
+import ForgotPassword from '@/views/ForgotPassword'
 
 Vue.use(VueRouter);
 
@@ -37,6 +38,11 @@ const router =  new VueRouter({
             name: 'scrape-results',
             component: ScrapeResults,
             props: true
+        },
+        {
+            path: '/forgot-password',
+            name: 'forgot-password',
+            component: ForgotPassword
         }
     ]
 });

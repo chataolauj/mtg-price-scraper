@@ -113,4 +113,24 @@ router.get('/check_auth', ensureAuthenticated, (req, res) => {
     res.status(200).send({ is_logged_in: true, user: user});
 });
 
+router.get('/forgot', 
+    [
+        check('email').custom(async (email) => {
+            return await User.findOne({email: email})
+            .then(user => {
+                if(!user) {
+                    return Promise.reject(`No account registered under ${email}.`)
+                }
+            });
+        })
+    ],
+    async (req, res) => {
+        try {
+            
+        } catch (error) {
+            
+        }
+    }
+)
+
 module.exports = router;

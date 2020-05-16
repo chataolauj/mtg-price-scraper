@@ -18,16 +18,26 @@
                         <v-container>
                             <v-alert dense type="error" v-if="login_error.length">{{login_error}}</v-alert>
                             <v-row>
-                                <v-col cols="12">
-                                    <v-text-field v-model="login_creds.email" label="Email" :disabled="isLoading" required></v-text-field>
+                                <v-col cols="12"> <!-- Email -->
+                                    <v-text-field 
+                                        v-model="login_creds.email" label="Email" :disabled="isLoading" 
+                                        hide-details required class="pt-0"
+                                    ></v-text-field>
                                 </v-col>
-                                <v-col cols="12">
+                                <v-col cols="12"> <!-- Password -->
                                     <v-text-field 
                                         v-model="login_creds.password" @keyup.enter="login(login_creds)" 
                                         label="Password" :type="show_login_pass ? 'text' : 'password'" required 
                                         :append-icon="show_login_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_login_pass = !show_login_pass"
-                                        :disabled="isLoading"
+                                        :disabled="isLoading" hide-details
                                     ></v-text-field>
+                                </v-col>
+                                <v-col cols="12"> <!-- Forgot Password -->
+                                    <v-card-text @click="closeDialog()" class="pa-0">
+                                        <router-link to="/forgot-password" style="text-decoration: none;">
+                                            Forgot password?
+                                        </router-link>
+                                    </v-card-text>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -56,23 +66,26 @@
                                 </div>
                             </div>
                             <v-row>
-                                <v-col cols="12">
-                                    <v-text-field v-model="register_creds.email" label="Email" :disabled="isLoading" required></v-text-field>
+                                <v-col cols="12"> <!-- Email -->
+                                    <v-text-field 
+                                        v-model="register_creds.email" label="Email" :disabled="isLoading" 
+                                        hide-details required class="pt-0"
+                                    ></v-text-field>
                                 </v-col>
-                                <v-col cols="12">
+                                <v-col cols="12"> <!-- Password -->
                                     <v-text-field 
                                         v-model="register_creds.password" 
                                         label="Password" :type="show_regis_pass ? 'text' : 'password'" required 
                                         :append-icon="show_regis_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_regis_pass = !show_regis_pass"
-                                        :disabled="isLoading"
+                                        :disabled="isLoading" hide-details
                                     ></v-text-field>
                                 </v-col>
-                                <v-col cols="12">
+                                <v-col cols="12"> <!-- Confirm Password -->
                                     <v-text-field 
                                         v-model="register_creds.confirm_pw" @keyup.enter="register(register_creds)" 
                                         label="Confirm Password" :type="show_confirm ? 'text' : 'password'" required
                                         :append-icon="show_confirm ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_confirm = !show_confirm"
-                                        :disabled="isLoading"
+                                        :disabled="isLoading" hide-details
                                     ></v-text-field>
                                 </v-col>
                             </v-row>
