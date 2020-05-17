@@ -7,9 +7,9 @@
             <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
             <v-spacer></v-spacer>
 
-            <AuthModal  v-show="!this.$store.state.logged_in" @logged_in="showSnack()"/>
+            <AuthModal v-if="this.$store.state.logged_in == false" @logged_in="showSnack()"/>
 
-            <v-menu offset-y transition="slide-y-transition" v-if="this.$store.state.logged_in">
+            <v-menu v-else offset-y transition="slide-y-transition">
                 <template v-slot:activator="{ on: click}">
                 <v-btn id="btn" class="pa-0" v-on="click" x-large text absolute right :ripple="false">
                     <v-icon>mdi-account</v-icon>
@@ -46,7 +46,7 @@
             <Snackbar :snack="snackbar"/>
 
             <v-container fluid style="width: 80%;">
-                <router-view @account_deleted="showSnack"></router-view>
+                <router-view @account_deleted="showSnack" @reset_password="showSnack"></router-view>
             </v-container>
         </v-content>
     </v-app>

@@ -73,24 +73,48 @@ export default {
     },
     methods: {
         sendEmail() {
-            this.emailSent = true;
-
-            this.snackbar = {
-                msg: 'Sent email to ' + this.email,
-                color: 'success',
-                close_color: 'white',
-                show: true
+            if(this.email == '') {
+                return this.email_error = 'Please enter an email.'
             }
+            
+            this.isLoading = true;
+
+            this.$http.post('/forgot-password', {email: this.email})
+            .then(response => {
+                this.isLoading = false;
+                this.emailSent = true;
+
+                this.snackbar = {
+                    msg: response.data.message,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
+            })
+            .catch(error => {
+                this.isLoading = false;
+                this.email_error = error.response.data[0].msg
+            });
         },
         resendEmail() {
-            this.sentAgain = true;
+            this.isLoading = false;
 
-            this.snackbar = {
-                msg: 'Re-sent email to ' + this.email,
-                color: 'success',
-                close_color: 'white',
-                show: true
-            }
+            this.$http.post('/forgot-password', {email: this.email})
+            .then(() => {
+                this.isLoading = false;
+                this.sentAgain = true;
+
+                this.snackbar = {
+                    msg: 'Re-sent reset password email to ' + this.email,
+                    color: 'success',
+                    close_color: 'white',
+                    show: true
+                }
+            })
+            .catch(error => {
+                this.isLoading = false;
+                this.email_error = error.response.data[0].msg
+            });
         }
     }
 }

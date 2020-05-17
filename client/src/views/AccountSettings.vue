@@ -150,12 +150,12 @@ export default {
                 new_email: ''
             },
             email_error: '',
+            emailLoading: false,
             password_creds: {
                 curr_password: '',
                 new_password: '',
                 confirm_new_pw: ''
             },
-            emailLoading: false,
             show_curr_pass: false,
             show_new_pass: false,
             show_confirm_new: false,

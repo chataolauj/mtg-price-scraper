@@ -159,8 +159,8 @@ export default {
                 await this.$store.dispatch('login', login_creds)
                 .then(response => {
                     this.isLoading = false;
+                    console.log(this.$store.state.logged_in)
                     console.log(this.$store.state.user.email)
-                    this.$emit('logged_in', true);
                 })
                 .catch(error => {
                     this.isLoading = false;

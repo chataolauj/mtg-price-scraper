@@ -6,6 +6,7 @@ import AccountSettings from '@/views/AccountSettings'
 import WishList from '@/views/WishList'
 import ScrapeResults from '@/views/ScrapeResults'
 import ForgotPassword from '@/views/ForgotPassword'
+import ResetPassword from '@/views/ResetPassword'
 
 Vue.use(VueRouter);
 
@@ -43,6 +44,12 @@ const router =  new VueRouter({
             path: '/forgot-password',
             name: 'forgot-password',
             component: ForgotPassword
+        },
+        {
+            path: '/reset-password/:token',
+            name: 'reset-password',
+            component: ResetPassword,
+            props: true
         }
     ]
 });
