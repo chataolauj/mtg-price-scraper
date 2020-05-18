@@ -70,7 +70,7 @@ router.patch('/:id/change-email',
     }
 )
 
-//Update specific user password
+//Update user password
 router.patch('/:id/change-password', 
     [
         check('curr_password').custom(async (curr_password, {req}) => {

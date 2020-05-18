@@ -153,40 +153,41 @@ export default {
     },
     methods: {
         async login(login_creds) {
+            if(this.login_creds.email == '' || this.login_creds.password == '') {
+                return this.login_error = 'All fields are required.'
+            }
+
             this.isLoading = true;
 
             try {
                 await this.$store.dispatch('login', login_creds)
                 .then(response => {
                     this.isLoading = false;
-                    console.log(this.$store.state.logged_in)
-                    console.log(this.$store.state.user.email)
                 })
                 .catch(error => {
                     this.isLoading = false;
                     this.login_error = error.response.data.message;
-                    console.log(this.login_error)
                 });
             } catch (error) {
                 this.isLoading = false;
                 this.login_error = error.response.data.message;
-                console.log(error.response.data.message)
             }
         },
         async register(register_creds) {
+            if(this.register_creds.email == '' || this.register_creds.password == '' || this.register_creds.confirm_pw == '') {
+                return this.register_error = 'All fields are required.'
+            }
+
             this.isLoading = true;
 
             try {
                 await this.$store.dispatch('register', register_creds)
                 .then(response => {
                     this.isLoading = false;
-                    console.log(response);
-                    console.log(this.$store.state.user)
                 })
                 .catch(error => {
                     this.isLoading = false;
                     this.register_error = error;
-                    console.log(this.register_error)
                 });
             } catch (error) {
                 this.isLoading = false;

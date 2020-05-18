@@ -10,8 +10,8 @@
         <v-tabs-items v-model="tab">
             <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
                 <v-card>
-                    <v-card-text class="d-block text-truncate pb-0">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-text>
-                    <v-row align="center">
+                    <v-card-text class="d-block text-truncate pb-0">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-text> <!-- Link -->
+                    <v-row align="center"> <!-- Last Update -->
                         <v-col cols="auto" class="py-0 pr-0">
                             <v-card-text class="pr-1 pb-3">Last update: {{site.createdAt}}</v-card-text>
                         </v-col>
@@ -84,10 +84,10 @@ export default {
         }
     },
     created() {
-        this.getCardWebsites(this.card);
+        this.getCardWebsites();
     },
     methods: {
-        async getCardWebsites(card) {
+        async getCardWebsites() {
             await this.$http.get(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async response => {
                 this.websites = response.data;
@@ -113,6 +113,17 @@ export default {
             await this.$http.put(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async (response) => {
                 this.websites = response.data.websites;
+
+                if(this.conditions) {
+                    this.filterListings();
+                }
+                else {
+                    for(let website of this.websites) {
+                        website.listings.map(listing => {
+                            this.$set(listing, 'percent_diff', 'N/A');
+                        })
+                    }
+                }
 
                 this.isLoading = false;
 
@@ -170,7 +181,7 @@ export default {
     },
     watch: {
         card() {
-            this.getCardWebsites(this.card);
+            this.getCardWebsites();
         },
         user_price() {
             this.calcDiff(this.user_price);

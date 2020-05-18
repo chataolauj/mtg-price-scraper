@@ -14,8 +14,10 @@
                 <v-row>
                     <v-col cols="6">
                         <v-text-field 
+                        @keyup.enter="sendEmail()"
                             v-model="email" outlined hide-details
                             label="Email" type="email" required
+                            :disabled="isLoading"
                         ></v-text-field>
                     </v-col>
                 </v-row>

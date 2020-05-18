@@ -128,18 +128,13 @@ router.post('/forgot-password',
     ],
     async (req, res) => {
         try {
-            //generate token
             let token = crypto.randomBytes(20).toString('hex');
 
-            console.log(token)
-
-            //set reset_password_token and reset_password_expires; save it
             await User.updateOne(
                 {email: req.body.email},
                 {$set: {reset_password_token: token, reset_password_expires: Date.now() + 15 * 60 * 1000}}
             )
 
-            //send email containing link
             let transporter = nodemailer.createTransport({
                 service: 'gmail',
                 auth: {
@@ -156,7 +151,7 @@ router.post('/forgot-password',
                 text: 
                     `You are receiving this email because you, or someone, requested a password reset for your account.`
                     + `\n\nPlease click the following link, or paste it into your browser, to continue the password reset process:`
-                    + `\nhttp://http://localhost:8080/reset-password/${token}`
+                    + `\nhttp://localhost:8080/reset-password/${token}`
                     + `\n\nIf you did not request a password reset for your account, then please ignore this email and your password will remain unchanged.`
             };
         
@@ -180,6 +175,9 @@ router.get('/reset-password/:token', async (req, res) => {
 
                 if(!user) {
                     res.status(404).send({ message: 'Password reset token is invalid or has expired.' })
+                }
+                else {
+                    res.status(204).send();
                 }
             }
         )

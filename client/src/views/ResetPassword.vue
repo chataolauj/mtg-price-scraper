@@ -90,6 +90,7 @@ export default {
         }
     },
     created() {
+        console.log(this.token)
         this.checkToken();
     },
     computed: {
@@ -110,7 +111,8 @@ export default {
     },
     methods: {
         async checkToken() {
-            this.$http.get(`/reset-password/${this.token}`).catch(() => {
+            this.$http.get(`/reset-password/${this.token}`).then(response => console.log(response)).catch(error => {
+                console.log(error.response.data)
                 this.tokenExpired = true;
             });
         },

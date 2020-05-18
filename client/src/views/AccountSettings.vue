@@ -16,7 +16,7 @@
                 <v-col cols="6">
                     <v-text-field 
                         v-model="email_creds.new_email" @keyup.enter="changeEmail()" outlined
-                        label="New Email" type="email" required
+                        label="New Email" type="email" required hide-details
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -56,7 +56,7 @@
                         v-model="password_creds.curr_password" @keyup.enter="changePassword()" outlined
                         label="Current Password" :type="show_curr_pass ? 'text' : 'password'" required 
                         :append-icon="show_curr_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_curr_pass = !show_curr_pass"
-                        :disabled="pwLoading"
+                        :disabled="pwLoading" hide-details
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -66,7 +66,7 @@
                         v-model="password_creds.new_password" @keyup.enter="changePassword()" outlined
                         label="New Password" :type="show_new_pass ? 'text' : 'password'" required 
                         :append-icon="show_new_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_new_pass = !show_new_pass"
-                        :disabled="pwLoading"
+                        :disabled="pwLoading" hide-details
                     ></v-text-field>
                 </v-col>
             </v-row>
@@ -76,7 +76,7 @@
                         v-model="password_creds.confirm_new_pw" @keyup.enter="changePassword()" outlined
                         label="Confirm New Password" :type="show_confirm_new ? 'text' : 'password'" required 
                         :append-icon="show_confirm_new ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_confirm_new = !show_confirm_new"
-                        :disabled="pwLoading"
+                        :disabled="pwLoading" hide-details
                     ></v-text-field>
                 </v-col>
             </v-row>
