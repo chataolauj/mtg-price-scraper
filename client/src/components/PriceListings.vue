@@ -13,7 +13,7 @@
                     <v-card-text class="d-block text-truncate pb-0">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-text> <!-- Link -->
                     <v-row align="center"> <!-- Last Update -->
                         <v-col cols="auto" class="py-0 pr-0">
-                            <v-card-text class="pr-1 pb-3">Last update: {{site.createdAt}}</v-card-text>
+                            <v-card-text class="pr-1 pb-3">Last update: {{site.createdAt | formatDate}}</v-card-text>
                         </v-col>
                         <v-col class="pa-0">
                             <v-btn v-if="$router.currentRoute.name == 'wish-list'" @click="scrape()" icon small :loading="isLoading">
@@ -80,11 +80,32 @@ export default {
                 },
             ],
             snackbar: {},
-            isLoading: false,
+            isLoading: false
         }
     },
     created() {
         this.getCardWebsites();
+    },
+    filters: {
+        formatDate(createdAt) {
+            let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
+            let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            let date = new Date(createdAt);
+
+            let day = date.getDay();
+            let mm = date.getMonth();
+            let dd = date.getDate();
+            let year = date.getFullYear();
+            let hour = date.getHours();
+            let minutes = date.getMinutes();
+            let timezone = date.toLocaleString('en', {timeZoneName:'short'}).split(' ').pop();
+
+            return days[day] + ', ' + months[mm] + ' ' + dd + ', ' + year 
+                    + ' at ' + (hour > 12 ? hour - 12 : hour)
+                    + ':'  + (minutes < 10 ? '0' + minutes : minutes)
+                    + (hour < 12 ? ' a.m.' : ' p.m.')
+                    + ' ' + timezone;
+        }
     },
     methods: {
         async getCardWebsites() {
