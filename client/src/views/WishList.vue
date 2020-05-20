@@ -29,85 +29,87 @@
             <h2>No cards in your wish list...</h2>
         </div>
         <v-col> <!-- Wish List -->
-            <v-card class="mb-6" style="width: 100%;" v-for="(card, index) in wish_list" :item="card" :key="index">
-                <v-container fluid>
-                    <v-row justify="space-around">
-                        <!-- <v-col cols="1" class="d-flex flex-column justify-center align-center">
-                            <v-checkbox class="ma-0"></v-checkbox>
-                        </v-col> -->
-                        <v-col cols="6"> <!-- Card Details -->
-                            <v-row>
-                                <!-- <v-col cols="auto" class="d-flex flex-column justify-center align-center">
-                                    <v-checkbox class="ma-0"></v-checkbox>
-                                </v-col> -->
-                                <v-col cols="6" class="d-flex flex-column align-center"> 
-                                    <v-img :src="card.image_uris.normal" contain></v-img> 
-                                    <div class="d-flex justify-center align-center"> <!--  Card action buttons -->
-                                        <v-dialog v-model="deleteDialog[card._id]" max-width="25%"> <!-- Delete Dialog -->
-                                            <template v-slot:activator="{ on: remove }">
-                                                <v-btn v-on="remove" icon color="error">
-                                                    <v-icon>mdi-delete</v-icon>
-                                                </v-btn>
-                                            </template>
-                                            <v-card>
-                                                <v-card-title class="headline">Remove from wish list?</v-card-title>
-                                                <v-card-text>Are you sure you want to remove {{card.name}} ({{card.set_name}}) from your wish list?</v-card-text>
-                                                <v-card-actions>
-                                                    <v-spacer></v-spacer>
-                                                    <v-btn text @click="deleteDialog[card._id] = false">Cancel</v-btn>
-                                                    <v-btn color="error" text @click="deleteCard(card)">Remove</v-btn>
-                                                </v-card-actions>
-                                            </v-card>
-                                        </v-dialog>
-                                        <v-btn v-show="!editCard[card._id]" @click="$set(editCard, card._id, true)" icon color="success">
-                                            <v-icon>mdi-pencil</v-icon>
-                                        </v-btn>
-                                        <v-btn v-show="editCard[card._id]" @click="saveEdit(card)" icon color="success">
-                                            <v-icon>mdi-floppy</v-icon>
-                                        </v-btn>
-                                    </div>
-                                </v-col>
-                                <v-col class="d-flex flex-column" cols="6"> <!-- Wish Price & Conditions -->
-                                    <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>
-                                    <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
-                                    <div v-if="!editCard[card._id]">
-                                        <v-card-text class="pa-0 mb-2 body-1">Foil: {{card.isFoil ? 'Yes' : 'No'}}</v-card-text>
-                                        <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{card.wish_price}}</v-card-text>
-                                        <v-card-text class="pa-0 body-1">Condition(s):</v-card-text>
-                                        <v-chip-group column>
-                                            <v-chip 
-                                                color="amber accent-3" :ripple="false"
-                                                v-for="(condition, index) in card.conditions" :item="condition" :key="index"
+            <transition-group name="list">
+                <v-card class="mb-6" style="width: 100%;" v-for="(card, index) in wish_list" :item="card" :key="index">
+                    <v-container fluid>
+                        <v-row justify="space-around">
+                            <!-- <v-col cols="1" class="d-flex flex-column justify-center align-center">
+                                <v-checkbox class="ma-0"></v-checkbox>
+                            </v-col> -->
+                            <v-col cols="6"> <!-- Card Details -->
+                                <v-row>
+                                    <!-- <v-col cols="auto" class="d-flex flex-column justify-center align-center">
+                                        <v-checkbox class="ma-0"></v-checkbox>
+                                    </v-col> -->
+                                    <v-col cols="6" class="d-flex flex-column align-center"> 
+                                        <v-img :src="card.image_uris.normal" contain></v-img> 
+                                        <div class="d-flex justify-center align-center"> <!--  Card action buttons -->
+                                            <v-dialog v-model="deleteDialog[card._id]" max-width="25%"> <!-- Delete Dialog -->
+                                                <template v-slot:activator="{ on: remove }">
+                                                    <v-btn v-on="remove" icon color="error">
+                                                        <v-icon>mdi-delete</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <v-card>
+                                                    <v-card-title class="headline">Remove from wish list?</v-card-title>
+                                                    <v-card-text>Are you sure you want to remove {{card.name}} ({{card.set_name}}) from your wish list?</v-card-text>
+                                                    <v-card-actions>
+                                                        <v-spacer></v-spacer>
+                                                        <v-btn text @click="deleteDialog[card._id] = false">Cancel</v-btn>
+                                                        <v-btn color="error" text @click="deleteCard(card)">Remove</v-btn>
+                                                    </v-card-actions>
+                                                </v-card>
+                                            </v-dialog>
+                                            <v-btn v-show="!editCard[card._id]" @click="$set(editCard, card._id, true)" icon color="success">
+                                                <v-icon>mdi-pencil</v-icon>
+                                            </v-btn>
+                                            <v-btn v-show="editCard[card._id]" @click="saveEdit(card)" icon color="success">
+                                                <v-icon>mdi-floppy</v-icon>
+                                            </v-btn>
+                                        </div>
+                                    </v-col>
+                                    <v-col class="d-flex flex-column" cols="6"> <!-- Wish Price & Conditions -->
+                                        <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>
+                                        <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
+                                        <div v-if="!editCard[card._id]">
+                                            <v-card-text class="pa-0 mb-2 body-1">Foil: {{card.isFoil ? 'Yes' : 'No'}}</v-card-text>
+                                            <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{card.wish_price}}</v-card-text>
+                                            <v-card-text class="pa-0 body-1">Condition(s):</v-card-text>
+                                            <v-chip-group column>
+                                                <v-chip 
+                                                    color="amber accent-3" :ripple="false"
+                                                    v-for="(condition, index) in card.conditions" :item="condition" :key="index"
+                                                >
+                                                    {{condition}}
+                                                </v-chip>
+                                            </v-chip-group>
+                                        </div>
+                                        <div v-else> <!-- Editable details -->
+                                            <v-row align="center">
+                                                <v-col cols="auto" class="pa-0">
+                                                    <v-card-text>Foil: </v-card-text>
+                                                </v-col>
+                                                <v-col cols="auto" class="pa-0">
+                                                    <v-switch v-model="card.isFoil" :label="card.isFoil ? 'Yes' : 'No'"></v-switch>
+                                                </v-col>
+                                            </v-row>
+                                            <v-text-field class="mb-2" prefix="$" solo hide-details label="Wish Price" v-model="card.wish_price"></v-text-field>
+                                            <v-select 
+                                                :items="conditions" multiple solo hide-details
+                                                menu-props="offsetY" label="Condition" v-model="card.conditions"
                                             >
-                                                {{condition}}
-                                            </v-chip>
-                                        </v-chip-group>
-                                    </div>
-                                    <div v-else> <!-- Editable details -->
-                                        <v-row align="center">
-                                            <v-col cols="auto" class="pa-0">
-                                                <v-card-text>Foil: </v-card-text>
-                                            </v-col>
-                                            <v-col cols="auto" class="pa-0">
-                                                <v-switch v-model="card.isFoil" :label="card.isFoil ? 'Yes' : 'No'"></v-switch>
-                                            </v-col>
-                                        </v-row>
-                                        <v-text-field class="mb-2" prefix="$" solo hide-details label="Wish Price" v-model="card.wish_price"></v-text-field>
-                                        <v-select 
-                                            :items="conditions" multiple solo hide-details
-                                            menu-props="offsetY" label="Condition" v-model="card.conditions"
-                                        >
-                                        </v-select>
-                                    </div>
-                                </v-col>
-                            </v-row>
-                        </v-col>
-                        <v-col cols="6"> <!-- Price Listings -->
-                            <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
-                        </v-col>
-                    </v-row>
-                </v-container>
-            </v-card>
+                                            </v-select>
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                            </v-col>
+                            <v-col cols="6"> <!-- Price Listings -->
+                                <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card>
+            </transition-group>
         </v-col>
     </v-row>
 </template>
@@ -303,5 +305,17 @@ export default {
 
 #card-search {
     width: 450px;
+}
+
+.list-enter-active {
+    transition: all 1s;
+}
+
+.list-leave-active {
+  transition: all .3s;
+}
+.list-enter, .list-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
 }
 </style>

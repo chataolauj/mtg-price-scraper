@@ -46,7 +46,9 @@
             <Snackbar :snack="snackbar"/>
 
             <v-container fluid style="width: 80%;">
-                <router-view @account_deleted="showSnack" @reset_password="showSnack"></router-view>
+                <transition name="component-fade" mode="out-in">
+                    <router-view @account_deleted="showSnack" @reset_password="showSnack"></router-view>
+                </transition>
             </v-container>
         </v-content>
     </v-app>
@@ -96,7 +98,7 @@ export default {
                     this.$router.push('/');
                 }
                 
-                console.log(response.data.message);
+                this.showSnack(response.data.message);
             })
             .catch(error => console.log(error));
         },
@@ -170,5 +172,24 @@ export default {
     &::before {
         color: transparent;
     }
+}
+
+.component-fade-enter-active, .component-fade-leave-active {
+    transition: opacity .3s ease;
+}
+.component-fade-enter, .component-fade-leave-to {
+    opacity: 0;
+}
+
+.app-bar-enter-active {
+    transition: all 5s;
+}
+
+.app-bar-leave-active {
+  transition: all 5s;
+}
+.app-bar-enter, .app-bar-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
 }
 </style>

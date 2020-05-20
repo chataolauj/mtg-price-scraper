@@ -21,7 +21,7 @@
                                 <v-col cols="12"> <!-- Email -->
                                     <v-text-field 
                                         v-model="login_creds.email" label="Email" :disabled="isLoading" 
-                                        hide-details required class="pt-0"
+                                        hide-details required
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="12"> <!-- Password -->
@@ -50,8 +50,8 @@
                 </v-tab-item>
                 <v-tab-item value="register"> <!-- Register Tab -->
                     <v-card>
-                        <v-container>
-                            <div v-if="register_error != ''">
+                        <v-container class="pb-5">
+                            <div v-if="register_error != ''"> <!-- Register Errors -->
                                 <v-alert dense type="error" v-if='!Array.isArray(register_error)'>{{ register_error }}</v-alert>
                                 <div v-else>
                                     <v-alert dense type="error" v-for='(err, index) in email_errors' :item='err' :key='index'>{{ err.msg }}</v-alert>
@@ -210,8 +210,7 @@ export default {
 
 <style lang="scss" scoped>
 #auth-btn {
-    text-transform: capitalize;
-    font-size: 1.1em;
+    font-size: 1.05em;
 
     &::before {
         color: transparent;
