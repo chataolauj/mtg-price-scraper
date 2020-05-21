@@ -1,7 +1,6 @@
 <template>
     <div id="home">
         <Snackbar :snack="snackbar"/>
-        <h1>Home</h1>
         <Search id="search" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
     </div>
 </template>
@@ -74,11 +73,10 @@ export default {
 
 <style lang="scss" scoped>
 #home {
-    height: 100%;
-    
     #search {
-        width: 650px;
+        width: 600px;
         margin: 0 auto;
+        padding-top: 200px;
     }
 }
 </style>

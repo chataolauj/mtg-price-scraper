@@ -7,7 +7,7 @@
                 <v-icon>mdi-refresh</v-icon>
             </v-btn>
         </v-col>
-        <v-col cols="12"> <!-- Toolbar -->
+        <v-col cols="12" style="z-index: 1;"> <!-- Toolbar -->
             <v-toolbar :tile="false" dark color="blue darken-3" height="90px">
                 <Search style="width: 450px" @selected_card="setCard" :cardAdded="clearSearch"/>
                 <v-spacer></v-spacer>

@@ -1,9 +1,9 @@
 <template>
     <div id="search">
-        <v-menu offset-y transition="slide-y-transition" class="mt-n4">
-            <template v-slot:activator="{ on: focus }">
+        <!-- <v-menu offset-y transition="slide-y-transition" class="mt-n4">
+            <template v-slot:activator="{ on }">
                 <v-text-field 
-                    v-on="focus" hide-details
+                    v-on="on" hide-details
                     :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
                     v-model="card_name" @focus="isFocused = true" @blur="isFocused = false"
                     :loading="searchLoading || selectedLoading && isHomeRoute"
@@ -29,7 +29,37 @@
                     </v-list-item-content>
                 </v-list-item>
             </v-list>
-        </v-menu>
+        </v-menu> -->
+        <v-text-field 
+            v-model="card_name"
+            :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
+            @focus="isFocused = true"  @blur="isFocused = false" 
+            :loading="searchLoading || selectedLoading && isHomeRoute"
+            prepend-inner-icon="mdi-magnify" hide-details
+        >
+            <template v-slot:progress>
+                <v-progress-circular
+                    class="mt-3"
+                    v-if="searchLoading || selectedLoading"
+                    indeterminate
+                    color="primary"
+                    :width="2"
+                    :size="30"
+                ></v-progress-circular>
+            </template>
+        </v-text-field>
+        <v-list id="v-list" v-show="queried_cards.length && isFocused" class="pa-0 overflow-y-auto" max-height="300" two-line>
+            <v-list-item 
+                v-for="(card, index) in queried_cards" :item="card" :key="index"
+                @mouseover="isHovering = true" @mouseleave="isHovering = false" @mousedown="setCard(card)"
+                :class="{ active: isHovering }"
+            >
+                <v-list-item-content>
+                    <v-list-item-title class="mb-2" style="color: black">{{card.name}}</v-list-item-title>
+                    <v-list-item-subtitle style="color: rgba(0, 0, 0, .6)">{{card.set_name}}</v-list-item-subtitle>
+                </v-list-item-content>
+            </v-list-item>
+        </v-list>
     </div>
 </template>
 
@@ -46,6 +76,7 @@ export default {
         return {
             isHomeRoute: true,
             isFocused: false,
+            isHovering: false,
             queried_cards: [],
             card_name: '',
             searchLoading: false,
@@ -88,6 +119,9 @@ export default {
             if(this.card_name.length > 2 && !this.selected) {
                 this.delaySearch();
             }
+            else if(this.card_name.length && this.selected) {
+                this.delaySearch();
+            }
             else {
                 this.queried_cards = [];
             }
@@ -109,6 +143,23 @@ export default {
 }
 
 #search {
+    width: 100%;
 
+    #v-list {
+        z-index: 1;
+        position: absolute;
+        width: inherit;
+        color: black !important;
+        background-color: white;
+        box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, .3);
+    }
+
+    .active {
+        &:hover {
+            cursor: pointer;
+            color: #FFC400;
+            background-color: #1565C0;
+        }
+    }
 }
 </style>
