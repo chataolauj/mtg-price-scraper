@@ -20,10 +20,7 @@ const ScrapeListSchema = mongoose.Schema({
                         {
                             qty: Number,
                             condition: String,
-                            usd: Number,
-                            usd_foil: Number,
-                            eur: Number,
-                            eur_foil: Number,
+                            price: Number,
                             shipping: Number,
                             total_price: Number
                         }

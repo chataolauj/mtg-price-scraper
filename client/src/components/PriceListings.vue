@@ -26,7 +26,7 @@
                         :headers="headers" 
                         :items="$router.currentRoute.name == 'wish-list' ? filtered_listings : site.listings" 
                         :items-per-page="5" 
-                        :sort-by="['usd', 'qty']"
+                        :sort-by="['price', 'qty']"
                         :sort-desc="[false, true]"
                         multi-sort
                     ></v-data-table>
@@ -68,7 +68,7 @@ export default {
                 },
                 {
                     text: 'Price (USD)',
-                    value: 'usd'
+                    value: 'price'
                 },
                 {
                     text: 'Shipping (USD)',
@@ -180,8 +180,8 @@ export default {
         calcDiff(wish_price) {
             if(wish_price > 0) {
                 for(let listing of this.filtered_listings) {
-                    let price_diff = (listing.usd - wish_price).toFixed(2);
-                    let percent_diff = (((listing.usd - wish_price) / wish_price) * 100).toFixed(2);
+                    let price_diff = (listing.price - wish_price).toFixed(2);
+                    let percent_diff = (((listing.price - wish_price) / wish_price) * 100).toFixed(2);
 
                     if(price_diff > 0) {
                         this.$set(listing, 'percent_diff', "$" + price_diff + " or " + percent_diff + "% more");

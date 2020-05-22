@@ -6,7 +6,7 @@ function delay(timeout) {
     });
 }
 
-async function scrapeTCG(card_name, set_name, isFoil) {
+async function scrapeTCG(card_name, set_name) {
     if(set_name == 'Mystery Booster') {
         set_name = 'Mystery Booster Cards';
     }
@@ -33,7 +33,7 @@ async function scrapeTCG(card_name, set_name, isFoil) {
     try {
         await delay(2000);
 
-        product_listings = await page.evaluate((isFoil) => {
+        product_listings = await page.evaluate(() => {
             let conditions = Array.from(document.querySelectorAll('div.product-listing .condition')).map(condition => condition.innerText);
             let prices = Array.from(document.querySelectorAll('div.product-listing .product-listing__price')).map(price => +price.innerText.replace(/\$/g, ''));
             let shipping_costs = Array.from(document.querySelectorAll('div.product-listing .product-listing__shipping')).map(shipping => +shipping.innerText.replace(/[^\d.]/g, ""));
@@ -52,8 +52,7 @@ async function scrapeTCG(card_name, set_name, isFoil) {
                 
                 let listing = {
                     condition: conditions[i],
-                    usd: prices[i],
-                    usd_foil: isFoil ? 33.87 : null,
+                    price: prices[i],
                     shipping: shipping_costs[i],
                     qty: quantity[i],
                     total_price: (prices[i] + shipping_costs[i]).toFixed(2)
@@ -63,7 +62,7 @@ async function scrapeTCG(card_name, set_name, isFoil) {
             }
 
             return listings;
-        }, isFoil);
+        });
 
         console.log(product_listings.length)
 
@@ -78,10 +77,10 @@ async function scrapeTCG(card_name, set_name, isFoil) {
     return website;
 }
 
-async function getWebsites(card_name, set_name, isFoil) {
+async function getWebsites(card_name, set_name) {
     let websites = [];
 
-    let tcgplayer = await scrapeTCG(card_name, set_name, isFoil);
+    let tcgplayer = await scrapeTCG(card_name, set_name);
     websites.push(tcgplayer);
 
     return websites;

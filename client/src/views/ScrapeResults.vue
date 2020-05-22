@@ -9,10 +9,19 @@
                 <v-col cols="4">
                     <v-img :src="card.image_uris.normal"></v-img> 
                 </v-col>
-                <v-col cols="8" class="d-flex flex-column">
-                    <PriceListings :card="card"/>
-                    <v-btn v-if="this.$store.state.logged_in" @click="addCard()" block color="success" :loading="isLoading" class="mt-4">Add to Wish List</v-btn>
-                    <v-btn v-else disabled block class="mt-4">Login to Add to Wish List</v-btn>
+                <v-col cols="8" >
+                    <v-row class="d-flex flex-column">
+                        <v-col cols="12">
+                            <PriceListings :card="card"/>
+                        </v-col>
+
+                        <v-spacer></v-spacer>
+
+                        <v-col>
+                            <v-btn v-if="this.$store.state.logged_in" @click="addCard()" block color="success" :loading="isLoading" class="mt-4">Add to Wish List</v-btn>
+                            <v-btn v-else disabled block class="mt-4">Login to Add to Wish List</v-btn>
+                        </v-col>
+                    </v-row>
                 </v-col>
             </v-row>
         </v-col>

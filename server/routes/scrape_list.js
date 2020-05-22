@@ -38,12 +38,10 @@ router.post('/', async (req, res) => {
         );
 
         if(!query) {
-            new_card.websites = await getWebsites(new_card.name, new_card.set_name, false);
+            new_card.websites = await getWebsites(new_card.name, new_card.set_name);
 
-            if(new_card.websites[0].listings.length) {
-                if(!query) {
-                    new_card.save();
-                }
+            if(new_card.websites.length) {
+                new_card.save();
     
                 res.status(200).send({ message: `Found prices for ${new_card.name} (${new_card.set_name})!`});
             }
@@ -97,9 +95,9 @@ router.put('/:set_name/:card_name/websites', async (req, res) => {
         );
 
         if(query) {
-            card.websites = await getWebsites(card.name, card.set_name, false);
+            card.websites = await getWebsites(card.name, card.set_name);
 
-            if(card.websites[0].listings.length) {
+            if(card.websites.length) {
                 
                 await ScrapeList.updateOne(
                     {name: card.name, set_name: card.set_name},
