@@ -30,7 +30,7 @@
         </div>
         <v-col> <!-- Wish List -->
             <transition-group name="list">
-                <v-card class="mb-6" style="width: 100%;" v-for="(card, index) in wish_list" :item="card" :key="index">
+                <v-card class="mb-6" style="width: 100%;" v-for="(card) in wish_list" :item="card" :key="card._id">
                     <v-container fluid>
                         <v-row justify="space-around">
                             <!-- <v-col cols="1" class="d-flex flex-column justify-center align-center">
@@ -73,7 +73,7 @@
                                         <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
                                         <div v-if="!editCard[card._id]">
                                             <v-card-text class="pa-0 mb-2 body-1">Foil: {{card.isFoil ? 'Yes' : 'No'}}</v-card-text>
-                                            <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{card.wish_price}}</v-card-text>
+                                            <v-card-text class="pa-0 mb-2 body-1">Wish Price: ${{(+card.wish_price).toFixed(2)}}</v-card-text>
                                             <v-card-text class="pa-0 body-1">Condition(s):</v-card-text>
                                             <v-chip-group column>
                                                 <v-chip 
