@@ -1,35 +1,5 @@
 <template>
     <div id="search">
-        <!-- <v-menu offset-y transition="slide-y-transition" class="mt-n4">
-            <template v-slot:activator="{ on }">
-                <v-text-field 
-                    v-on="on" hide-details
-                    :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
-                    v-model="card_name" @focus="isFocused = true" @blur="isFocused = false"
-                    :loading="searchLoading || selectedLoading && isHomeRoute"
-                    prepend-inner-icon="mdi-magnify"
-                >
-                    <template v-slot:progress>
-                        <v-progress-circular
-                            class="mt-3"
-                            v-if="searchLoading || selectedLoading"
-                            indeterminate
-                            color="primary"
-                            :width="2"
-                            :size="30"
-                        ></v-progress-circular>
-                    </template>
-                </v-text-field>
-            </template>
-            <v-list class="pa-0 overflow-y-auto" max-height="300" two-line>
-                <v-list-item @click="setCard(card)" v-for="(card, index) in queried_cards" :item="card" :key="index">
-                    <v-list-item-content>
-                        <v-list-item-title class="mb-2">{{card.name}}</v-list-item-title>
-                        <v-list-item-subtitle>{{card.set_name}}</v-list-item-subtitle>
-                    </v-list-item-content>
-                </v-list-item>
-            </v-list>
-        </v-menu> -->
         <v-text-field 
             v-model="card_name"
             :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
@@ -120,7 +90,7 @@ export default {
                 this.delaySearch();
             }
             else if(this.card_name.length && this.selected) {
-                this.delaySearch();
+                this.selected = false;
             }
             else {
                 this.queried_cards = [];
@@ -143,8 +113,6 @@ export default {
 }
 
 #search {
-    width: 100%;
-
     #v-list {
         z-index: 1;
         position: absolute;

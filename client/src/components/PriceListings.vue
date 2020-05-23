@@ -3,17 +3,17 @@
         <Snackbar :snack="snackbar"/>
         <!-- <v-btn v-if="this.$router.currentRoute.name == 'wish-list'" @click="scrape()" block :loading="isLoading">Update Listings</v-btn> -->
         <v-tabs v-model="tab" background-color="amber accent-3" grow show-arrows>
-            <v-tab v-for="(site, index) in websites" :item="site" :key="index" :href="'#site' + index">
-                {{site.website}}
+            <v-tab v-for="(website, index) in websites" :item="website" :key="index" :href="'#site' + index">
+                {{website.name}}
             </v-tab>
         </v-tabs>
         <v-tabs-items v-model="tab">
-            <v-tab-item v-for="(site, index) in websites" :item="site" :key="index" :value="'site' + index">
+            <v-tab-item v-for="(website, index) in websites" :item="website" :key="index" :value="'site' + index">
                 <v-card>
-                    <v-card-text class="d-block text-truncate pb-0">Link: <a :href="site.url" target="_blank">{{site.url}}</a></v-card-text> <!-- Link -->
+                    <v-card-text class="d-block text-truncate pb-0">Link: <a :href="website.url" target="_blank">{{website.url}}</a></v-card-text> <!-- Link -->
                     <v-row align="center"> <!-- Last Update -->
                         <v-col cols="auto" class="py-0 pr-0">
-                            <v-card-text class="pr-1 pb-3">Last update: {{site.createdAt | formatDate}}</v-card-text>
+                            <v-card-text class="pr-1 pb-3">Last update: {{website.scrapedAt | formatDate}}</v-card-text>
                         </v-col>
                         <v-col class="pa-0">
                             <v-btn v-if="$router.currentRoute.name == 'wish-list'" @click="scrape()" icon small :loading="isLoading">
@@ -24,10 +24,8 @@
                     
                     <v-data-table
                         :headers="headers" 
-                        :items="$router.currentRoute.name == 'wish-list' ? filtered_listings : site.listings" 
-                        :items-per-page="5" 
-                        :sort-by="['price', 'qty']"
-                        :sort-desc="[false, true]"
+                        :items="$router.currentRoute.name == 'wish-list' ? filtered_listings : website.listings" 
+                        :items-per-page="5"
                         multi-sort
                     ></v-data-table>
                 </v-card>
@@ -75,7 +73,11 @@ export default {
                     value: 'shipping'
                 },
                 {
-                    text: '(%) Diff.',
+                    text: 'Total (price + shipping)',
+                    value: 'total_price'
+                },
+                {
+                    text: '(%) Diff. From Price',
                     value: 'percent_diff'
                 },
             ],
@@ -87,10 +89,10 @@ export default {
         this.getCardWebsites();
     },
     filters: {
-        formatDate(createdAt) {
+        formatDate(scrapedAt) {
             let days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
             let months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            let date = new Date(createdAt);
+            let date = new Date(scrapedAt);
 
             let day = date.getDay();
             let mm = date.getMonth();
@@ -131,7 +133,7 @@ export default {
         async scrape() {
             this.isLoading = true;
 
-            await this.$http.put(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
+            await this.$http.patch(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async (response) => {
                 this.websites = response.data.websites;
 

@@ -83,7 +83,7 @@ router.get('/:set_name/:card_name/websites', async (req, res) => {
 });
 
 //Update card's websites array with new website listings
-router.put('/:set_name/:card_name/websites', async (req, res) => {
+router.patch('/:set_name/:card_name/websites', async (req, res) => {
     try {
         let card = {
             name: req.params.card_name,
@@ -95,13 +95,12 @@ router.put('/:set_name/:card_name/websites', async (req, res) => {
         );
 
         if(query) {
-            card.websites = await getWebsites(card.name, card.set_name);
+            let websites = await getWebsites(card.name, card.set_name);
 
-            if(card.websites.length) {
-                
+            if(websites.length) {
                 await ScrapeList.updateOne(
                     {name: card.name, set_name: card.set_name},
-                    {$set: {websites: card.websites}}
+                    {$set: {websites: websites}}
                 );
 
                 query = await ScrapeList.findOne(

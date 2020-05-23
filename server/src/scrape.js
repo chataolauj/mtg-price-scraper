@@ -25,7 +25,7 @@ async function scrapeTCG(card_name, set_name) {
     await page.select('#priceTableContainer > #product-price-table > .sort-toolbar > .sort-toolbar__option:nth-child(4) > .sort-toolbar__select', '25');
 
     let website = {
-        website: 'TCGPlayer',
+        name: 'TCGPlayer',
         url: url,
         listings: []
     };
@@ -67,12 +67,20 @@ async function scrapeTCG(card_name, set_name) {
         console.log(product_listings.length)
 
         website.listings = product_listings;
+        
+        let prices = [];
+        
+        website.listings.forEach(listing => prices.push(listing.price));
+
+        website.lowest_listing = Math.min(...prices)
 
     } catch(err) {
         console.log(err);
     }
     
     await browser.close();
+    
+    website.scrapedAt = Date.now();
 
     return website;
 }

@@ -13,7 +13,7 @@ const ScrapeListSchema = mongoose.Schema({
     websites: {
         type: [
             {
-                website: String,
+                name: String,
                 url: String,
                 listings: {
                     type: [
@@ -26,7 +26,8 @@ const ScrapeListSchema = mongoose.Schema({
                         }
                     ]
                 },
-                createdAt: {
+                lowest_listing: Number,
+                scrapedAt: {
                     type: Date,
                     default: Date.now
                 }
