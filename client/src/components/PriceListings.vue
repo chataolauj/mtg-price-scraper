@@ -133,7 +133,7 @@ export default {
         async scrape() {
             this.isLoading = true;
 
-            await this.$http.patch(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
+            await this.$http.put(`/scrape-list/${this.card.set_name}/${this.card.name}/websites`)
             .then(async (response) => {
                 this.websites = response.data.websites;
 

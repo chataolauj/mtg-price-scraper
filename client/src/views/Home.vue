@@ -1,8 +1,8 @@
 <template>
-    <div id="home">
+    <v-row id="home">
         <Snackbar :snack="snackbar"/>
         <Search id="search" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
-    </div>
+    </v-row>
 </template>
 
 <script>

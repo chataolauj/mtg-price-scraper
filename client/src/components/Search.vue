@@ -1,6 +1,7 @@
 <template>
-    <div id="search">
+    <div id="search" ref="input">
         <v-text-field 
+            
             v-model="card_name"
             :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
             @focus="isFocused = true"  @blur="isFocused = false" 
@@ -18,7 +19,7 @@
                 ></v-progress-circular>
             </template>
         </v-text-field>
-        <v-list id="v-list" v-show="queried_cards.length && isFocused" class="pa-0 overflow-y-auto" max-height="300" two-line>
+        <v-list id="v-list" :style="list_style" v-show="queried_cards.length && isFocused" class="pa-0 overflow-y-auto" max-height="300" two-line>
             <v-list-item 
                 v-for="(card, index) in queried_cards" :item="card" :key="index"
                 @mouseover="isHovering = true" @mouseleave="isHovering = false" @mousedown="setCard(card)"
@@ -44,6 +45,8 @@ export default {
     },
     data() {
         return {
+            list_style: {},
+            window_width: null,
             isHomeRoute: true,
             isFocused: false,
             isHovering: false,
@@ -55,11 +58,23 @@ export default {
         }
     },
     mounted() {
+        this.$nextTick(() => {
+            window.addEventListener('resize', this.onResize)
+        });
+
+        this.onResize();
+
         if(this.$router.currentRoute.name != 'home') {
             this.isHomeRoute = false;
         }
     },
+    beforeDestroy() {
+        window.removeEventListener('resize', this.onResize)
+    },
     methods: {
+        onResize() {
+            this.$set(this.list_style, 'width', this.$refs.input.clientWidth + 'px');
+        }, 
         delaySearch() {
             this.searchLoading = true;
 
@@ -116,7 +131,6 @@ export default {
     #v-list {
         z-index: 1;
         position: absolute;
-        width: inherit;
         color: black !important;
         background-color: white;
         box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, .3);

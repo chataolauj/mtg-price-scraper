@@ -83,7 +83,7 @@ router.get('/:set_name/:card_name/websites', async (req, res) => {
 });
 
 //Update card's websites array with new website listings
-router.patch('/:set_name/:card_name/websites', async (req, res) => {
+router.put('/:set_name/:card_name/websites', async (req, res) => {
     try {
         let card = {
             name: req.params.card_name,

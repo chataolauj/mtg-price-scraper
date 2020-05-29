@@ -10,7 +10,7 @@ Vue.config.productionTip = false
 Vue.prototype.$http = axios.create({
   baseURL: 'http://localhost:5000',
   withCredentials: true
-})
+});
 
 new Vue({
   render: h => h(App),
