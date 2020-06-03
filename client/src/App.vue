@@ -1,5 +1,5 @@
 <template>
-  <v-app style="height: 100vh">
+  <v-app>
         <v-app-bar app :color="app_bar.color" :flat="app_bar.isFlat">
             <router-link to="/">Home</router-link>
             <v-spacer></v-spacer>
@@ -11,10 +11,13 @@
 
             <v-menu v-else offset-y transition="slide-y-transition">
                 <template v-slot:activator="{ on: click}">
-                <v-btn id="btn" class="pa-0" v-on="click" x-large text absolute right :ripple="false">
-                    <v-icon>mdi-account</v-icon>
-                    {{ $store.state.user.email }}
-                    <v-icon>mdi-menu-down</v-icon>
+                <v-btn 
+                    id="btn" class="pa-0" v-on="click" x-large text absolute right 
+                    :ripple="false" :icon="$vuetify.breakpoint.xsOnly"
+                >
+                    <v-icon color="black">mdi-account</v-icon>
+                    {{ $vuetify.breakpoint.smAndUp ? $store.state.user.email : '' }}
+                    <v-icon :class="{'ml-n2': $vuetify.breakpoint.xsOnly}" color="black">mdi-menu-down</v-icon>
                 </v-btn>
                 </template>
                 <v-list>
