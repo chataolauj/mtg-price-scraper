@@ -13,11 +13,11 @@
                 <template v-slot:activator="{ on: click}">
                 <v-btn 
                     id="btn" class="pa-0" v-on="click" x-large text absolute right 
-                    :ripple="false" :icon="$vuetify.breakpoint.xsOnly"
+                    :ripple="false" :icon="$vuetify.breakpoint.smAndDown"
                 >
                     <v-icon color="black">mdi-account</v-icon>
-                    {{ $vuetify.breakpoint.smAndUp ? $store.state.user.email : '' }}
-                    <v-icon :class="{'ml-n2': $vuetify.breakpoint.xsOnly}" color="black">mdi-menu-down</v-icon>
+                    {{ $vuetify.breakpoint.mdAndUp ? $store.state.user.email : '' }}
+                    <v-icon :class="{'ml-n2': $vuetify.breakpoint.smAndDown}" color="black">mdi-menu-down</v-icon>
                 </v-btn>
                 </template>
                 <v-list>
@@ -48,7 +48,7 @@
 
             <Snackbar :snack="snackbar"/>
 
-            <v-container fluid style="width: 80%;">
+            <v-container fluid :class="[$vuetify.breakpoint.smAndDown ? 'view-width large' : 'view-width small']">
                 <transition name="component-fade" mode="out-in">
                     <router-view @account_deleted="showSnack" @reset_password="showSnack"></router-view>
                 </transition>
@@ -174,6 +174,16 @@ export default {
 
     &::before {
         color: transparent;
+    }
+}
+
+.view-width {
+    &.small {
+        width: 80%;
+    }
+
+    &.large {
+        width: 100%;
     }
 }
 
