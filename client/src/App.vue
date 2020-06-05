@@ -48,7 +48,7 @@
 
             <Snackbar :snack="snackbar"/>
 
-            <v-container fluid :class="[$vuetify.breakpoint.smAndDown ? 'view-width large' : 'view-width small']">
+            <v-container fluid :class="[$vuetify.breakpoint.smAndDown && $router.currentRoute.name != 'home' ? 'view-width large' : 'view-width small']">
                 <transition name="component-fade" mode="out-in">
                     <router-view @account_deleted="showSnack" @reset_password="showSnack"></router-view>
                 </transition>
