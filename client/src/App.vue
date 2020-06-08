@@ -13,11 +13,11 @@
                 <template v-slot:activator="{ on: click}">
                 <v-btn 
                     id="btn" class="pa-0" v-on="click" x-large text absolute right 
-                    :ripple="false" :icon="$vuetify.breakpoint.smAndDown"
+                    :ripple="false" :icon="$vuetify.breakpoint.mdAndDown"
                 >
                     <v-icon color="black">mdi-account</v-icon>
-                    {{ $vuetify.breakpoint.mdAndUp ? $store.state.user.email : '' }}
-                    <v-icon :class="{'ml-n2': $vuetify.breakpoint.smAndDown}" color="black">mdi-menu-down</v-icon>
+                    {{ $vuetify.breakpoint.lgAndUp ? $store.state.user.email : '' }}
+                    <v-icon :class="{'ml-n2': $vuetify.breakpoint.mdAndDown}" color="black">mdi-menu-down</v-icon>
                 </v-btn>
                 </template>
                 <v-list>

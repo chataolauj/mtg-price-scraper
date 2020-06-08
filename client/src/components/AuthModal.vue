@@ -1,9 +1,9 @@
 <template>
-    <v-dialog v-model="dialog" max-width="25%" persistent>
+    <v-dialog v-model="dialog" :max-width="$vuetify.breakpoint.smAndDown ? '75%' : '35%'" persistent >
         <template v-slot:activator="{ on: click }">
-            <v-btn id="auth-btn" :ripple="false" v-on="click" x-large text absolute right>
-                <v-icon small>mdi-login-variant</v-icon>
-                Login
+            <v-btn id="auth-btn" :ripple="false" v-on="click" x-large text absolute :icon="$vuetify.breakpoint.xsOnly" right>
+                <v-icon :small="$vuetify.breakpoint.smAndUp" color="black">mdi-login-variant</v-icon>
+                {{ $vuetify.breakpoint.smAndUp ? 'Login' : '' }}
             </v-btn>
         </template>
 

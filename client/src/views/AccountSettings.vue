@@ -13,7 +13,7 @@
                 <v-alert dense type="error">{{ email_error }}</v-alert>
             </div>
             <v-row>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                     <v-text-field 
                         v-model="email_creds.new_email" @keyup.enter="changeEmail()" outlined
                         label="New Email" type="email" required hide-details
@@ -21,8 +21,8 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="4">
-                    <v-btn color="info" 
+                <v-col cols="12">
+                    <v-btn color="info" :block="$vuetify.breakpoint.smAndDown"
                         @click="changeEmail()"
                         :loading="emailLoading"
                     >
@@ -51,7 +51,7 @@
                 </div>
             </div>
             <v-row>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                     <v-text-field 
                         v-model="password_creds.curr_password" @keyup.enter="changePassword()" outlined
                         label="Current Password" :type="show_curr_pass ? 'text' : 'password'" required 
@@ -61,7 +61,7 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                     <v-text-field 
                         v-model="password_creds.new_password" @keyup.enter="changePassword()" outlined
                         label="New Password" :type="show_new_pass ? 'text' : 'password'" required 
@@ -71,7 +71,7 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="6">
+                <v-col cols="12" md="6">
                     <v-text-field 
                         v-model="password_creds.confirm_new_pw" @keyup.enter="changePassword()" outlined
                         label="Confirm New Password" :type="show_confirm_new ? 'text' : 'password'" required 
@@ -81,8 +81,8 @@
                 </v-col>
             </v-row>
             <v-row>
-                <v-col cols="4">
-                    <v-btn color="info" 
+                <v-col cols="12">
+                    <v-btn color="info" :block="$vuetify.breakpoint.smAndDown"
                         @click="changePassword()"
                         :loading="pwLoading"
                     >
@@ -96,9 +96,9 @@
 
             <v-divider class="mb-5"></v-divider>
 
-            <v-dialog v-model="deleteDialog" max-width="25%" persistent>
+            <v-dialog v-model="deleteDialog" :max-width="$vuetify.breakpoint.smAndDown ? '75%' : '35%'" persistent >
                 <template v-slot:activator="{ on: click}">
-                    <v-btn v-on="click" color="error">Delete Account</v-btn>
+                    <v-btn v-on="click" color="error" :block="$vuetify.breakpoint.smAndDown">Delete Account</v-btn>
                 </template>
 
                 <v-card>
