@@ -36,15 +36,18 @@
                             <!-- <v-col cols="1" class="d-flex flex-column justify-center align-center">
                                 <v-checkbox class="ma-0"></v-checkbox>
                             </v-col> -->
-                            <v-col cols="6"> <!-- Card Details -->
+                            <v-col cols="12" lg="6"> <!-- Card Details -->
                                 <v-row>
                                     <!-- <v-col cols="auto" class="d-flex flex-column justify-center align-center">
                                         <v-checkbox class="ma-0"></v-checkbox>
                                     </v-col> -->
-                                    <v-col cols="6" class="d-flex flex-column align-center"> 
-                                        <v-img :src="card.image_uris.normal" contain></v-img> 
+                                    <v-col cols="12" sm="6" class="d-flex flex-column align-center"> 
+                                        <v-img :src="$vuetify.breakpoint.xs ? card.image_uris.small : card.image_uris.normal" contain></v-img> 
                                         <div class="d-flex justify-center align-center"> <!--  Card action buttons -->
-                                            <v-dialog v-model="deleteDialog[card._id]" max-width="25%"> <!-- Delete Dialog -->
+                                            <v-dialog 
+                                                v-model="deleteDialog[card._id]" 
+                                                :max-width="$vuetify.breakpoint.xsOnly ? '100%' : $vuetify.breakpoint.sm ? '50%' : $vuetify.breakpoint.md ? '35%' : '25%'"
+                                            > <!-- Delete Dialog -->
                                                 <template v-slot:activator="{ on: remove }">
                                                     <v-btn v-on="remove" icon color="error">
                                                         <v-icon>mdi-delete</v-icon>
@@ -68,7 +71,7 @@
                                             </v-btn>
                                         </div>
                                     </v-col>
-                                    <v-col class="d-flex flex-column" cols="6"> <!-- Wish Price & Conditions -->
+                                    <v-col class="d-flex flex-column" cols="12" sm="6"> <!-- Wish Price & Conditions -->
                                         <v-card-title class="pa-0 font-weight-bold d-inline-block text-truncate">{{card.name}}</v-card-title>
                                         <v-card-subtitle class="pa-0 ma-0 mb-2 font-weight-light d-inline-block text-truncate">{{card.set_name}}</v-card-subtitle>
                                         <div v-if="!editCard[card._id]">
@@ -103,7 +106,7 @@
                                     </v-col>
                                 </v-row>
                             </v-col>
-                            <v-col cols="6"> <!-- Price Listings -->
+                            <v-col cols="12" lg="6"> <!-- Price Listings -->
                                 <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
                             </v-col>
                         </v-row>

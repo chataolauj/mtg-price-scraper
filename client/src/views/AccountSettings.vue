@@ -96,7 +96,11 @@
 
             <v-divider class="mb-5"></v-divider>
 
-            <v-dialog v-model="deleteDialog" :max-width="$vuetify.breakpoint.smAndDown ? '75%' : '35%'" persistent >
+            <v-dialog 
+                v-model="deleteDialog" 
+                :max-width="$vuetify.breakpoint.xsOnly ? '100%' : $vuetify.breakpoint.sm ? '50%' : $vuetify.breakpoint.md ? '35%' : '25%'" 
+                persistent
+            >
                 <template v-slot:activator="{ on: click}">
                     <v-btn v-on="click" color="error" :block="$vuetify.breakpoint.smAndDown">Delete Account</v-btn>
                 </template>
