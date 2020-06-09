@@ -15,11 +15,11 @@
                         <v-col cols="auto" class="py-0 pr-0">
                             <v-card-text class="pr-1 pb-3">Last update: {{website.scrapedAt | formatDate}}</v-card-text>
                         </v-col>
-                        <v-col class="pa-0">
+                        <!-- <v-col class="pa-0">
                             <v-btn v-if="$router.currentRoute.name == 'wish-list'" @click="scrape()" icon small :loading="isLoading">
                                 <v-icon>mdi-refresh</v-icon>
                             </v-btn>
-                        </v-col>
+                        </v-col> -->
                     </v-row>
                     
                     <v-data-table
@@ -73,7 +73,7 @@ export default {
                     value: 'shipping'
                 },
                 {
-                    text: 'Total (price + shipping)',
+                    text: 'Total',
                     value: 'total_price'
                 },
                 {
