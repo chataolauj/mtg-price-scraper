@@ -42,8 +42,8 @@
                                         <v-checkbox class="ma-0"></v-checkbox>
                                     </v-col> -->
                                     <v-col cols="12" sm="6" class="d-flex flex-column align-center"> 
-                                        <v-img :src="$vuetify.breakpoint.xs ? card.image_uris.small : card.image_uris.normal" contain></v-img> 
-                                        <div class="d-flex justify-center align-center"> <!--  Card action buttons -->
+                                        <v-img :src="$vuetify.breakpoint.smAndDown ? card.image_uris.small : card.image_uris.normal" contain></v-img> 
+                                        <div class="d-flex justify-center align-center"> <!-- Card action buttons -->
                                             <v-dialog 
                                                 v-model="deleteDialog[card._id]" 
                                                 :max-width="$vuetify.breakpoint.xsOnly ? '100%' : $vuetify.breakpoint.sm ? '50%' : $vuetify.breakpoint.md ? '35%' : '25%'"
@@ -106,9 +106,20 @@
                                     </v-col>
                                 </v-row>
                             </v-col>
-                            <v-col cols="12" lg="6"> <!-- Price Listings -->
+                            <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="12" lg="6"> <!-- Price Listings -->
                                 <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
                             </v-col>
+                            <v-card-actions v-else>
+                                <v-btn icon @click="$set(showListings, card._id, !showListings[card._id])">
+                                    <v-icon>{{ showListings[card._id] ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+                                </v-btn>
+                            </v-card-actions>
+
+                            <v-expand-transition>
+                                <v-col v-show="showListings[card._id]" cols="12">
+                                    <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
+                                </v-col>
+                            </v-expand-transition>
                         </v-row>
                     </v-container>
                 </v-card>
@@ -151,7 +162,8 @@ export default {
             deleteDialog: {},
             editCard: {},
             isLoading: false,
-            refresh: false
+            refresh: false,
+            showListings: {}
         }
     },
     created() {
@@ -171,7 +183,7 @@ export default {
                     this.edit = {};
 
                     for(let i = 0; i < this.wish_list.length; i++) {
-                        this.$set(this.edit, this.wish_list[i]._id, false);
+                        this.$set(this.showListings, this.wish_list[i]._id, false);
                     }
                 }
             })
