@@ -1,9 +1,8 @@
 <template>
     <div id="search" ref="input">
         <v-text-field 
-            
             v-model="card_name"
-            :rounded="isHomeRoute" outlined flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0" label="Search for a card..."
+            :rounded="isHomeRoute" outlined single-line flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0"
             @focus="isFocused = true"  @blur="isFocused = false" 
             :loading="searchLoading || selectedLoading && isHomeRoute"
             prepend-inner-icon="mdi-magnify" hide-details
@@ -129,7 +128,7 @@ export default {
 
 #search {
     #v-list {
-        z-index: 1;
+        z-index: 2;
         position: absolute;
         color: black !important;
         background-color: white;

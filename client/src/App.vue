@@ -4,21 +4,34 @@
             <router-link to="/">Home</router-link>
             <v-spacer></v-spacer>
 
-            <Search style="width: 500px;" v-if="this.$router.currentRoute.name != 'home'" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
-            <v-spacer></v-spacer>
+            <Search 
+                v-if="this.$router.currentRoute.name != 'home' && $vuetify.breakpoint.smAndUp" @selected_card="scrape" 
+                :style="$vuetify.breakpoint.sm ? 'width: 400px;' : 'width: 500px;'"
+                :loading="isLoading" :cardAdded="clearSearch"
+            />
+
+            <v-btn 
+                v-else-if="this.$router.currentRoute.name != 'home' && $vuetify.breakpoint.xsOnly"
+                @click="showSearch = !showSearch" color="black" icon large
+                class="mr-10"
+            >
+                <v-icon>{{showSearch ? 'mdi-close' : 'mdi-magnify'}}</v-icon>
+            </v-btn>
+            
+            <v-spacer v-if="$vuetify.breakpoint.smAndUp"></v-spacer>
 
             <AuthModal v-if="this.$store.state.logged_in == false" @logged_in="showSnack()"/>
 
-            <v-menu v-else offset-y transition="slide-y-transition">
+            <v-menu v-else offset-y transition="slide-y-transition"> <!-- User Menu -->
                 <template v-slot:activator="{ on: click}">
-                <v-btn 
-                    id="btn" class="pa-0" v-on="click" x-large text absolute right 
-                    :ripple="false" :icon="$vuetify.breakpoint.mdAndDown"
-                >
-                    <v-icon color="black">mdi-account</v-icon>
-                    {{ $vuetify.breakpoint.lgAndUp ? $store.state.user.email : '' }}
-                    <v-icon :class="{'ml-n2': $vuetify.breakpoint.mdAndDown}" color="black">mdi-menu-down</v-icon>
-                </v-btn>
+                    <v-btn 
+                        id="btn" class="pa-0" v-on="click" x-large text absolute right 
+                        :ripple="false" :icon="$vuetify.breakpoint.mdAndDown"
+                    >
+                        <v-icon color="black">mdi-account</v-icon>
+                        {{ $vuetify.breakpoint.lgAndUp ? $store.state.user.email : '' }}
+                        <v-icon :class="{'ml-n2': $vuetify.breakpoint.mdAndDown}" color="black">mdi-menu-down</v-icon>
+                    </v-btn>
                 </template>
                 <v-list>
                     <v-list-item to="/wish-list">
@@ -37,6 +50,7 @@
                 </v-list>
             </v-menu>
         </v-app-bar>
+        
 
         <v-content>
             <v-progress-linear
@@ -45,6 +59,13 @@
                 absolute
                 color="primary"
             ></v-progress-linear>
+
+            <v-expand-transition>
+                <Search 
+                    v-if="showSearch" @selected_card="scrape" 
+                    :loading="isLoading" :cardAdded="clearSearch"
+                />
+            </v-expand-transition>
 
             <Snackbar :snack="snackbar"/>
 
@@ -79,7 +100,8 @@ export default {
             },
             card: {},
             isLoading: false,
-            clearSearch: false
+            clearSearch: false,
+            showSearch: false
         }
     },
     beforeCreate() {
@@ -151,6 +173,8 @@ export default {
     },
     watch: {
         $route(to, from) {
+            this.showSearch = false;
+
             if(to.path == '/') {
                 this.app_bar.isFlat = true;
                 this.app_bar.color = "white";
