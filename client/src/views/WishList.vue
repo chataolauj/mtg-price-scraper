@@ -137,6 +137,16 @@
                 </v-card>
             </transition-group>
         </v-col>
+
+        <v-fab-transition>
+            <v-btn 
+                v-show="showFAB" @click="toTop" 
+                x-large color="blue darken-3" fab 
+                fixed bottom right dark
+            >
+                <v-icon>mdi-chevron-up</v-icon>
+            </v-btn>
+        </v-fab-transition>
     </v-row>
 </template>
 
@@ -174,13 +184,22 @@ export default {
             editCard: {},
             isLoading: false,
             refresh: false,
-            showListings: {}
+            showListings: {},
+            showFAB: false
         }
     },
     created() {
+        window.addEventListener('scroll', this.onScroll);
+
         this.getWishList();
     },
+    beforeDestroy() {
+        window.removeEventListener('scroll', this.onScroll);
+    },
     methods: {
+        onScroll() {
+            this.showFAB = window.scrollY > 250;
+        },
         async getWishList() {
             this.refresh = true;
 
@@ -320,6 +339,13 @@ export default {
                     close_color: 'white',
                     show: true
                 }
+            });
+        },
+        toTop() {
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'smooth'
             });
         }
     }

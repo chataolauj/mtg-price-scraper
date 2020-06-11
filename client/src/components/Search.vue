@@ -67,8 +67,6 @@ export default {
         if(this.$router.currentRoute.name != 'home') {
             this.isHomeRoute = false;
         }
-
-        console.log(this.$parent.$options.name)
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)
