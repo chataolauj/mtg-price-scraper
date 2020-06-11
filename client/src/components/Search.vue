@@ -12,7 +12,7 @@
                     class="mt-3"
                     v-if="searchLoading || selectedLoading"
                     indeterminate
-                    color="primary"
+                    :color="$parent.$options.name == 'WishList' ? 'amber accent-3' : 'primary'"
                     :width="2"
                     :size="30"
                 ></v-progress-circular>
