@@ -8,22 +8,34 @@
             </v-btn>
         </v-col>
         <v-col cols="12" style="z-index: 1;"> <!-- Toolbar -->
-            <v-toolbar :tile="false" dark color="blue darken-3" height="90px">
-                <Search style="width: 450px" @selected_card="setCard" :cardAdded="clearSearch"/>
+            <div id="toolbar" class="pa-5 d-flex flex-column flex-sm-row">
+                <Search 
+                    :style="$vuetify.breakpoint.xs ? '' : $vuetify.breakpoint.sm ? 'width: 350px' : 'width: 400px'" 
+                    @selected_card="setCard" @unset_card="unsetCard" :cardAdded="clearSearch"
+                />
                 <v-spacer></v-spacer>
 
                 <v-select 
-                    :items="conditions" multiple outlined hide-details
-                    menu-props="offsetY" label="Condition" v-model="card_to_add.conditions"
+                    v-model="card_to_add.conditions" dark
+                    :items="conditions" multiple outlined single-line hide-details
+                    menu-props="offsetY" label="Condition"
                 >
                 </v-select>
                 <v-spacer></v-spacer>
 
-                <v-text-field prefix="$" outlined hide-details label="Wish Price" v-model="card_to_add.wish_price"></v-text-field>
+                <v-text-field 
+                    v-model="card_to_add.wish_price" prefix="$" dark
+                    outlined single-line hide-details label="Wish Price"
+                ></v-text-field>
                 <v-spacer></v-spacer>
 
-                <v-btn @click="addCard()" style="height: 56px" x-large :loading="isLoading" :disabled="card_to_add.name == ''" color="success">Add Card</v-btn>
-            </v-toolbar>
+                <v-btn 
+                    @click="addCard()" style="height: 56px" color="success" dark
+                    x-large :loading="isLoading" :disabled="card_to_add.name == ''"
+                >
+                    Add Card
+                </v-btn>
+            </div>
         </v-col>
         <div class="d-flex justify-center" v-if="!wish_list.length">
             <h2>No cards in your wish list...</h2>
@@ -42,7 +54,7 @@
                                         <v-checkbox class="ma-0"></v-checkbox>
                                     </v-col> -->
                                     <v-col cols="12" sm="6" class="d-flex flex-column align-center"> 
-                                        <v-img :src="$vuetify.breakpoint.smAndDown ? card.image_uris.small : card.image_uris.normal" contain></v-img> 
+                                        <v-img :src="$vuetify.breakpoint.mdAndDown ? card.image_uris.small : card.image_uris.normal" contain></v-img> 
                                         <div class="d-flex justify-center align-center"> <!-- Card action buttons -->
                                             <v-dialog 
                                                 v-model="deleteDialog[card._id]" 
@@ -63,10 +75,10 @@
                                                     </v-card-actions>
                                                 </v-card>
                                             </v-dialog>
-                                            <v-btn v-show="!editCard[card._id]" @click="$set(editCard, card._id, true)" icon color="success">
+                                            <v-btn v-show="!editCard[card._id]" @click="$set(editCard, card._id, true)" icon color="success"> <!-- Edit Details -->
                                                 <v-icon>mdi-pencil</v-icon>
                                             </v-btn>
-                                            <v-btn v-show="editCard[card._id]" @click="saveEdit(card)" icon color="success">
+                                            <v-btn v-show="editCard[card._id]" @click="saveEdit(card)" icon color="success"> <!-- Save Edit -->
                                                 <v-icon>mdi-floppy</v-icon>
                                             </v-btn>
                                         </div>
@@ -106,16 +118,16 @@
                                     </v-col>
                                 </v-row>
                             </v-col>
-                            <v-col v-if="$vuetify.breakpoint.mdAndUp" cols="12" lg="6"> <!-- Price Listings -->
+                            <v-col v-if="$vuetify.breakpoint.lgAndUp" cols="12" lg="6"> <!-- Price Listings -->
                                 <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
                             </v-col>
-                            <v-card-actions v-else>
+                            <v-card-actions v-else> <!-- Expand Button -->
                                 <v-btn icon @click="$set(showListings, card._id, !showListings[card._id])">
                                     <v-icon>{{ showListings[card._id] ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                                 </v-btn>
                             </v-card-actions>
 
-                            <v-expand-transition>
+                            <v-expand-transition> <!-- Responsive Price Listings -->
                                 <v-col v-show="showListings[card._id]" cols="12">
                                     <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
                                 </v-col>
@@ -152,8 +164,7 @@ export default {
                 set_code: '',
                 conditions: [],
                 wish_price: null,
-                image_uris: {},
-                isFoil: null
+                image_uris: {}
             },
             conditions: ['Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged'],
             wish_list: [],
@@ -178,14 +189,6 @@ export default {
                 this.wish_list = response.data;
 
                 this.refresh = false;
-
-                if(this.wish_list.length > 0) {
-                    this.edit = {};
-
-                    for(let i = 0; i < this.wish_list.length; i++) {
-                        this.$set(this.showListings, this.wish_list[i]._id, false);
-                    }
-                }
             })
             .catch(error => {
                 console.log(error)
@@ -199,6 +202,13 @@ export default {
             this.card_to_add.set_name = card.set_name;
             this.card_to_add.set_code = card.set_code;
             this.card_to_add.image_uris = card.image_uris;
+        },
+        unsetCard() {
+            this.card_to_add.multiverse_id = '';
+            this.card_to_add.name = '';
+            this.card_to_add.set_name = '';
+            this.card_to_add.set_code = '';
+            this.card_to_add.image_uris = '';
         },
         async addCard() {
             this.isLoading = true;
@@ -318,8 +328,9 @@ export default {
 
 <style lang="scss" scoped>
 
-#card-search {
-    width: 450px;
+#toolbar {
+    background-color: #1565C0;
+    border-radius: 5px;
 }
 
 .list-enter-active {

@@ -1,7 +1,7 @@
 <template>
     <div id="search" ref="input">
         <v-text-field 
-            v-model="card_name"
+            v-model="card_name" :dark="$parent.$options.name == 'WishList'"
             :rounded="isHomeRoute" outlined single-line flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0"
             @focus="isFocused = true"  @blur="isFocused = false" 
             :loading="searchLoading || selectedLoading && isHomeRoute"
@@ -53,7 +53,8 @@ export default {
             card_name: '',
             searchLoading: false,
             selectedLoading: false,
-            selected: false
+            selected: false,
+            isAppBar: false
         }
     },
     mounted() {
@@ -66,6 +67,8 @@ export default {
         if(this.$router.currentRoute.name != 'home') {
             this.isHomeRoute = false;
         }
+
+        console.log(this.$parent.$options.name)
     },
     beforeDestroy() {
         window.removeEventListener('resize', this.onResize)
