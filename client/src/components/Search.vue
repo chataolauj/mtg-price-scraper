@@ -107,6 +107,7 @@ export default {
                 this.selected = false;
             }
             else {
+                this.$emit('unset_card');
                 this.queried_cards = [];
             }
         },
