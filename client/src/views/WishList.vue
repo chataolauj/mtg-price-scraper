@@ -7,36 +7,78 @@
                 <v-icon>mdi-refresh</v-icon>
             </v-btn>
         </v-col>
-        <v-col cols="12" style="z-index: 1;"> <!-- Toolbar -->
+        <v-col v-if="$vuetify.breakpoint.smAndUp" cols="12" style="z-index: 1;"> <!-- Toolbar -->
             <div id="toolbar" class="pa-5 d-flex flex-column flex-sm-row">
                 <Search 
-                    :style="$vuetify.breakpoint.xs ? '' : $vuetify.breakpoint.sm ? 'width: 350px' : 'width: 400px'" 
+                    class="mr-sm-3"
+                    :style="$vuetify.breakpoint.sm ? 'width: 350px' : 'width: 400px'" 
                     @selected_card="setCard" @unset_card="unsetCard" :cardAdded="clearSearch"
                 />
-                <v-spacer></v-spacer>
 
                 <v-select 
-                    v-model="card_to_add.conditions" dark
+                    v-model="card_to_add.conditions" dark class="mr-sm-3"
                     :items="conditions" multiple outlined single-line hide-details
                     menu-props="offsetY" label="Condition"
                 >
                 </v-select>
-                <v-spacer></v-spacer>
 
                 <v-text-field 
-                    v-model="card_to_add.wish_price" prefix="$" dark
+                    v-model="card_to_add.wish_price" prefix="$" dark class="mr-sm-3"
                     outlined single-line hide-details label="Wish Price"
                 ></v-text-field>
-                <v-spacer></v-spacer>
 
                 <v-btn 
-                    @click="addCard()" style="height: 56px" color="success" dark
+                    @click="addCard()" style="height: 56px" color="success" dark 
                     x-large :loading="isLoading" :disabled="card_to_add.name == ''"
                 >
                     Add Card
                 </v-btn>
             </div>
         </v-col>
+        <v-dialog v-else v-model="showAdd" persistent> <!-- Add Card FAB -->
+            <template v-slot:activator="{ on }">
+                    <v-btn 
+                        v-on="on" @click="showAdd = !showAdd" 
+                        style="z-index: 1000;"
+                        large :color="showAdd ? 'error' : 'success'" fab 
+                        fixed bottom right dark
+                    >
+                        <v-icon>{{showAdd ? 'mdi-close' : 'mdi-plus'}}</v-icon>
+                    </v-btn>
+            </template>
+
+            <v-card>
+                <v-container>
+                    <v-row>
+                        <v-col cols="12">
+                            <Search @selected_card="setCard" @unset_card="unsetCard" :cardAdded="clearSearch" />
+                        </v-col>
+                        <v-col cols="12">
+                            <v-select ref="select"
+                                v-model="card_to_add.conditions" 
+                                :items="conditions" multiple outlined single-line hide-details
+                                menu-props="offsetY" label="Condition"
+                            >
+                            </v-select>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-text-field 
+                                v-model="card_to_add.wish_price" prefix="$" 
+                                outlined single-line hide-details label="Wish Price"
+                            ></v-text-field>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-btn 
+                                @click="addCard()" color="success" block
+                                x-large :loading="isLoading" :disabled="card_to_add.name == ''"
+                            >
+                                Add Card
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-card>
+        </v-dialog>
         <div class="d-flex justify-center" v-if="!wish_list.length">
             <h2>No cards in your wish list...</h2>
         </div>
@@ -122,7 +164,7 @@
                                 <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
                             </v-col>
                             <v-card-actions v-else> <!-- Expand Button -->
-                                <v-btn icon @click="$set(showListings, card._id, !showListings[card._id])">
+                                <v-btn icon color="black" @click="$set(showListings, card._id, !showListings[card._id])">
                                     <v-icon>{{ showListings[card._id] ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
                                 </v-btn>
                             </v-card-actions>
@@ -138,15 +180,18 @@
             </transition-group>
         </v-col>
 
-        <v-fab-transition>
+        <v-fab-transition> <!-- To Top FAB -->
             <v-btn 
                 v-show="showFAB" @click="toTop" 
-                x-large color="blue darken-3" fab 
+                :style="$vuetify.breakpoint.xsOnly ? 'margin-bottom: 85px;' : ''"
+                large color="blue darken-3" fab 
                 fixed bottom right dark
             >
                 <v-icon>mdi-chevron-up</v-icon>
             </v-btn>
         </v-fab-transition>
+
+        
     </v-row>
 </template>
 
@@ -185,7 +230,8 @@ export default {
             isLoading: false,
             refresh: false,
             showListings: {},
-            showFAB: false
+            showFAB: false,
+            showAdd: false
         }
     },
     created() {
@@ -223,11 +269,16 @@ export default {
             this.card_to_add.image_uris = card.image_uris;
         },
         unsetCard() {
-            this.card_to_add.multiverse_id = '';
-            this.card_to_add.name = '';
-            this.card_to_add.set_name = '';
-            this.card_to_add.set_code = '';
-            this.card_to_add.image_uris = '';
+            this.card_to_add = {
+                multiverse_id: null,
+                name: '',
+                set_name: '',
+                set_code: '',
+                conditions: [],
+                wish_price: null,
+                image_uris: {},
+                isFoil: false
+            };
         },
         async addCard() {
             this.isLoading = true;
@@ -245,7 +296,7 @@ export default {
 
                 await this.$http.post(`/scrape-list/${this.card_to_add.set_name}/${this.card_to_add.name}/notify-list`, notify);
 
-                this.getWishList();
+                await this.getWishList();
 
                 this.snackbar = {
                     msg: response.data.message,
@@ -255,20 +306,18 @@ export default {
                 }
 
                 this.isLoading = false;
-                
-                //find a better way of doing this
-                this.card_to_add = {
-                    multiverse_id: null,
-                    name: '',
-                    set_name: '',
-                    set_code: '',
-                    conditions: [],
-                    wish_price: null,
-                    image_uris: {},
-                    isFoil: false
-                };
+
+                this.unsetCard();
 
                 this.clearSearch = !this.clearSearch;
+
+                this.showAdd = !this.showAdd;
+
+                window.scrollTo({
+                    top: document.body.scrollHeight,
+                    left: 0,
+                    behavior: 'smooth'
+                });
             })
             .catch(error => {
                 console.log(error.response.data.message)
@@ -278,7 +327,13 @@ export default {
                     color: 'error',
                     close_color: 'white',
                     show: true
-                }
+                };
+                
+                this.isLoading = false;
+
+                this.unsetCard();
+
+                this.clearSearch = !this.clearSearch;
             });
         },
         async saveEdit(card) {
@@ -347,6 +402,12 @@ export default {
                 left: 0,
                 behavior: 'smooth'
             });
+
+            if(this.showListings) {
+                for(let listing in this.showListings) {
+                    this.$set(this.showListings, listing, false)
+                }
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 <template>
-    <div id="search" ref="input">
+    <div id="search">
         <v-text-field 
+            ref="input"
             v-model="card_name" :dark="$parent.$options.name == 'WishList'"
             :rounded="isHomeRoute" outlined single-line flat :shaped="isFocused && isHomeRoute && queried_cards.length > 0"
             @focus="isFocused = true"  @blur="isFocused = false" 
@@ -62,7 +63,9 @@ export default {
             window.addEventListener('resize', this.onResize)
         });
 
-        this.onResize();
+        this.$nextTick(() => {
+            this.onResize();
+        })
 
         if(this.$router.currentRoute.name != 'home') {
             this.isHomeRoute = false;
@@ -73,7 +76,7 @@ export default {
     },
     methods: {
         onResize() {
-            this.$set(this.list_style, 'width', this.$refs.input.clientWidth + 'px');
+            this.$set(this.list_style, 'width', this.$refs.input.$el.clientWidth + 'px');
         }, 
         delaySearch() {
             this.searchLoading = true;
@@ -130,7 +133,7 @@ export default {
 
 #search {
     #v-list {
-        z-index: 2;
+        z-index: 1000;
         position: absolute;
         color: black !important;
         background-color: white;
