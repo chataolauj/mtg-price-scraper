@@ -54,7 +54,7 @@
                             <Search @selected_card="setCard" @unset_card="unsetCard" :cardAdded="clearSearch" />
                         </v-col>
                         <v-col cols="12">
-                            <v-select ref="select"
+                            <v-select 
                                 v-model="card_to_add.conditions" 
                                 :items="conditions" multiple outlined single-line hide-details
                                 menu-props="offsetY" label="Condition"

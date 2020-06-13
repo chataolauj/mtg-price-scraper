@@ -19,7 +19,10 @@
                 ></v-progress-circular>
             </template>
         </v-text-field>
-        <v-list id="v-list" :style="list_style" v-show="queried_cards.length && isFocused" class="pa-0 overflow-y-auto" max-height="300" two-line>
+        <v-list 
+            id="v-list" class="pa-0 overflow-y-auto"
+            :style="list_style" v-show="queried_cards.length && isFocused"
+            :max-height="$parent.$options.name == 'v-card' ? '200' : '300'" two-line>
             <v-list-item 
                 v-for="(card, index) in queried_cards" :item="card" :key="index"
                 @mouseover="isHovering = true" @mouseleave="isHovering = false" @mousedown="setCard(card)"
