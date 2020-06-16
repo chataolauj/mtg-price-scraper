@@ -64,6 +64,7 @@
                 <Search 
                     v-if="showSearch && $vuetify.breakpoint.xs" @selected_card="scrape" 
                     :loading="isLoading" :cardAdded="clearSearch"
+                    class="pa-5"
                 />
             </v-expand-transition>
 

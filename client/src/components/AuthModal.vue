@@ -5,9 +5,12 @@
         persistent
     >
         <template v-slot:activator="{ on: click }">
-            <v-btn id="auth-btn" :ripple="false" v-on="click" x-large text absolute :icon="$vuetify.breakpoint.xsOnly" right>
-                <v-icon :small="$vuetify.breakpoint.smAndUp" color="black">mdi-login-variant</v-icon>
-                {{ $vuetify.breakpoint.smAndUp ? 'Login' : '' }}
+            <v-btn 
+                id="auth-btn" class="px-0" :ripple="false" v-on="click" 
+                x-large text absolute :icon="$vuetify.breakpoint.mdAndDown" right
+            >
+                <v-icon :small="$vuetify.breakpoint.lgAndUp" color="black">mdi-login-variant</v-icon>
+                {{ $vuetify.breakpoint.lgAndUp ? 'Login' : '' }}
             </v-btn>
         </template>
 
@@ -20,7 +23,7 @@
                 <v-tab-item value="login"> <!-- Login Tab -->
                     <v-card>
                         <v-container>
-                            <v-alert dense type="error" v-if="login_error.length">{{login_error}}</v-alert>
+                            <v-alert v-if="login_error.length" dense type="error">{{login_error}}</v-alert>
                             <v-row>
                                 <v-col cols="12"> <!-- Email -->
                                     <v-text-field 
@@ -31,8 +34,9 @@
                                 <v-col cols="12"> <!-- Password -->
                                     <v-text-field 
                                         v-model="login_creds.password" @keyup.enter="login(login_creds)" 
+                                        @click:append="show_login_pass = !show_login_pass" 
                                         label="Password" :type="show_login_pass ? 'text' : 'password'" required 
-                                        :append-icon="show_login_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_login_pass = !show_login_pass"
+                                        :append-icon="show_login_pass ? 'mdi-eye' : 'mdi-eye-off'" 
                                         :disabled="isLoading" hide-details
                                     ></v-text-field>
                                 </v-col>

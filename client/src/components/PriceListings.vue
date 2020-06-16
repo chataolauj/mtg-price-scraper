@@ -25,8 +25,11 @@
                     <v-data-table
                         :headers="headers" 
                         :items="$router.currentRoute.name == 'wish-list' ? filtered_listings : website.listings" 
-                        :items-per-page="5"
+                        :items-per-page="$vuetify.breakpoint.xl ? 8 : 5"
                         multi-sort
+                        :footer-props="{
+                            disableItemsPerPage: true,
+                        }"
                     ></v-data-table>
                 </v-card>
             </v-tab-item>

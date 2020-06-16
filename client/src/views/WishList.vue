@@ -38,10 +38,10 @@
         <v-dialog v-else v-model="showAdd" persistent> <!-- Add Card FAB -->
             <template v-slot:activator="{ on }">
                     <v-btn 
-                        v-on="on" @click="showAdd = !showAdd" 
+                        v-on="on" @click="showAdd = !showAdd; clearSearch = !clearSearch" 
                         style="z-index: 1000;"
                         large :color="showAdd ? 'error' : 'success'" fab 
-                        fixed bottom right dark
+                        :disabled="isLoading" fixed bottom right dark
                     >
                         <v-icon>{{showAdd ? 'mdi-close' : 'mdi-plus'}}</v-icon>
                     </v-btn>
@@ -87,14 +87,8 @@
                 <v-card class="mb-6" style="width: 100%;" v-for="(card) in wish_list" :item="card" :key="card._id">
                     <v-container fluid>
                         <v-row justify="space-around">
-                            <!-- <v-col cols="1" class="d-flex flex-column justify-center align-center">
-                                <v-checkbox class="ma-0"></v-checkbox>
-                            </v-col> -->
                             <v-col cols="12" lg="6"> <!-- Card Details -->
                                 <v-row>
-                                    <!-- <v-col cols="auto" class="d-flex flex-column justify-center align-center">
-                                        <v-checkbox class="ma-0"></v-checkbox>
-                                    </v-col> -->
                                     <v-col cols="12" sm="6" class="d-flex flex-column align-center"> 
                                         <v-img :src="$vuetify.breakpoint.mdAndDown ? card.image_uris.small : card.image_uris.normal" contain></v-img> 
                                         <div class="d-flex justify-center align-center"> <!-- Card action buttons -->
@@ -163,6 +157,7 @@
                             <v-col v-if="$vuetify.breakpoint.lgAndUp" cols="12" lg="6"> <!-- Price Listings -->
                                 <PriceListings :card="card" :conditions="card.conditions" :user_price="+card.wish_price"/>
                             </v-col>
+                            
                             <v-card-actions v-else> <!-- Expand Button -->
                                 <v-btn icon color="black" @click="$set(showListings, card._id, !showListings[card._id])">
                                     <v-icon>{{ showListings[card._id] ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>

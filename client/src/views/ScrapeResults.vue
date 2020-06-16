@@ -1,28 +1,54 @@
 <template>
     <v-row class="d-flex flex-column mx-0">
         <Snackbar :snack="snackbar"/>
-        <v-col>
+        <v-col cols="12" class="pb-0">
             <h1>Scrape Results</h1>
         </v-col>
-        <v-col>
-            <v-row>
-                <v-col cols="4">
-                    <v-img :src="card.image_uris.normal"></v-img> 
-                </v-col>
-                <v-col cols="8" >
-                    <v-row class="d-flex flex-column">
-                        <v-col cols="12">
-                            <PriceListings :card="card"/>
-                        </v-col>
+        <v-col cols="12">
+            <v-row class="d-flex flex-column flex-lg-row" align="center" align-lg="stretch">
+                <v-col cols="12" sm="4">
+                    <v-img :src="card.image_uris.normal" contain></v-img>
 
-                        <v-spacer></v-spacer>
-
-                        <v-col>
-                            <v-btn v-if="this.$store.state.logged_in" @click="addCard()" block color="success" :loading="isLoading" class="mt-4">Add to Wish List</v-btn>
-                            <v-btn v-else disabled block class="mt-4">Login to Add to Wish List</v-btn>
-                        </v-col>
-                    </v-row>
+                    <v-btn 
+                        v-if="this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" @click="addCard()" 
+                        block color="success" :loading="isLoading"
+                        class="mt-4"
+                    >
+                        Add to Wish List
+                    </v-btn>
+                    <v-btn 
+                        v-else-if="!this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" 
+                        disabled block class="mt-4"
+                    >
+                        Login to Add to Wish List
+                    </v-btn> 
                 </v-col>
+                <v-col cols="12" lg="8" class="d-flex flex-column">
+                    <PriceListings :card="card"/>
+
+                    <v-btn 
+                        v-if="this.$store.state.logged_in && $vuetify.breakpoint.lgAndUp" @click="addCard()" 
+                        block color="success" :loading="isLoading"
+                        class="mt-4"
+                    >
+                        Add to Wish List
+                    </v-btn>
+                    <v-btn 
+                        v-else-if="!this.$store.state.logged_in && $vuetify.breakpoint.lgAndUp" 
+                        disabled block class="mt-4"
+                    >
+                        Login to Add to Wish List
+                    </v-btn> 
+                </v-col>
+                <!-- <v-col cols="12" v-if="$vuetify.breakpoint.mdAndDown">
+                    <v-btn 
+                        v-if="this.$store.state.logged_in" @click="addCard()" 
+                        block color="success" :loading="isLoading"
+                    >
+                        Add to Wish List
+                    </v-btn>
+                    <v-btn v-else disabled block class="mt-4">Login to Add to Wish List</v-btn> 
+                </v-col> -->
             </v-row>
         </v-col>
     </v-row>

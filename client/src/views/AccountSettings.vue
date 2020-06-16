@@ -108,12 +108,14 @@
                 <v-card>
                     <v-container>
                         <v-row>
-                            <v-col cols="12">
+                            <v-col cols="12" class="py-0">
                                 <v-card-title class="headline">Delete Account</v-card-title>
                                 <div class="px-4">
-                                    <v-alert dense type="error" v-if="delete_error != ''">{{ delete_error }}</v-alert>
+                                    <v-alert v-if="delete_error != ''" dense type="error" transition="scale-transition">{{ delete_error }}</v-alert>
                                 </div>
-                                <v-card-text v-if="!wantToDelete" class="body-1">Are you sure you want to delete your account? This can't be undone once you do so.</v-card-text>
+                                <v-card-text v-if="!wantToDelete" class="py-0 body-1">
+                                    Are you sure you want to delete your account? This can't be undone once you do so.
+                                </v-card-text>
                                 <v-text-field 
                                     v-else v-model="delete_creds.password" @keyup.enter="deleteAccount()" class="px-4"
                                     label="Password" :type="show_delete_pass ? 'text' : 'password'" required 
