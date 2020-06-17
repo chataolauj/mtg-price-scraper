@@ -18,7 +18,8 @@ const store = new Vuex.Store({
         app_bar: {
             color: 'white',
             isFlat: true
-        }
+        },
+        card: {}
     },
     mutations: {
         logged_in(state, email) {
@@ -29,11 +30,14 @@ const store = new Vuex.Store({
             state.logged_in = false;
             state.email = '';
         },
-        change_email(state, new_email) {
-            state.email = new_email;
-        },
         change_app_bar(state, app_bar) {
             state.app_bar = app_bar;
+        },
+        scraped_card(state, card) {
+            state.card = card;
+        },
+        change_email(state, new_email) {
+            state.email = new_email;
         }
     },
     actions: {

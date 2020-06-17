@@ -127,6 +127,8 @@ export default {
         async scrape(card) {
             this.isLoading = true;
 
+            this.$store.dispatch('scraped_card', card);
+
             await this.$http.post('/scrape-list', card)
             .then(async (response) => {
                 if(response.status == 200 || response.status == 204) {
@@ -171,13 +173,6 @@ export default {
     watch: {
         $route(to, from) {
             this.showSearch = false;
-
-            if(to.path == '/') {
-                this.$store.commit('change_app_bar', {color: 'white', isFlat: true});
-            }
-            else {
-                this.$store.commit('change_app_bar', {color: 'amber accent-3', isFlat: false});
-            }
         }
     }
 }

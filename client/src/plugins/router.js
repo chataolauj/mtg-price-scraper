@@ -61,6 +61,13 @@ router.beforeEach((to, from, next) => {
     else {
         next();
     }
+
+    if(to.path == '/') {
+        store.commit('change_app_bar', {color: 'white', isFlat: true});
+    }
+    else {
+        store.commit('change_app_bar', {color: 'amber accent-3', isFlat: false});
+    }
 })
 
 export default router;
