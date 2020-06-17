@@ -152,7 +152,7 @@ export default {
         return {
             snackbar: {},
             email_creds: {
-                curr_email: this.$store.state.user.email,
+                curr_email: this.$store.state.email,
                 new_email: ''
             },
             email_error: '',
@@ -168,7 +168,7 @@ export default {
             pwLoading: false,
             password_errors: '',
             delete_creds: {
-                email: this.$store.state.user.email,
+                email: this.$store.state.email,
                 password: ''
             },
             deleteDialog: false,
@@ -208,15 +208,14 @@ export default {
             }
 
             this.emailLoading = true;
-            console.log(this.email_creds)
 
-            await this.$http.patch(`/users/${this.$store.state.user._id}/change-email`, this.email_creds)
+            await this.$http.patch(`/users/${this.$store.state.email}/change-email`, this.email_creds)
             .then(response => {
                 this.emailLoading = false;
                 
                 this.$store.commit('change_email', this.email_creds.new_email);
                 this.email_error = '';
-                this.email_creds.curr_email = this.$store.state.user.email;
+                this.email_creds.curr_email = this.$store.state.email;
                 this.email_creds.new_email = ''
 
                 this.snackbar = {
@@ -239,7 +238,7 @@ export default {
             
             this.pwLoading = true;
 
-            await this.$http.patch(`/users/${this.$store.state.user._id}/change-password`, this.password_creds)
+            await this.$http.patch(`/users/${this.$store.state.email}/change-password`, this.password_creds)
             .then(response => {
                 this.pwLoading = false;
 
@@ -271,7 +270,7 @@ export default {
         async deleteAccount() {
             this.deleteLoading = true;
 
-            await this.$http.delete(`/users/${this.$store.state.user._id}`, { data: { email: this.delete_creds.email, password: this.delete_creds.password} } )
+            await this.$http.delete(`/users/${this.$store.state.email}`, { data: { email: this.delete_creds.email, password: this.delete_creds.password} } )
             .then(response => {
                 
                 this.$store.dispatch('logout')

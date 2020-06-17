@@ -29,7 +29,7 @@
                         :ripple="false" :icon="$vuetify.breakpoint.mdAndDown"
                     >
                         <v-icon color="black">mdi-account</v-icon>
-                        {{ $vuetify.breakpoint.lgAndUp ? $store.state.user.email : '' }}
+                        {{ $vuetify.breakpoint.lgAndUp ? $store.state.email : '' }}
                         <v-icon :class="{'ml-n2': $vuetify.breakpoint.mdAndDown}" color="black">mdi-menu-down</v-icon>
                     </v-btn>
                 </template>

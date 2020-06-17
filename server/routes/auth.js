@@ -54,13 +54,8 @@ router.post('/register',
                     .then(() => {
                         req.logIn(user, (err) => {
                             if(err) return next(err);
-                            
-                            let new_user  = {
-                                _id: req.user._id,
-                                email: req.user.email
-                            }
             
-                            return res.status(200).send({message: `Welcome ${user.email}!`, user: new_user});
+                            return res.status(200).send({message: `Welcome ${user.email}!`, email: user.email});
                         });
                     })
                     .catch(() => {
@@ -82,13 +77,8 @@ router.post('/login', async (req, res, next) => {
 
             req.logIn(user, (err) => {
                 if(err) return next(err);
-                
-                let user  = {
-                    _id: req.user._id,
-                    email: req.user.email
-                }
 
-                return res.status(200).send({message: 'Successfully logged in.', user: user});
+                return res.status(200).send({message: 'Successfully logged in.', email: user.email});
             });
         })(req, res, next);
     } catch (error) {
@@ -107,12 +97,7 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/check_auth', ensureAuthenticated, (req, res) => {
-    let user  = {
-        _id: req.user._id,
-        email: req.user.email
-    }
-
-    res.status(200).send({ is_logged_in: true, user: user});
+    res.status(200).send({ is_logged_in: true, email: req.user.email});
 });
 
 router.post('/forgot-password', 

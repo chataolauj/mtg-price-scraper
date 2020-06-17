@@ -79,10 +79,10 @@ export default {
                 image_uris: this.card.image_uris
             };
             
-            await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card_to_add)
+            await this.$http.post(`/users/${this.$store.state.email}/wish_list`, this.card_to_add)
             .then(async (response) => {
                 let notify = {
-                    email: this.$store.state.user.email,
+                    email: this.$store.state.email,
                     wish_price: this.card_to_add.wish_price,
                     name: this.card_to_add.name,
                     set_name: this.card_to_add.set_name

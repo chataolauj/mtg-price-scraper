@@ -238,7 +238,7 @@ export default {
         async getWishList() {
             this.refresh = true;
 
-            await this.$http.get(`/users/${this.$store.state.user._id}/wish_list`)
+            await this.$http.get(`/users/${this.$store.state.email}/wish_list`)
             .then(response => {
                 this.wish_list = response.data;
 
@@ -271,12 +271,12 @@ export default {
         async addCard() {
             this.isLoading = true;
             
-            await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card_to_add)
+            await this.$http.post(`/users/${this.$store.state.email}/wish_list`, this.card_to_add)
             .then(async (response) => {
                 await this.$http.post('/scrape-list', this.card_to_add);
 
                 let notify = {
-                    email: this.$store.state.user.email,
+                    email: this.$store.state.email,
                     wish_price: this.card_to_add.wish_price,
                     name: this.card_to_add.name,
                     set_name: this.card_to_add.set_name
@@ -327,11 +327,11 @@ export default {
         async saveEdit(card) {
             this.$set(this.editCard, card._id, false);
 
-            await this.$http.patch(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`, card)
+            await this.$http.patch(`/users/${this.$store.state.email}/wish_list/card/${card._id}`, card)
             .then(async (response) => {
 
                 let notify = {
-                    email: this.$store.state.user.email,
+                    email: this.$store.state.email,
                     wish_price: card.wish_price,
                     name: card.name,
                     set_name: card.set_name
@@ -358,11 +358,11 @@ export default {
             });
         },
         async deleteCard(card) {
-            await this.$http.delete(`/users/${this.$store.state.user._id}/wish_list/card/${card._id}`)
+            await this.$http.delete(`/users/${this.$store.state.email}/wish_list/card/${card._id}`)
             .then(async (response) => {
                 delete this.deleteDialog[card._id];
 
-                await this.$http.delete(`/scrape-list/${card.set_name}/${card.name}/notify-list?email=${this.$store.state.user.email}`);
+                await this.$http.delete(`/scrape-list/${card.set_name}/${card.name}/notify-list?email=${this.$store.state.email}`);
 
                 this.getWishList();
 

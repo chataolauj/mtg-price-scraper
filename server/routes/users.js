@@ -6,9 +6,9 @@ const {check, validationResult} = require('express-validator');
 const bcrypt = require('bcrypt');
 
 //Get specific user by their ObjectId
-router.get('/:id', async (req, res) => {
+router.get('/:email', async (req, res) => {
     try {
-        const user = await User.findById(req.params.id);
+        const user = await User.findById(req.params.email);
         res.json(user);
     } catch(err) {
         res.json({message: err});
@@ -16,7 +16,7 @@ router.get('/:id', async (req, res) => {
 });
 
 //Update specific user email
-router.patch('/:id/change-email', 
+router.patch('/:email/change-email', 
     [
         check('new_email')
             .trim()
@@ -43,7 +43,7 @@ router.patch('/:id/change-email',
         }
 
         try {
-            let query = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+            let query = await User.findOne({email: req.params.email}, {_id: 0, wish_list: 1});
 
             await query.wish_list.forEach(async (card) => {
                 await ScrapeList.updateOne(
@@ -56,7 +56,7 @@ router.patch('/:id/change-email',
             console.log(req.body.new_email)
 
             await User.updateOne(
-                {_id: req.params.id},
+                {email: req.params.email},
                 {$set: {email: req.body.new_email}},
                 (err) => {
                     if(err) throw err;
@@ -71,10 +71,10 @@ router.patch('/:id/change-email',
 )
 
 //Update user password
-router.patch('/:id/change-password', 
+router.patch('/:email/change-password', 
     [
         check('curr_password').custom(async (curr_password, {req}) => {
-            let user = await User.findOne({_id: req.params.id});
+            let user = await User.findOne({email: req.params.email});
 
             let isMatch = await bcrypt.compare(curr_password, user.password).then((result) => {
                 return result;
@@ -87,7 +87,7 @@ router.patch('/:id/change-password',
         check('new_password')
             .trim()
             .custom(async (new_password, {req}) => {
-                let user = await User.findOne({_id: req.params.id});
+                let user = await User.findOne({email: req.params.email});
     
                 let isMatch = await bcrypt.compare(new_password, user.password).then((result) => {
                     return result;
@@ -125,7 +125,7 @@ router.patch('/:id/change-password',
                     if(err) throw err;
         
                     await User.updateOne(
-                        {_id: req.params.id},
+                        {email: req.params.email},
                         {$set: {password: hash}},
                         (err) => {
                             if(err) throw err;
@@ -142,10 +142,10 @@ router.patch('/:id/change-password',
 );
 
 //Delete user
-router.delete('/:id', 
+router.delete('/:email', 
     [
         check('password').custom(async (password, {req}) => {
-            let user = await User.findOne({_id: req.params.id});
+            let user = await User.findOne({email: req.params.email});
 
             let isMatch = await bcrypt.compare(password, user.password).then((result) => {
                 console.log(result)
@@ -167,7 +167,7 @@ router.delete('/:id',
         let user_email = req.body.email;
 
         try {
-            let query = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+            let query = await User.findOne({email: req.params.email}, {_id: 0, wish_list: 1});
 
             await query.wish_list.forEach(async (card) => 
                 await ScrapeList.updateOne(
@@ -176,7 +176,7 @@ router.delete('/:id',
                 )
             )
 
-            await User.deleteOne({_id: req.params.id});
+            await User.deleteOne({email: req.params.email});
             res.status(200).send({message: 'Your account has been deleted.'});
         } catch (err) {
             res.send({message: err});
@@ -185,24 +185,24 @@ router.delete('/:id',
 );
 
 //Get user wish list
-router.get('/:id/wish_list', async (req, res) => {
+router.get('/:email/wish_list', async (req, res) => {
     try {
-        let query = await User.findOne({_id: req.params.id}, {_id: 0, wish_list: 1});
+        let query = await User.findOne({email: req.params.email}, {_id: 0, wish_list: 1});
         
         res.status(200).json(query.wish_list)
     } catch (err) {
-        res.send({message: err});
+        res.status(404).send({message: err});
     }
 });
 
 //Clear wish list
-router.put('/:id/wish_list', async (req, res) => {
+router.put('/:email/wish_list', async (req, res) => {
     let clear = req.query.clear;
 
     try {
         if(clear == 'true') {
             await User.update(
-                {_id: req.params.id}, 
+                {email: req.params.email}, 
                 {
                     $set: {
                         wish_list: []
@@ -220,7 +220,7 @@ router.put('/:id/wish_list', async (req, res) => {
 });
 
 //Insert card to user's wish list
-router.post('/:id/wish_list', async (req, res) => {
+router.post('/:email/wish_list', async (req, res) => {
     try {
         let conditions = [
             'Near Mint', 'Lightly Played', 'Moderately Played', 'Heavily Played', 'Damaged', 
@@ -238,13 +238,13 @@ router.post('/:id/wish_list', async (req, res) => {
         }
 
         let query = await User.findOne(
-            {_id: req.params.id, 'wish_list.name': new_card.name, 'wish_list.set_name': new_card.set_name},
+            {email: req.params.email, 'wish_list.name': new_card.name, 'wish_list.set_name': new_card.set_name},
             {_id: 0, 'wish_list.$': 1}
         );
 
         if(!query) {
             await User.updateOne(
-                {_id: req.params.id},
+                {email: req.params.email},
                 {$push: {wish_list: new_card}}
             );
 
@@ -259,10 +259,10 @@ router.post('/:id/wish_list', async (req, res) => {
 });
 
 //Get a card from user's wish list
-router.get('/:id/wish_list/card/:card_id', async (req, res) => {
+router.get('/:email/wish_list/card/:card_id', async (req, res) => {
     try {
         let query = await User.findOne(
-            {_id: req.params.id, 'wish_list._id': req.params.card_id},
+            {email: req.params.email, 'wish_list._id': req.params.card_id},
             {_id: 0, 'wish_list.$': 1}
         );
 
@@ -275,7 +275,7 @@ router.get('/:id/wish_list/card/:card_id', async (req, res) => {
 });
 
 //Update card in user wish list
-router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
+router.patch('/:email/wish_list/card/:card_id', async (req, res) => {
     try {
         let update = {
             conditions: req.body.conditions,
@@ -283,13 +283,13 @@ router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
         }
 
         let query = await User.findOne(
-            {_id: req.params.id, 'wish_list._id': req.params.card_id},
+            {email: req.params.email, 'wish_list._id': req.params.card_id},
             {_id: 0, 'wish_list.$': 1}
         );
 
         if(query) {
             await User.updateOne(
-                {_id: req.params.id, 'wish_list._id': req.params.card_id},
+                {email: req.params.email, 'wish_list._id': req.params.card_id},
                 {
                     $set: {
                         'wish_list.$.conditions': update.conditions,
@@ -309,10 +309,10 @@ router.patch('/:id/wish_list/card/:card_id', async (req, res) => {
 });
 
 //Remove card from wish list
-router.delete('/:id/wish_list/card/:card_id', async (req, res) => {
+router.delete('/:email/wish_list/card/:card_id', async (req, res) => {
     try {
         let query = await User.findOne(
-            {_id: req.params.id, 'wish_list._id': req.params.card_id},
+            {email: req.params.email, 'wish_list._id': req.params.card_id},
             {_id: 0, 'wish_list.$': 1}
         );
 
@@ -320,7 +320,7 @@ router.delete('/:id/wish_list/card/:card_id', async (req, res) => {
             let card_doc = query.wish_list[0];
 
             await User.updateOne(
-                {_id: req.params.id},
+                {email: req.params.email},
                 {$pull: {wish_list: {_id: req.params.card_id}}}
             );
 
