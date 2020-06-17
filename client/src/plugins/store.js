@@ -1,25 +1,36 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { http } from './connector'
+import VuexPersist from 'vuex-persist'
 
 Vue.use(Vuex);
 
+const vuexLocal = new VuexPersist({
+    key: 'vuex',
+    storage: window.localStorage,
+    reducer: (state) => ({
+        logged_in: state.logged_in,
+        email: state.email
+    })
+});
+
 const store = new Vuex.Store({
+    plugins: [vuexLocal.plugin],
     state: {
         logged_in: '',
-        user: {}
+        email: ''
     },
     mutations: {
-        logged_in(state, user) {
+        logged_in(state, email) {
             state.logged_in = true;
-            state.user = user;
+            state.email = email;
         },
         logged_out(state) {
             state.logged_in = false;
-            state.user = {};
+            state.email = '';
         },
         change_email(state, new_email) {
-            state.user.email = new_email;
+            state.email = new_email;
         }
     },
     actions: {
@@ -27,9 +38,9 @@ const store = new Vuex.Store({
             return new Promise((resolve, reject) => {
                 http.post('/register', register_creds)
                 .then(response => {
-                    let curr_user = response.data.user;
+                    let email = response.data.email;
 
-                    commit('logged_in', curr_user)
+                    commit('logged_in', email)
                     resolve(response);
                 })
                 .catch(error => {
@@ -50,13 +61,13 @@ const store = new Vuex.Store({
                 });
             });
         },
-        login({commit}, user) {
+        login({commit}, email) {
             return new Promise((resolve, reject) => {
-                http.post('/login', user)
+                http.post('/login', email)
                 .then(response => {
-                    let curr_user = response.data.user;
+                    let curr_email = response.data.email;
 
-                    commit('logged_in', curr_user)
+                    commit('logged_in', curr_email)
                     resolve(response);
                 })
                 .catch(error => {
@@ -81,9 +92,9 @@ const store = new Vuex.Store({
             return new Promise((resolve, reject) => {
                 http.get('/check_auth')
                 .then(response => {
-                    let curr_user = response.data.user;
+                    let email = response.data.email;
 
-                    commit('logged_in', curr_user)
+                    commit('logged_in', email)
                     resolve(response);
                 })
                 .catch(error => {
