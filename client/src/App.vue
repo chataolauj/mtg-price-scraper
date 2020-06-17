@@ -1,6 +1,6 @@
 <template>
   <v-app>
-        <v-app-bar app :color="app_bar.color" :flat="app_bar.isFlat">
+        <v-app-bar app :color="this.$store.state.app_bar.color" :flat="this.$store.state.app_bar.isFlat">
             <router-link to="/">Home</router-link>
             <v-spacer></v-spacer>
 
@@ -95,10 +95,6 @@ export default {
     data() {
         return {
             snackbar: {},
-            app_bar: {
-                isFlat: true,
-                color: 'white'
-            },
             card: {},
             isLoading: false,
             clearSearch: false,
@@ -177,12 +173,10 @@ export default {
             this.showSearch = false;
 
             if(to.path == '/') {
-                this.app_bar.isFlat = true;
-                this.app_bar.color = "white";
+                this.$store.commit('change_app_bar', {color: 'white', isFlat: true});
             }
             else {
-                this.app_bar.isFlat = false;
-                this.app_bar.color = "amber accent-3";
+                this.$store.commit('change_app_bar', {color: 'amber accent-3', isFlat: false});
             }
         }
     }

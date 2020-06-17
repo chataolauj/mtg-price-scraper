@@ -7,18 +7,18 @@ Vue.use(Vuex);
 
 const vuexLocal = new VuexPersist({
     key: 'vuex',
-    storage: window.localStorage,
-    reducer: (state) => ({
-        logged_in: state.logged_in,
-        email: state.email
-    })
+    storage: window.localStorage
 });
 
 const store = new Vuex.Store({
     plugins: [vuexLocal.plugin],
     state: {
         logged_in: '',
-        email: ''
+        email: '',
+        app_bar: {
+            color: 'white',
+            isFlat: true
+        }
     },
     mutations: {
         logged_in(state, email) {
@@ -31,6 +31,9 @@ const store = new Vuex.Store({
         },
         change_email(state, new_email) {
             state.email = new_email;
+        },
+        change_app_bar(state, app_bar) {
+            state.app_bar = app_bar;
         }
     },
     actions: {
