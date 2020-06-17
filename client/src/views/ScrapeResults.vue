@@ -40,15 +40,6 @@
                         Login to Add to Wish List
                     </v-btn> 
                 </v-col>
-                <!-- <v-col cols="12" v-if="$vuetify.breakpoint.mdAndDown">
-                    <v-btn 
-                        v-if="this.$store.state.logged_in" @click="addCard()" 
-                        block color="success" :loading="isLoading"
-                    >
-                        Add to Wish List
-                    </v-btn>
-                    <v-btn v-else disabled block class="mt-4">Login to Add to Wish List</v-btn> 
-                </v-col> -->
             </v-row>
         </v-col>
     </v-row>
@@ -85,8 +76,7 @@ export default {
                 set_code: this.card.set_code,
                 conditions: [],
                 wish_price: null,
-                image_uris: this.card.image_uris,
-                isFoil: false
+                image_uris: this.card.image_uris
             };
             
             await this.$http.post(`/users/${this.$store.state.user._id}/wish_list`, this.card_to_add)
