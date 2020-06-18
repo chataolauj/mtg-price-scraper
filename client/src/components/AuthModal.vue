@@ -27,8 +27,8 @@
                             <v-row>
                                 <v-col cols="12"> <!-- Email -->
                                     <v-text-field 
-                                        v-model="login_creds.email" label="Email" :disabled="isLoading" 
-                                        hide-details required
+                                        v-model="login_creds.email" label="Email" @keyup.enter="login(login_creds)"
+                                        :disabled="isLoading" hide-details required
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="12"> <!-- Password -->
@@ -76,13 +76,13 @@
                             <v-row>
                                 <v-col cols="12"> <!-- Email -->
                                     <v-text-field 
-                                        v-model="register_creds.email" label="Email" :disabled="isLoading" 
-                                        hide-details required class="pt-0"
+                                        v-model="register_creds.email" label="Email" @keyup.enter="register(register_creds)"
+                                        :disabled="isLoading" hide-details required class="pt-0"
                                     ></v-text-field>
                                 </v-col>
                                 <v-col cols="12"> <!-- Password -->
                                     <v-text-field 
-                                        v-model="register_creds.password" 
+                                        v-model="register_creds.password" @keyup.enter="register(register_creds)"
                                         label="Password" :type="show_regis_pass ? 'text' : 'password'" required 
                                         :append-icon="show_regis_pass ? 'mdi-eye' : 'mdi-eye-off'" @click:append="show_regis_pass = !show_regis_pass"
                                         :disabled="isLoading" hide-details

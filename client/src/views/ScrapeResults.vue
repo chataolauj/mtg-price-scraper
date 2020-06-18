@@ -6,8 +6,8 @@
         </v-col>
         <v-col cols="12">
             <v-row class="d-flex flex-column flex-lg-row" align="center" align-lg="stretch">
-                <v-col cols="12" sm="4">
-                    <v-img :src="card.image_uris.normal" contain></v-img>
+                <v-col cols="12" sm="4"> <!-- Card Image -->
+                    <v-img :src="$store.state.card.image_uris.normal" contain></v-img>
 
                     <v-btn 
                         v-if="this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" @click="addCard()" 
@@ -23,8 +23,8 @@
                         Login to Add to Wish List
                     </v-btn> 
                 </v-col>
-                <v-col cols="12" lg="8" class="d-flex flex-column">
-                    <PriceListings :card="card"/>
+                <v-col cols="12" lg="8" class="d-flex flex-column"> <!-- Price Listings -->
+                    <PriceListings :card="$store.state.card"/>
 
                     <v-btn 
                         v-if="this.$store.state.logged_in && $vuetify.breakpoint.lgAndUp" @click="addCard()" 
@@ -55,9 +55,6 @@ export default {
         Snackbar,
         PriceListings
     },
-    props: {
-        card: Object
-    },
     data() {
         return {
             isLoading: false,
@@ -70,13 +67,13 @@ export default {
             this.isLoading = true;
             
             this.card_to_add = {
-                multiverse_id: this.card.multiverse_id,
-                name: this.card.name,
-                set_name: this.card.set_name,
-                set_code: this.card.set_code,
+                multiverse_id: this.$store.state.card.multiverse_id,
+                name: this.$store.state.card.name,
+                set_name: this.$store.state.card.set_name,
+                set_code: this.$store.state.card.set_code,
                 conditions: [],
                 wish_price: null,
-                image_uris: this.card.image_uris
+                image_uris: this.$store.state.card.image_uris
             };
             
             await this.$http.post(`/users/${this.$store.state.email}/wish_list`, this.card_to_add)
@@ -100,7 +97,7 @@ export default {
                 this.isLoading = false;
             })
             .catch(error => {
-                console.log(error.response.data.message)
+                this.isLoading = false;
 
                 this.snackbar = {
                     msg: error.response.data.message,
@@ -108,8 +105,6 @@ export default {
                     close_color: 'white',
                     show: true
                 }
-
-                this.isLoading = false;
             });
         }
     }

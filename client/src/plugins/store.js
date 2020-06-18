@@ -19,7 +19,8 @@ const store = new Vuex.Store({
             color: 'white',
             isFlat: true
         },
-        card: {}
+        card: {},
+        previous_scrape: {}
     },
     mutations: {
         logged_in(state, email) {
@@ -35,6 +36,9 @@ const store = new Vuex.Store({
         },
         scraped_card(state, card) {
             state.card = card;
+        },
+        previous_scrape(state, card) {
+            state.previous_scrape = card;
         },
         change_email(state, new_email) {
             state.email = new_email;
@@ -95,7 +99,7 @@ const store = new Vuex.Store({
                 });
             });
         },
-        check_auth({commit}) {
+        checkAuth({commit}) {
             return new Promise((resolve, reject) => {
                 http.get('/check_auth')
                 .then(response => {
@@ -106,6 +110,30 @@ const store = new Vuex.Store({
                 })
                 .catch(error => {
                     commit('logged_out')
+                    reject(error);
+                });
+            });
+        },
+        scrape({commit, state}, card) {
+            return new Promise((resolve, reject) => {
+                http.post('/scrape-list', card)
+                .then(async (response) => {
+                    if(response.status == 200 || response.status == 204) {
+                        await http.put(`/scrape-list/${card.set_name}/${card.name}/websites`)
+                        .then(() => {
+                            commit('previous_scrape', state.card)
+                            commit('scraped_card', card);
+
+                            resolve();
+                        })
+                        .catch(error => {
+                            commit('scraped_card', {});
+
+                            reject(error);
+                        });
+                    }
+                })
+                .catch(error => {
                     reject(error);
                 });
             });

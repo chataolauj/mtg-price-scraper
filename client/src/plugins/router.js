@@ -37,8 +37,7 @@ const router =  new VueRouter({
         {
             path: '/scrape-results/:set_name/:card_name',
             name: 'scrape-results',
-            component: ScrapeResults,
-            props: true
+            component: ScrapeResults
         },
         {
             path: '/forgot-password',
@@ -68,6 +67,11 @@ router.beforeEach((to, from, next) => {
     else {
         store.commit('change_app_bar', {color: 'amber accent-3', isFlat: false});
     }
+
+    /* if(to.name == 'scrape-results' && from.name == 'scrape-results') {
+        store.commit('previous_scrape', store.state.card)
+        store.commit('scraped_card', store.state.previous_scrape);
+    } */
 })
 
 export default router;

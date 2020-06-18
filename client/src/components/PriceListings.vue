@@ -101,7 +101,7 @@ export default {
             let timezone = date.toLocaleString('en', {timeZoneName:'short'}).split(' ').pop();
 
             return days[day] + ', ' + months[mm] + ' ' + dd + ', ' + year 
-                    + ' at ' + (hour > 12 ? hour - 12 : hour)
+                    + ' at ' + (hour > 12 ? hour - 12 : hour == 0 ? 12 : hour)
                     + ':'  + (minutes < 10 ? '0' + minutes : minutes)
                     + (hour < 12 ? ' a.m.' : ' p.m.')
                     + ' ' + timezone;

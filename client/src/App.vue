@@ -102,7 +102,7 @@ export default {
         }
     },
     beforeCreate() {
-        this.$store.dispatch('check_auth').catch(error => console.log(error));
+        this.$store.dispatch('checkAuth').catch(error => console.log(error));
     },
     methods: {
         showSnack(msg) {
@@ -127,39 +127,19 @@ export default {
         async scrape(card) {
             this.isLoading = true;
 
-            this.$store.dispatch('scraped_card', card);
-
-            await this.$http.post('/scrape-list', card)
-            .then(async (response) => {
-                if(response.status == 200 || response.status == 204) {
-                    await this.$http.put(`/scrape-list/${card.set_name}/${card.name}/websites`)
-                    .then(() => {
-                        this.isLoading = false;
-                        this.clearSearch = !this.clearSearch;
-                        this.$router.push({name: 'scrape-results', params: {
-                            card: card, 
-                            set_name: card.set_name.toLowerCase().replace(/:?,?\s+/g, "-"), 
-                            card_name: card.name.toLowerCase().replace(/:?,?\s+/g, "-")
-                        }});
-                    })
-                    .catch(error => {
-                        console.log(error.response)
-
-                        this.isLoading = false;
-
-                        this.snackbar = {
-                            msg: error.response.data.message,
-                            color: 'error',
-                            close_color: 'white',
-                            show: true
-                        }
-                    });
-                }
-            })
-            .catch(error => {
-                console.log(error.response)
-
+            try {
+                await this.$store.dispatch('scrape', card)
+                .then(() => {
+                    this.isLoading = false;
+                    this.clearSearch = !this.clearSearch;
+                    this.$router.push({name: 'scrape-results', params: {
+                        set_name: card.set_name.toLowerCase().replace(/:?,?\s+/g, "-"), 
+                        card_name: card.name.toLowerCase().replace(/:?,?\s+/g, "-")
+                    }});
+                });
+            } catch (error) {
                 this.isLoading = false;
+                this.clearSearch = !this.clearSearch;
 
                 this.snackbar = {
                     msg: error.response.data.message,
@@ -167,7 +147,7 @@ export default {
                     close_color: 'white',
                     show: true
                 }
-            });
+            }
         }
     },
     watch: {
