@@ -16,12 +16,9 @@
                     >
                         Add to Wish List
                     </v-btn>
-                    <v-btn 
-                        v-else-if="!this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" 
-                        disabled block class="mt-4"
-                    >
-                        Login to Add to Wish List
-                    </v-btn> 
+                </v-col>
+                <v-col cols="12" sm="4" v-if="!this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" class="px-0 py-2">
+                    <v-btn block disabled>Login to Add to Wish List</v-btn> 
                 </v-col>
                 <v-col cols="12" lg="8" class="d-flex flex-column"> <!-- Price Listings -->
                     <PriceListings :card="$store.state.card"/>
