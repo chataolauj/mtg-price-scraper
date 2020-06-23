@@ -1,6 +1,9 @@
+/* eslint-disable no-unused-vars */
+
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import store from './store'
+import { source, refreshToken } from './connector'
 import Home from '@/views/Home'
 import AccountSettings from '@/views/AccountSettings'
 import WishList from '@/views/WishList'
@@ -68,10 +71,9 @@ router.beforeEach((to, from, next) => {
         store.commit('change_app_bar', {color: 'amber accent-3', isFlat: false});
     }
 
-    /* if(to.name == 'scrape-results' && from.name == 'scrape-results') {
-        store.commit('previous_scrape', store.state.card)
-        store.commit('scraped_card', store.state.previous_scrape);
-    } */
-})
+    if(store.state.cancel) {
+        store.dispatch('cancelScrape');
+    }
+});
 
 export default router;

@@ -4,3 +4,5 @@ export let http = axios.create({
     baseURL: 'http://localhost:5000',
     withCredentials: true
 })
+
+export const CancelToken = axios.CancelToken;

@@ -17,7 +17,7 @@
                         Add to Wish List
                     </v-btn>
                 </v-col>
-                <v-col cols="12" sm="4" v-if="!this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" class="px-0 py-2">
+                <v-col cols="12" sm="4" v-if="!this.$store.state.logged_in && $vuetify.breakpoint.mdAndDown" class="px-0 py-2"> <!-- Login to Add to Wish List -->
                     <v-btn block disabled>Login to Add to Wish List</v-btn> 
                 </v-col>
                 <v-col cols="12" lg="8" class="d-flex flex-column"> <!-- Price Listings -->

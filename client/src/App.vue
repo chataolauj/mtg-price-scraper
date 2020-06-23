@@ -84,6 +84,7 @@
 import Snackbar from './/components/Snackbar'
 import AuthModal from './components/AuthModal'
 import Search from './components/Search'
+import { source, refreshToken } from './plugins/connector'
 
 export default {
     name: 'App',
@@ -141,11 +142,13 @@ export default {
                 this.isLoading = false;
                 this.clearSearch = !this.clearSearch;
 
-                this.snackbar = {
-                    msg: error.response.data.message,
-                    color: 'error',
-                    close_color: 'white',
-                    show: true
+                if(error.response) {
+                    this.snackbar = {
+                        msg: error.response.data.message,
+                        color: 'error',
+                        close_color: 'white',
+                        show: true
+                    }
                 }
             }
         }

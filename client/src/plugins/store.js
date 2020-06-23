@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { http } from './connector'
+import { http, CancelToken } from './connector'
 import VuexPersist from 'vuex-persist'
 
 Vue.use(Vuex);
@@ -20,7 +20,8 @@ const store = new Vuex.Store({
             isFlat: true
         },
         card: {},
-        previous_scrape: {}
+        previous_scrape: {},
+        cancel: ''
     },
     mutations: {
         logged_in(state, email) {
@@ -36,6 +37,9 @@ const store = new Vuex.Store({
         },
         scraped_card(state, card) {
             state.card = card;
+        },
+        cancel_scrape(state, c) {
+            state.cancel = c
         },
         previous_scrape(state, card) {
             state.previous_scrape = card;
@@ -116,10 +120,18 @@ const store = new Vuex.Store({
         },
         scrape({commit, state}, card) {
             return new Promise((resolve, reject) => {
-                http.post('/scrape-list', card)
+                http.post('/scrape-list', card, {
+                    cancelToken: new CancelToken(function executor(c) {
+                        commit('cancel_scrape', c);
+                    })
+                })
                 .then(async (response) => {
                     if(response.status == 200 || response.status == 204) {
-                        await http.put(`/scrape-list/${card.set_name}/${card.name}/websites`)
+                        await http.put(`/scrape-list/${card.set_name}/${card.name}/websites`, { }, {
+                            cancelToken: new CancelToken(function executor(c) {
+                                commit('cancel_scrape', c);
+                            })
+                        })
                         .then(() => {
                             commit('previous_scrape', state.card)
                             commit('scraped_card', card);
@@ -137,6 +149,9 @@ const store = new Vuex.Store({
                     reject(error);
                 });
             });
+        },
+        cancelScrape({state}) {
+            state.cancel();
         }
     },
     getters: {

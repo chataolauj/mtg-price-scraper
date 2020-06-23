@@ -38,16 +38,16 @@ export default {
                     }});
                 });
             } catch (error) {
-                console.log(error.response)
-
                 this.isLoading = false;
                 this.clearSearch = !this.clearSearch;
 
-                this.snackbar = {
-                    msg: error.response.data.message,
-                    color: 'error',
-                    close_color: 'white',
-                    show: true
+                if(error.response) {
+                    this.snackbar = {
+                        msg: error.response.data.message,
+                        color: 'error',
+                        close_color: 'white',
+                        show: true
+                    }
                 }
             }
         }
