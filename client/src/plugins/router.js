@@ -76,4 +76,10 @@ router.beforeEach((to, from, next) => {
     }
 });
 
+router.afterEach((to, from) => {
+    if(from.name == 'scrape-results') {
+        store.dispatch('addVisitedScrape', {path: from.path, card: store.state.card})
+    }
+});
+
 export default router;

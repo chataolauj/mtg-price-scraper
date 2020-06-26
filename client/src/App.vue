@@ -3,7 +3,7 @@
         <v-app-bar app :color="this.$store.state.app_bar.color" :flat="this.$store.state.app_bar.isFlat">
             <router-link v-if="$router.currentRoute.name == 'home'" to="/">Home</router-link>
             <router-link v-else to="/">
-                <v-img src="../public/images/all_blue_logo.png" height="50" width="50"></v-img>
+                <v-img src="../public/images/app_bar_logo.png" height="50" width="75"></v-img>
             </router-link>
             <v-spacer></v-spacer>
 
@@ -54,7 +54,6 @@
             </v-menu>
         </v-app-bar>
         
-
         <v-content>
             <v-progress-linear
                 v-if="isLoading"
@@ -159,6 +158,7 @@ export default {
     watch: {
         $route(to, from) {
             this.showSearch = false;
+            this.clearSearch = !this.clearSearch;
         }
     }
 }

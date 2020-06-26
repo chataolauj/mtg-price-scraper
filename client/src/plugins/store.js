@@ -20,7 +20,7 @@ const store = new Vuex.Store({
             isFlat: true
         },
         card: {},
-        previous_scrape: {},
+        previous_scrapes: [],
         cancel: ''
     },
     mutations: {
@@ -41,8 +41,8 @@ const store = new Vuex.Store({
         cancel_scrape(state, c) {
             state.cancel = c
         },
-        previous_scrape(state, card) {
-            state.previous_scrape = card;
+        previous_scrapes(state, scrape) {
+            state.previous_scrapes.push(scrape)
         },
         change_email(state, new_email) {
             state.email = new_email;
@@ -118,7 +118,7 @@ const store = new Vuex.Store({
                 });
             });
         },
-        scrape({commit, state}, card) {
+        scrape({commit}, card) {
             return new Promise((resolve, reject) => {
                 http.post('/scrape-list', card, {
                     cancelToken: new CancelToken(function executor(c) {
@@ -133,7 +133,6 @@ const store = new Vuex.Store({
                             })
                         })
                         .then(() => {
-                            commit('previous_scrape', state.card)
                             commit('scraped_card', card);
 
                             resolve();
@@ -149,6 +148,15 @@ const store = new Vuex.Store({
                     reject(error);
                 });
             });
+        },
+        addVisitedScrape({commit, state}, curr_scrape) {
+            let hasDuplicates = state.previous_scrapes.filter(scrape => scrape.path == curr_scrape.path);
+            
+            if(!hasDuplicates.length || !state.previous_scrapes.length) {
+                commit('previous_scrapes', curr_scrape);
+            }
+
+            console.log(state.previous_scrapes)
         },
         cancelScrape({state}) {
             state.cancel();

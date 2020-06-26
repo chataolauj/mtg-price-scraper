@@ -3,10 +3,9 @@
         <Snackbar :snack="snackbar"/>
         <v-col cols="12" class="pa-0 d-flex flex-column align-center">
             <v-img 
-                src="../../public/images/yellow_logo.png" 
-                class="mb-n4" 
-                :height="$vuetify.breakpoint.xs ? '200' : '250'"
-                :width="$vuetify.breakpoint.xs ? '200' : '250'"
+                src="../../public/images/homepage_logo.png" 
+                :height="$vuetify.breakpoint.xs ? '175' : '250'"
+                :width="$vuetify.breakpoint.xs ? '225' : '300'"
             ></v-img>
         </v-col>
         <Search id="search" @selected_card="scrape" :loading="isLoading" :cardAdded="clearSearch"/>
