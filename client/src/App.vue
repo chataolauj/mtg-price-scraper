@@ -1,7 +1,10 @@
 <template>
   <v-app>
         <v-app-bar app :color="this.$store.state.app_bar.color" :flat="this.$store.state.app_bar.isFlat">
-            <router-link to="/">Home</router-link>
+            <router-link v-if="$router.currentRoute.name == 'home'" to="/">Home</router-link>
+            <router-link v-else to="/">
+                <v-img src="../public/images/all_blue_logo.png" height="50" width="50"></v-img>
+            </router-link>
             <v-spacer></v-spacer>
 
             <Search 
