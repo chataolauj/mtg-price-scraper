@@ -71,15 +71,23 @@ router.beforeEach((to, from, next) => {
         store.commit('change_app_bar', {color: 'amber accent-3', isFlat: false});
     }
 
+    if(to.name == 'scrape-results') {
+        store.state.previous_scrapes.forEach(scrape => {
+            if(to.path == scrape.path) {
+                store.commit('setCard', scrape.card);
+            }
+        })
+    }
+
     if(store.state.cancel) {
         store.dispatch('cancelScrape');
     }
 });
 
 router.afterEach((to, from) => {
-    if(from.name == 'scrape-results') {
+    /* if(from.name == 'scrape-results') {
         store.dispatch('addVisitedScrape', {path: from.path, card: store.state.card})
-    }
+    } */
 });
 
 export default router;

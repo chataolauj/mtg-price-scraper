@@ -21,7 +21,8 @@ const store = new Vuex.Store({
         },
         card: {},
         previous_scrapes: [],
-        cancel: ''
+        cancel: '',
+        previous_scrapes_expiry: 0
     },
     mutations: {
         logged_in(state, email) {
@@ -35,7 +36,7 @@ const store = new Vuex.Store({
         change_app_bar(state, app_bar) {
             state.app_bar = app_bar;
         },
-        scraped_card(state, card) {
+        setCard(state, card) {
             state.card = card;
         },
         cancel_scrape(state, c) {
@@ -43,6 +44,15 @@ const store = new Vuex.Store({
         },
         previous_scrapes(state, scrape) {
             state.previous_scrapes.push(scrape)
+        },
+        previous_scrapes_expiry(state) {
+            state.previous_scrapes_expiry = Date.now();
+        },
+        clearPreviousScrapes(state) {
+            if((Date.now() - state.previous_scrapes_expiry) > (60 * 60000)) {
+                state.card = {};
+                state.previous_scrapes = [];
+            }
         },
         change_email(state, new_email) {
             state.email = new_email;
@@ -118,7 +128,7 @@ const store = new Vuex.Store({
                 });
             });
         },
-        scrape({commit}, card) {
+        scrape({commit, dispatch}, card) {
             return new Promise((resolve, reject) => {
                 http.post('/scrape-list', card, {
                     cancelToken: new CancelToken(function executor(c) {
@@ -133,13 +143,16 @@ const store = new Vuex.Store({
                             })
                         })
                         .then(() => {
-                            commit('scraped_card', card);
+                            dispatch('addVisitedScrape', {
+                                path: `/scrape-results/${card.set_name.toLowerCase().replace(/:?,?\s+/g, "-")}/${card.name.toLowerCase().replace(/:?,?\s+/g, "-")}`,
+                                card: card
+                            });
+
+                            commit('setCard', card);
 
                             resolve();
                         })
                         .catch(error => {
-                            commit('scraped_card', {});
-
                             reject(error);
                         });
                     }
@@ -150,13 +163,15 @@ const store = new Vuex.Store({
             });
         },
         addVisitedScrape({commit, state}, curr_scrape) {
+            if(!state.previous_scrapes.length) {
+                commit('previous_scrapes_expiry');
+            }
+
             let hasDuplicates = state.previous_scrapes.filter(scrape => scrape.path == curr_scrape.path);
             
             if(!hasDuplicates.length || !state.previous_scrapes.length) {
                 commit('previous_scrapes', curr_scrape);
             }
-
-            console.log(state.previous_scrapes)
         },
         cancelScrape({state}) {
             state.cancel();

@@ -107,6 +107,9 @@ export default {
     beforeCreate() {
         this.$store.dispatch('checkAuth').catch(error => console.log(error));
     },
+    beforeMount() {
+        this.$store.commit('clearPreviousScrapes');
+    },
     methods: {
         showSnack(msg) {
             this.snackbar = {
@@ -158,7 +161,10 @@ export default {
     watch: {
         $route(to, from) {
             this.showSearch = false;
-            this.clearSearch = !this.clearSearch;
+
+            if(to.name != 'scrape-results') {
+                this.clearSearch = !this.clearSearch;
+            }
         }
     }
 }
