@@ -95,7 +95,7 @@ export default {
         AuthModal,
         Search
     },
-    data() { /dsddsdsd
+    data() {
         return {
             snackbar: {},
             card: {},
