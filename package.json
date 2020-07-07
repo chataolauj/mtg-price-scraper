@@ -27,7 +27,7 @@
     "nodemailer": "^6.4.6",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "puppeteer": "^3.0.1"
+    "puppeteer": "^3.3.0"
   },
   "devDependencies": {
     "concurrently": "^5.2.0",
