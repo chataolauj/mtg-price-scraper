@@ -8,7 +8,7 @@ import vuetify from './plugins/vuetify';
 Vue.config.productionTip = false
 
 Vue.prototype.$http = axios.create({
-  baseURL: process.env.PORT || 5000,
+  baseURL: process.env.PORT,
   withCredentials: true
 });
 
