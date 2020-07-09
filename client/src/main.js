@@ -7,10 +7,8 @@ import vuetify from './plugins/vuetify';
 
 Vue.config.productionTip = false
 
-const port = process.env.PORT || 5000;
-
 Vue.prototype.$http = axios.create({
-  baseURL: port,
+  baseURL: process.env.PORT || 'http://localhost:5000',
   withCredentials: true
 });
 
