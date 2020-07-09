@@ -42,9 +42,9 @@ app.use('/users', require('./routes/users'));
 app.use('/scrape-list', require('./routes/scrape_list'));
 app.use('', require('./routes/auth'));
 
-/* app.get('/', (req, res) => {
+app.get('/', (req, res) => {
     res.send('This is home...');
-}); */
+});
 
 if(process.env.NODE_ENV === 'production') {
     //Set static folder
