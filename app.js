@@ -36,17 +36,11 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-db.connect();
-
 //Routes
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
 app.use('/scrape-list', require('./routes/scrape_list'));
 app.use('', require('./routes/auth'));
-
-/* app.get('/', (req, res) => {
-    res.send('This is home...');
-}); */
 
 if(process.env.NODE_ENV === 'production') {
     //Set static folder
@@ -58,5 +52,7 @@ if(process.env.NODE_ENV === 'production') {
 }
 
 const port = process.env.PORT || 5000;
+
+db.connect();
 
 app.listen(port, () => console.log(`Sever started on port ${port}`));
