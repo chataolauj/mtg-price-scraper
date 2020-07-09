@@ -1,7 +1,9 @@
 import axios from 'axios'
 
+const port = process.env.PORT || 5000;
+
 export let http = axios.create({
-    baseURL: process.env.PORT,
+    baseURL: port,
     withCredentials: true
 })
 
