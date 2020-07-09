@@ -36,6 +36,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+db.connect();
+
 //Routes
 app.use('/cards', require('./routes/cards'));
 app.use('/users', require('./routes/users'));
@@ -56,7 +58,5 @@ if(process.env.NODE_ENV === 'production') {
 }
 
 const port = process.env.PORT || 5000;
-
-db.connect();
 
 app.listen(port, () => console.log(`Sever started on port ${port}`));
