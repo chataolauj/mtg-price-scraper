@@ -136,7 +136,7 @@ router.post('/forgot-password',
                 text: 
                     `You are receiving this email because you, or someone, requested a password reset for your account.`
                     + `\n\nPlease click the following link, or paste it into your browser, to continue the password reset process:`
-                    + `\nhttp://localhost:8080/reset-password/${token}`
+                    + `\n${process.env.PORT || 8080}/${token}`
                     + `\n\nIf you did not request a password reset for your account, then please ignore this email and your password will remain unchanged.`
             };
         
