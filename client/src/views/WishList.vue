@@ -311,7 +311,7 @@ export default {
                 console.log(error.response.data.message)
 
                 this.snackbar = {
-                    msg: error.response.data.message,
+                    msg: error.response.data?.message,
                     color: 'error',
                     close_color: 'white',
                     show: true
@@ -350,7 +350,7 @@ export default {
                 console.log(error.response.data.message)
 
                 this.snackbar = {
-                    msg: error.response.data.message,
+                    msg: error.response.data?.message,
                     color: 'error',
                     close_color: 'white',
                     show: true
@@ -377,7 +377,7 @@ export default {
                 console.log(error.response)
 
                 this.snackbar = {
-                    msg: error.response.data.message,
+                    msg: error.response.data?.message,
                     color: 'error',
                     close_color: 'white',
                     show: true

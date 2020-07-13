@@ -174,11 +174,11 @@ export default {
                 })
                 .catch(error => {
                     this.isLoading = false;
-                    this.login_error = error.response.data.message;
+                    this.login_error = error.response.data?.message;
                 });
             } catch (error) {
                 this.isLoading = false;
-                this.login_error = error.response.data.message;
+                this.login_error = error.response.data?.message;
             }
         },
         async register(register_creds) {

@@ -95,7 +95,7 @@ export default {
             })
             .catch(error => {
                 this.isLoading = false;
-                this.email_error = error.response.data[0].msg
+                this.email_error = error.response.data[0]?.msg
             });
         },
         resendEmail() {

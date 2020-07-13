@@ -149,7 +149,7 @@ export default {
 
                 if(error.response) {
                     this.snackbar = {
-                        msg: error.response.data.message,
+                        msg: error.response.data?.message,
                         color: 'error',
                         close_color: 'white',
                         show: true
